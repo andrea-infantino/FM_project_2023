@@ -163,44 +163,44 @@ void switch_branch_fun() {
 		<location id="id18" x="-654" y="-476">
 			<committed/>
 		</location>
+		<location id="id19" x="-773" y="-110">
+			<committed/>
+		</location>
 		<init ref="id9"/>
-		<transition id="id19">
+		<transition id="id20">
+			<source ref="id19"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-765" y="-238">ready_to_receive!</label>
+			<nail x="-773" y="-280"/>
+		</transition>
+		<transition id="id21">
 			<source ref="id18"/>
 			<target ref="id10"/>
 			<label kind="synchronisation" x="-560" y="-501">go[prev_slot]!</label>
 			<nail x="-373" y="-476"/>
 		</transition>
-		<transition id="id20">
+		<transition id="id22">
 			<source ref="id11"/>
 			<target ref="id18"/>
 			<label kind="synchronisation" x="-722" y="-382">go[id]?</label>
 			<nail x="-654" y="-331"/>
 		</transition>
-		<transition id="id21">
-			<source ref="id17"/>
-			<target ref="id10"/>
-			<label kind="guard" x="-586" y="-238">system_state[id] == false</label>
-			<label kind="assignment" x="-509" y="-221">occupied = false</label>
-			<nail x="-365" y="-161"/>
-			<nail x="-365" y="-348"/>
-		</transition>
-		<transition id="id22">
-			<source ref="id17"/>
-			<target ref="id10"/>
-			<label kind="guard" x="-322" y="-238">system_state[id] == true</label>
-			<label kind="assignment" x="-322" y="-221">occupied = true</label>
-		</transition>
 		<transition id="id23">
+			<source ref="id17"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="-323" y="-238">occupied = system_state[id]</label>
+		</transition>
+		<transition id="id24">
 			<source ref="id16"/>
 			<target ref="id17"/>
 			<label kind="synchronisation" x="-288" y="-110">receive_all?</label>
 		</transition>
-		<transition id="id24">
+		<transition id="id25">
 			<source ref="id15"/>
 			<target ref="id16"/>
 			<label kind="synchronisation" x="-127" y="-110">ready_to_receive!</label>
 		</transition>
-		<transition id="id25">
+		<transition id="id26">
 			<source ref="id10"/>
 			<target ref="id10"/>
 			<label kind="guard" x="-271" y="-348">id == START_BRANCH_SLOT</label>
@@ -209,21 +209,10 @@ void switch_branch_fun() {
 			<nail x="-246" y="-365"/>
 			<nail x="-297" y="-323"/>
 		</transition>
-		<transition id="id26">
-			<source ref="id12"/>
-			<target ref="id15"/>
-			<label kind="guard" x="-59" y="-272">occupied == false</label>
-			<label kind="assignment" x="-59" y="-255">system_state[next_slot] = false</label>
-			<nail x="-68" y="-365"/>
-			<nail x="-68" y="-161"/>
-		</transition>
 		<transition id="id27">
 			<source ref="id12"/>
 			<target ref="id15"/>
-			<label kind="guard" x="213" y="-314">occupied == true</label>
-			<label kind="assignment" x="213" y="-297">system_state[next_slot] = true</label>
-			<nail x="204" y="-365"/>
-			<nail x="204" y="-161"/>
+			<label kind="assignment" x="42" y="-255">system_state[next_slot] = occupied</label>
 		</transition>
 		<transition id="id28">
 			<source ref="id14"/>
@@ -238,10 +227,8 @@ void switch_branch_fun() {
 		</transition>
 		<transition id="id30">
 			<source ref="id13"/>
-			<target ref="id11"/>
-			<label kind="synchronisation" x="-807" y="-195">stop[prev_slot]!</label>
-			<nail x="-662" y="-110"/>
-			<nail x="-662" y="-280"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-756" y="-102">stop[prev_slot]!</label>
 		</transition>
 		<transition id="id31">
 			<source ref="id11"/>
@@ -590,7 +577,6 @@ system_state[station_id + 1] = true</label>
 			<source ref="id91"/>
 			<target ref="id92"/>
 			<label kind="synchronisation" x="-25" y="-153">move?</label>
-			<nail x="25" y="-127"/>
 		</transition>
 		<transition id="id98">
 			<source ref="id90"/>
@@ -601,7 +587,7 @@ system_state[station_id + 1] = true</label>
 			<source ref="id89"/>
 			<target ref="id90"/>
 			<label kind="guard" x="-357" y="-246">system_state[station_id] == true</label>
-			<label kind="synchronisation" x="-357" y="-229">move?</label>
+			<label kind="synchronisation" x="-357" y="-229">receive_all?</label>
 			<label kind="assignment" x="-357" y="-204">x = 0</label>
 		</transition>
 		<transition id="id100">
