@@ -11,7 +11,7 @@ const int N_IN_SENSORS = 6;
 const int N_OUT_SENSORS = 5;
 
 // STATION POSITIONS
-const int POS_STATIONS[6] = {19, 40, 95, 104, 83, 1};
+const int POS_STATIONS[6] = {1, 19, 40, 83, 95, 104};
 
 broadcast chan initialize, move, receive_all;
 urgent chan go[N_SLOTS + N_STATIONS], stop[N_SLOTS + N_STATIONS], switch_branch, ready_to_receive;
@@ -556,19 +556,21 @@ int station_id;</declaration>
 			<name x="66" y="-238">Processing</name>
 			<label kind="invariant" x="93" y="-221">x &gt;= processing_time</label>
 		</location>
-		<location id="id91" x="76" y="-76">
-			<name x="85" y="-110">Done</name>
+		<location id="id91" x="76" y="-127">
+			<name x="85" y="-161">Done</name>
 		</location>
 		<location id="id92" x="-85" y="-127">
 			<committed/>
 		</location>
-		<location id="id93" x="-85" y="-8">
+		<location id="id93" x="76" y="8">
 		</location>
 		<init ref="id88"/>
 		<transition id="id94">
 			<source ref="id93"/>
-			<target ref="id92"/>
-			<label kind="synchronisation" x="-76" y="-76">go[station_id]?</label>
+			<target ref="id91"/>
+			<label kind="synchronisation" x="110" y="-68">go[station_id]?</label>
+			<nail x="102" y="-25"/>
+			<nail x="102" y="-93"/>
 		</transition>
 		<transition id="id95">
 			<source ref="id92"/>
@@ -580,19 +582,20 @@ system_state[station_id + 1] = true</label>
 		<transition id="id96">
 			<source ref="id91"/>
 			<target ref="id93"/>
-			<label kind="synchronisation" x="-68" y="0">stop[station_id]?</label>
-			<nail x="25" y="-8"/>
+			<label kind="synchronisation" x="-102" y="-68">stop[station_id]?</label>
+			<nail x="51" y="-93"/>
+			<nail x="51" y="-25"/>
 		</transition>
 		<transition id="id97">
 			<source ref="id91"/>
 			<target ref="id92"/>
-			<label kind="synchronisation" x="-68" y="-153">move?</label>
+			<label kind="synchronisation" x="-25" y="-153">move?</label>
 			<nail x="25" y="-127"/>
 		</transition>
 		<transition id="id98">
 			<source ref="id90"/>
 			<target ref="id91"/>
-			<label kind="guard" x="85" y="-161">x &lt;= processing_time</label>
+			<label kind="guard" x="85" y="-187">x &lt;= processing_time</label>
 		</transition>
 		<transition id="id99">
 			<source ref="id89"/>
