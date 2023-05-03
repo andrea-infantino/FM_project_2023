@@ -31,14 +31,14 @@ void init_system() {
     sequence[POS_STATIONS[5]] = false;
 
     for(i : int[0, N_SLOTS + N_STATIONS - 1])
-        if(i &gt;= 3 and i &lt;= 14)
+        if(i &gt;= 4 and i &lt;= 15)
             system_state[i] = true;
         else
             system_state[i] = false;
 }
 
 bool init_disks(int id) {
-    if(id &gt;= 3 and id &lt;= 14)
+    if(id &gt;= 4 and id &lt;= 15)
         return true;
     return false;
 }</declaration>
@@ -703,7 +703,7 @@ conveyorBelt6(const int[105, 109] id) = ConveyorBeltSlot(id);
 inSensors(const int[0, N_IN_SENSORS - 1] id) = InSensor(inSensorsPositions[id], inSensorsStations[id]);
 outSensors(const int[0, N_OUT_SENSORS - 1] id) = OutSensor(id, outSensorsPositions[id]);
 
-system stations, conveyorBelt0, conveyorBelt1, conveyorBelt2, conveyorBelt3, conveyorBelt4, conveyorBelt5, conveyorBelt6, inSensors, outSensors;</system>
+system stations, conveyorBeltHandler, conveyorBeltMotor, conveyorBelt0, conveyorBelt1, conveyorBelt2, conveyorBelt3, conveyorBelt4, conveyorBelt5, conveyorBelt6, inSensors, outSensors;</system>
 	<queries>
 		<query>
 			<formula/>
