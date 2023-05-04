@@ -541,7 +541,7 @@ int station_id;</declaration>
 		</location>
 		<location id="id90" x="289" y="-204">
 			<name x="306" y="-212">Processing</name>
-			<label kind="invariant" x="306" y="-195">x &gt;= processing_time</label>
+			<label kind="invariant" x="306" y="-195">x &lt;= processing_time</label>
 		</location>
 		<location id="id91" x="289" y="-59">
 			<name x="246" y="-85">Done</name>
@@ -629,7 +629,7 @@ system_state[station_id + 1] = true</label>
 		<transition id="id107">
 			<source ref="id90"/>
 			<target ref="id91"/>
-			<label kind="guard" x="297" y="-153">x &lt;= processing_time</label>
+			<label kind="guard" x="297" y="-153">x &gt;= processing_time</label>
 		</transition>
 		<transition id="id108">
 			<source ref="id89"/>
