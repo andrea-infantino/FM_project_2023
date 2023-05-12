@@ -8,35 +8,304 @@
 const int N_SLOTS = 105;
 const int N_STATIONS = 6;
 const int N_STATE = N_SLOTS + N_STATIONS;
+const int N_CONVEYOR_BELT = 9;
+const int N_IN_SENSORS = 5;
+const int N_OUT_SENSORS = 5;
+const int N_DISK = 12;
+
+const int POS_STATIONS[6] = {1, 19, 40, 83, 95, 104};
+const int POS_IN_SENSORS[6] = {13, 34, 64, 77, 93, 107};
+const int POS_OUT_SENSORS[N_OUT_SENSORS] = {2, 24, 68, 90, 105};
 
 /**
  * Variables
  */
 
-// TODO
-</declaration>
+broadcast chan initialize;
+chan move_belt[N_CONVEYOR_BELT + 1], go[N_IN_SENSORS], stop[N_IN_SENSORS]; // To be general in conveyor belt
+
+bool system_state[N_SLOTS + N_STATIONS];    // true if the piece is in that position
+
+//chan go[N_SLOTS + N_STATIONS], stop[N_SLOTS + N_STATIONS], go_station[N_OUT_SENSORS], stop_station[N_OUT_SENSORS], switch_branch, ready_to_receive;
+
+//bool sequence[N_SLOTS + N_STATIONS];        // true: slot, false: station
+
+
+void init_system() {
+    for(i : int[0, N_SLOTS + N_STATIONS - 1])
+        if(i &gt;= POS_OUT_SENSORS[N_OUT_SENSORS - 1] and i &lt;= POS_IN_SENSORS[0] and i &gt;= (POS_IN_SENSORS[0] - N_DISK + 1))
+            system_state[i] = true;
+        else
+            system_state[i] = false;
+}</declaration>
 	<template>
-		<name x="5" y="5">ConveyorBlet</name>
-		<parameter>const int[0, N_STATE] startingPosition, const int length, const int[0, N_STATE] previousPosition, const int[0, N_STATE] nextPosition, const int[0, N_STATE] alternativeNextPosition /* TODO: add parameters for the sensors */</parameter>
-		<location id="id0" x="0" y="0">
+		<name x="5" y="5">ConveyorBelt</name>
+		<parameter>const int[0, N_CONVEYOR_BELT] id, int[0, N_IN_SENSORS] sensor, const int[0, N_STATE] startingPosition, const int length, const int[0, N_STATE] previousPosition, const int[0, N_STATE] nextPosition, const int[0, N_STATE] alternativeNextPosition /* TODO: add parameters for the sensors */</parameter>
+		<declaration>void update_free() {
+
+}
+
+void update_block() {
+
+}</declaration>
+		<location id="id0" x="-2252" y="-2566">
+			<name x="-2218" y="-2575">Idle</name>
 		</location>
-		<init ref="id0"/>
+		<location id="id1" x="-2048" y="-2380">
+			<name x="-2014" y="-2397">Try_to_move</name>
+		</location>
+		<location id="id2" x="-2252" y="-2210">
+			<name x="-2269" y="-2193">Move</name>
+		</location>
+		<location id="id3" x="-2465" y="-2397">
+			<name x="-2541" y="-2414">Commit</name>
+		</location>
+		<location id="id4" x="-2252" y="-2635">
+		</location>
+		<init ref="id4"/>
+		<transition id="id5">
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-2235" y="-2618">initialize?</label>
+		</transition>
+		<transition id="id6">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-2201" y="-2320">sensor == -1</label>
+			<label kind="assignment" x="-2210" y="-2303">update_free()</label>
+		</transition>
+		<transition id="id7">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-2321" y="-2405">sensor != -1</label>
+			<label kind="synchronisation" x="-2321" y="-2422">go[sensor]?</label>
+			<label kind="assignment" x="-2321" y="-2388">update_free()</label>
+			<nail x="-2169" y="-2396"/>
+			<nail x="-2262" y="-2320"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-2490" y="-2524">move_belt[id + 1]!</label>
+		</transition>
+		<transition id="id9">
+			<source ref="id2"/>
+			<target ref="id3"/>
+		</transition>
+		<transition id="id10">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-2074" y="-2218">sensor != -1</label>
+			<label kind="synchronisation" x="-2074" y="-2235">stop[sensor]?</label>
+			<label kind="assignment" x="-2074" y="-2201">update_block()</label>
+			<label kind="comments" x="-2737" y="-2558">Sensor == -1 if not present</label>
+			<nail x="-2049" y="-2261"/>
+			<nail x="-2135" y="-2189"/>
+		</transition>
+		<transition id="id11">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-2167" y="-2524">move_belt[id]?</label>
+		</transition>
 	</template>
 	<template>
 		<name>Motor</name>
 		<parameter>const double speed</parameter>
 		<declaration>clock x;
 </declaration>
-		<location id="id1" x="0" y="0">
+		<location id="id12" x="-178" y="-170">
 		</location>
-		<init ref="id1"/>
+		<location id="id13" x="-178" y="-34">
+			<label kind="invariant" x="-161" y="-43">x &lt;= speed</label>
+		</location>
+		<location id="id14" x="-178" y="119">
+			<label kind="invariant" x="-212" y="153">x &lt;=speed</label>
+		</location>
+		<init ref="id12"/>
+		<transition id="id15">
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-357" y="17">x&gt;=speed</label>
+			<label kind="synchronisation" x="-552" y="34">move_belt[N_CONVEYOR_BELT]?</label>
+			<label kind="assignment" x="-331" y="51">x = 0</label>
+			<nail x="-280" y="76"/>
+			<nail x="-280" y="17"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-68" y="17">x &gt;= speed</label>
+			<label kind="synchronisation" x="-68" y="34">move_belt[0]!</label>
+			<label kind="assignment" x="-68" y="51">x = 0</label>
+			<nail x="-76" y="17"/>
+			<nail x="-76" y="76"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-170" y="-119">initialize!</label>
+			<label kind="assignment" x="-170" y="-102">x = 0, init_system()</label>
+		</transition>
 	</template>
 	<template>
 		<name>Station</name>
 		<parameter>const int[0, N_STATE] position</parameter>
-		<location id="id2" x="0" y="0">
+		<location id="id18" x="0" y="0">
 		</location>
-		<init ref="id2"/>
+		<init ref="id18"/>
+	</template>
+	<template>
+		<name x="5" y="5">FlowController</name>
+		<parameter>const int policy, const int T</parameter>
+		<declaration>clock x;</declaration>
+		<location id="id19" x="-1964" y="-2091">
+			<name x="-1947" y="-2117">Open_1</name>
+		</location>
+		<location id="id20" x="-1752" y="-1989">
+			<name x="-1735" y="-2015">Closed_2</name>
+		</location>
+		<location id="id21" x="-2542" y="-2040">
+			<name x="-2601" y="-2074">Start</name>
+		</location>
+		<location id="id22" x="-1964" y="-1862">
+			<name x="-2007" y="-1912">Open_3</name>
+			<label kind="invariant" x="-2023" y="-1895">x &lt;= 2*T</label>
+		</location>
+		<location id="id23" x="-1751" y="-1862">
+			<name x="-1752" y="-1912">Closed_3</name>
+			<label kind="invariant" x="-1752" y="-1895">x &lt;= 2*T</label>
+		</location>
+		<location id="id24" x="-1955" y="-2261">
+			<name x="-2015" y="-2295">Open_0</name>
+			<label kind="invariant" x="-1965" y="-2244">x &lt;= 1</label>
+		</location>
+		<location id="id25" x="-1785" y="-2337">
+			<committed/>
+		</location>
+		<location id="id26" x="-1615" y="-2261">
+			<name x="-1598" y="-2287">Closed_0</name>
+			<label kind="invariant" x="-1625" y="-2244">x &lt;= 1</label>
+		</location>
+		<location id="id27" x="-1785" y="-2184">
+			<committed/>
+		</location>
+		<location id="id28" x="-1964" y="-1607">
+			<name x="-2032" y="-1641">Open_4</name>
+		</location>
+		<location id="id29" x="-1794" y="-1683">
+		</location>
+		<location id="id30" x="-1641" y="-1598">
+			<name x="-1651" y="-1632">Closed_4</name>
+		</location>
+		<location id="id31" x="-1794" y="-1522">
+		</location>
+		<location id="id32" x="-1964" y="-1989">
+			<committed/>
+		</location>
+		<init ref="id21"/>
+		<transition id="id33">
+			<source ref="id32"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-1939" y="-2014">switch_branch!</label>
+		</transition>
+		<transition id="id34">
+			<source ref="id21"/>
+			<target ref="id28"/>
+			<label kind="guard" x="-2347" y="-1649">policy == 4</label>
+			<label kind="synchronisation" x="-2347" y="-1632">initialize?</label>
+			<nail x="-2355" y="-1607"/>
+		</transition>
+		<transition id="id35">
+			<source ref="id30"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-1718" y="-1555">system_state[N_MAIN_BRANCH] == true</label>
+		</transition>
+		<transition id="id36">
+			<source ref="id31"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-1989" y="-1556">switch_branch!</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id29"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-1726" y="-1666">switch_branch!</label>
+		</transition>
+		<transition id="id38">
+			<source ref="id28"/>
+			<target ref="id29"/>
+			<label kind="guard" x="-2202" y="-1683">system_state[START_BRANCH_SLOT + 1] == true</label>
+			<label kind="comments" x="-1964" y="-1496">TODO: Check the position in the system_state</label>
+		</transition>
+		<transition id="id39">
+			<source ref="id21"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-2355" y="-2303">policy == 0</label>
+			<label kind="synchronisation" x="-2355" y="-2286">initialize?</label>
+			<nail x="-2363" y="-2261"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id27"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-1956" y="-2210">switch_branch!</label>
+		</transition>
+		<transition id="id41">
+			<source ref="id26"/>
+			<target ref="id27"/>
+			<label kind="guard" x="-1717" y="-2201">x &gt;= 1</label>
+			<label kind="synchronisation" x="-1717" y="-2184">stop[POS_STATIONS[4]]?</label>
+			<label kind="assignment" x="-1717" y="-2218">x = 0</label>
+		</transition>
+		<transition id="id42">
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-1718" y="-2329">switch_branch!</label>
+		</transition>
+		<transition id="id43">
+			<source ref="id24"/>
+			<target ref="id25"/>
+			<label kind="guard" x="-1904" y="-2346">x &gt;= 1</label>
+			<label kind="synchronisation" x="-2041" y="-2363">stop[POS_STATIONS[3]]?</label>
+			<label kind="assignment" x="-1896" y="-2329">x = 0</label>
+		</transition>
+		<transition id="id44">
+			<source ref="id21"/>
+			<target ref="id32"/>
+			<label kind="guard" x="-2355" y="-2032">policy == 2</label>
+			<label kind="synchronisation" x="-2355" y="-2014">initialize?</label>
+			<nail x="-2363" y="-1989"/>
+		</transition>
+		<transition id="id45">
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-2355" y="-1904">policy == 3</label>
+			<label kind="synchronisation" x="-2355" y="-1887">initialize?</label>
+			<nail x="-2363" y="-1862"/>
+		</transition>
+		<transition id="id46">
+			<source ref="id21"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-2355" y="-2133">policy == 1</label>
+			<label kind="synchronisation" x="-2355" y="-2116">initialize?</label>
+			<nail x="-2363" y="-2091"/>
+		</transition>
+		<transition id="id47">
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="guard" x="-1912" y="-1955">x &gt;= T</label>
+			<label kind="synchronisation" x="-1912" y="-1972">switch_branch!</label>
+			<label kind="assignment" x="-1913" y="-1939">x = 0</label>
+			<nail x="-1921" y="-1913"/>
+			<nail x="-1785" y="-1913"/>
+		</transition>
+		<transition id="id48">
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-1912" y="-1785">x &gt;= T</label>
+			<label kind="synchronisation" x="-1912" y="-1768">switch_branch!</label>
+			<label kind="assignment" x="-1913" y="-1802">x = 0</label>
+			<nail x="-1785" y="-1803"/>
+			<nail x="-1929" y="-1803"/>
+		</transition>
 	</template>
 	<system>/**
  * Configuration
