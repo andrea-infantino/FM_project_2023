@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>/**
+ * Constants
+ */
+
+const int N_SLOTS = 105;
+const int N_STATIONS = 6;
+const int N_STATE = N_SLOTS + N_STATIONS;
+
+/**
+ * Variables
+ */
+
+// TODO
+</declaration>
+	<template>
+		<name x="5" y="5">ConveyorBlet</name>
+		<parameter>const int[0, N_STATE] startingPosition, const int length, const int[0, N_STATE] previousPosition, const int[0, N_STATE] nextPosition, const int[0, N_STATE] alternativeNextPosition /* TODO: add parameters for the sensors */</parameter>
+		<location id="id0" x="0" y="0">
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name>Motor</name>
+		<parameter>const double speed</parameter>
+		<declaration>clock x;
+</declaration>
+		<location id="id1" x="0" y="0">
+		</location>
+		<init ref="id1"/>
+	</template>
+	<template>
+		<name>Station</name>
+		<parameter>const int[0, N_STATE] position</parameter>
+		<location id="id2" x="0" y="0">
+		</location>
+		<init ref="id2"/>
+	</template>
+	<system>/**
+ * Configuration
+ */
+
+const double SPEED = 1.0;
+
+/**
+ * System definition
+ */
+
+motor = Motor(SPEED);
+
+system motor;
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>
