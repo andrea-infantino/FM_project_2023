@@ -7,18 +7,21 @@
 
 const int N_SLOTS = 110;
 const int N_STATIONS = 6;
-const int N_IN_SENSORS = 5;
+const int N_IN_SENSORS = 6;
 const int N_OUT_SENSORS = 5;
 const int[0, N_SLOTS-1] CONTROLLER_POS = 65;
 const int[0, N_SLOTS-1] BRANCH_FIRST_POS = 86;
 const int[0, N_SLOTS-1] MERGE_POS = 103;
 
+const int POS_IN_SENSORS[N_IN_SENSORS] = {13, 34, 64, 77, 93, 107};
+const int POS_STATIONS[6] = {17, 38, 81, 88, 97, 109};
+
 /**
  * Channels
  */
 
-broadcast chan initialize;
-chan move, station_free[N_STATIONS], station_busy[N_STATIONS], switch_branch; // To be general in conveyor belt
+broadcast chan initialize, station_free[N_STATIONS], station_busy[N_STATIONS];
+chan move, switch_branch;
 
 /**
  * Variables
@@ -37,12 +40,12 @@ bool out_sensors_state[N_OUT_SENSORS]; // true = queue is full; false = can send
  * Functions
  */
 
-void init_system() {
+void init_system(const int[0, N_SLOTS-1] head_pos, const int[0, N_SLOTS-1] tail_pos, const int n_disks) {
     for(i : int[0, N_SLOTS - 1])
         system_structure[i] = 0;
 
     for(i : int[0, N_SLOTS - 1])
-        if(i &gt;= 2 &amp;&amp; i &lt;= 13)    // Initial positions of disks
+        if(i &gt;= tail_pos and i &lt;= head_pos and i &gt;= (head_pos - n_disks + 1))
             system_state[i] = true;
         else
             system_state[i] = false;
@@ -50,7 +53,7 @@ void init_system() {
 }</declaration>
 	<template>
 		<name>OutSensor</name>
-		<parameter>int[0, N_OUT_SENSORS-1] id, int[0, N_SLOTS-1] queueHead, int[0, N_SLOTS-1] queueTail</parameter>
+		<parameter>const int[0, N_OUT_SENSORS-1] id, const int[0, N_SLOTS-1] queueHead, const int[0, N_SLOTS-1] queueTail</parameter>
 		<declaration>void init_out_sensor() {
     out_sensors_state[id] = false;
 }
@@ -98,7 +101,7 @@ bool full_queue() {
 	</template>
 	<template>
 		<name>InSensor</name>
-		<parameter>int[0, N_IN_SENSORS-1] id, int [0, N_STATIONS-1] station_controlled</parameter>
+		<parameter>const int[0, N_IN_SENSORS-1] id, const int [0, N_STATIONS-1] station_controlled</parameter>
 		<location id="id3" x="-34" y="-365">
 		</location>
 		<location id="id4" x="-34" y="-255">
@@ -212,7 +215,8 @@ void update(){
             if(system_structure[i-1] == 2) {
                 if(in_sensors_state[curr_in_sensor] == true)
                     to_block = true;
-                curr_in_sensor--;
+                if(curr_in_sensor &gt; 0)
+                    curr_in_sensor--;
             }
 
             if(system_state[i-1] == true){
@@ -260,7 +264,7 @@ void update(){
 	</template>
 	<template>
 		<name>Motor</name>
-		<parameter>const double speed</parameter>
+		<parameter>const int speed, const int[0, N_SLOTS-1] headPos, const int[0, N_SLOTS-1] tailPos, const int nDisks</parameter>
 		<declaration>clock x;
 </declaration>
 		<location id="id8" x="-178" y="-170">
@@ -282,7 +286,7 @@ void update(){
 			<source ref="id8"/>
 			<target ref="id9"/>
 			<label kind="synchronisation" x="-170" y="-119">initialize!</label>
-			<label kind="assignment" x="-170" y="-102">x = 0, init_system()</label>
+			<label kind="assignment" x="-170" y="-102">x = 0, init_system(headPos, tailPos, nDisks)</label>
 		</transition>
 	</template>
 	<template>
@@ -320,14 +324,14 @@ void complete_elaboration() {
 		<location id="id14" x="382" y="-136">
 			<committed/>
 		</location>
-		<location id="id15" x="-187" y="-25">
-			<name x="-238" y="-34">Done</name>
+		<location id="id15" x="-178" y="-8">
+			<name x="-229" y="-17">Done</name>
 		</location>
 		<init ref="id10"/>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id11"/>
-			<label kind="guard" x="-102" y="-76">out_sensors_state[out_sensor_id] == false</label>
+			<label kind="guard" x="-93" y="-76">out_sensors_state[out_sensor_id] == false</label>
 		</transition>
 		<transition>
 			<source ref="id14"/>
@@ -443,7 +447,7 @@ void complete_elaboration() {
 			<target ref="id26"/>
 			<label kind="guard" x="-2168" y="-1683">system_state[CONTROLLER_POS+1] == true</label>
 			<label kind="synchronisation" x="-1921" y="-1666">move?</label>
-			<label kind="comments" x="-1963" y="-1496">TODO: Check the position in the system_state</label>
+			<label kind="comments" x="-1938" y="-1615">TODO: Check the position in the system_state</label>
 		</transition>
 		<transition>
 			<source ref="id18"/>
@@ -519,15 +523,51 @@ void complete_elaboration() {
  * Configuration
  */
 
-const double SPEED = 1.0;
+const int SPEED = 1;
+const int N_DISKS = 12;
+const int[0, 4] POLICY = 1;
+const int RAND_FLOW_CONTROLLER = 1;
+
+const int POS_OUT_SENSORS[N_OUT_SENSORS] = {2, 24, 68, 90, 105};
+const int STATIONS_ELABORATION_TIME[N_STATIONS] = {3, 3, 3, 3, 3, 3};
 
 /**
  * System definition
  */
 
-motor = Motor(SPEED);
+motor = Motor(SPEED, POS_IN_SENSORS[0], POS_OUT_SENSORS[0], N_DISKS);
 
-system motor;
+conveyorBelt = ConveyorBelt();
+
+station0 = Station(0, POS_STATIONS[0], STATIONS_ELABORATION_TIME[0], POS_IN_SENSORS[0], 1);
+station1 = Station(1, POS_STATIONS[1], STATIONS_ELABORATION_TIME[1], POS_IN_SENSORS[1], 2);
+station2 = Station(2, POS_STATIONS[2], STATIONS_ELABORATION_TIME[2], POS_IN_SENSORS[3], 4);
+station3 = Station(3, POS_STATIONS[3], STATIONS_ELABORATION_TIME[3], POS_IN_SENSORS[2], 3);
+station4 = Station(4, POS_STATIONS[4], STATIONS_ELABORATION_TIME[4], POS_IN_SENSORS[4], 4);
+station5 = Station(5, POS_STATIONS[5], STATIONS_ELABORATION_TIME[5], POS_IN_SENSORS[5], 0);
+
+inSensor0 = InSensor(0, 0);
+inSensor1 = InSensor(1, 1);
+inSensor2 = InSensor(2, 3);
+inSensor3 = InSensor(3, 2);
+inSensor4 = InSensor(4, 4);
+inSensor5 = InSensor(5, 5);
+
+outSensor0 = OutSensor(0, POS_IN_SENSORS[0], POS_OUT_SENSORS[0]);
+outSensor1 = OutSensor(1, POS_IN_SENSORS[1], POS_OUT_SENSORS[1]);
+outSensor2 = OutSensor(2, POS_IN_SENSORS[3], POS_OUT_SENSORS[2]);
+outSensor3 = OutSensor(3, POS_IN_SENSORS[4], POS_OUT_SENSORS[3]);
+outSensor4 = OutSensor(4, POS_IN_SENSORS[5], POS_OUT_SENSORS[4]);
+
+flowController = FlowController(POLICY, RAND_FLOW_CONTROLLER);
+
+system 
+    motor, 
+    conveyorBelt, 
+    station0, station1, station2, station3, station4, station5,
+    inSensor0, inSensor1, inSensor2, inSensor3, inSensor4, inSensor5,
+    outSensor0, outSensor1, outSensor2, outSensor3, outSensor4,
+    flowController;
 </system>
 	<queries>
 		<query>
