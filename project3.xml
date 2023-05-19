@@ -569,7 +569,7 @@ out_sensors_state[3] == true</label>
 
 const int SPEED = 3;
 const int TICK_FREQUENCY = 1;    // TICK_FREQUENCY SHOULD BE &lt; SPEED
-const int N_DISKS = 1;
+const int N_DISKS = 3;
 const int[0, 4] POLICY = 1;
 const int RAND_FLOW_CONTROLLER = 1;    // Useful only if POLICY = 3
 
@@ -617,15 +617,76 @@ system
 	<queries>
 		<query>
 			<formula/>
-			<comment/>
+			<comment>------ Mandatory properties ------</comment>
 		</query>
 		<query>
-			<formula>A[] (initializer.run_state imply ((sum(i:slots) system_state[i] == true) == 1))</formula>
-			<comment>No spawn of disk</comment>
+			<formula>A[] (initializer.run_state imply ((sum(i:slots) system_state[i] == true) == N_DISKS))</formula>
+			<comment>No spawn or disappear of disk
+
+Verifies properties:
+P1. it never happens that a station holds more than 1 piece;
+P2. it never happens that two pieces occupy the same belt slot.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:22:40 +0200">
+			</result>
 		</query>
 		<query>
-			<formula>station0.Processing --&gt; (system_state[16] == false)</formula>
-			<comment>P1. It never happens that a station holds more than 1 piece.</comment>
+			<formula>station0.Processing --&gt; (system_state[16] == false &amp;&amp; system_state[17] == true)</formula>
+			<comment>If a station is processing, no other piece is waiting to enter immediately before
+
+Verifies property:
+P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:32:38 +0200">
+			</result>
+		</query>
+		<query>
+			<formula>station1.Processing --&gt; (system_state[37] == false &amp;&amp; system_state[38] == true)</formula>
+			<comment>If a station is processing, no other piece is waiting to enter immediately before
+
+Verifies property:
+P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:33:46 +0200">
+			</result>
+		</query>
+		<query>
+			<formula>station2.Processing --&gt; (system_state[80] == false &amp;&amp; system_state[81] == true)</formula>
+			<comment>If a station is processing, no other piece is waiting to enter immediately before
+
+Verifies property:
+P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:02 +0200">
+			</result>
+		</query>
+		<query>
+			<formula>station3.Processing --&gt; (system_state[87] == false &amp;&amp; system_state[88] == true)</formula>
+			<comment>If a station is processing, no other piece is waiting to enter immediately before
+
+Verifies property:
+P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:16 +0200">
+			</result>
+		</query>
+		<query>
+			<formula>station4.Processing --&gt; (system_state[96] == false &amp;&amp; system_state[97] == true)</formula>
+			<comment>If a station is processing, no other piece is waiting to enter immediately before
+
+Verifies property:
+P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:28 +0200">
+			</result>
+		</query>
+		<query>
+			<formula>station5.Processing --&gt; (system_state[108] == false &amp;&amp; system_state[109] == true)</formula>
+			<comment>If a station is processing, no other piece is waiting to enter immediately before
+
+Verifies property:
+P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:40 +0200">
+			</result>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment>Verifies property:
+4. the plant never incurs in deadlock.</comment>
 		</query>
 	</queries>
 </nta>
