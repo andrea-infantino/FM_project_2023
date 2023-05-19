@@ -59,21 +59,12 @@ void init_system(const int[0, N_SLOTS-1] head_pos, const int[0, N_SLOTS-1] tail_
 }</declaration>
 	<template>
 		<name>OutSensor</name>
-		<parameter>const int[0, N_OUT_SENSORS-1] id, const int[0, N_SLOTS-1] queueHead, const int[0, N_SLOTS-1] queueTail</parameter>
+		<parameter>const int[0, N_OUT_SENSORS-1] id, const int[0, N_SLOTS-1] position</parameter>
 		<declaration>void init_out_sensor() {
     out_sensors_state[id] = false;
-    system_structure[queueTail] = 3;
+    system_structure[position] = 3;
 }
-
-bool full_queue() {
-    int i = queueTail;
-    while (i &lt;= queueHead){
-        if(system_state[i] == false)
-             return false;
-        i++;
-    }
-    return true;
-}</declaration>
+</declaration>
 		<location id="id0" x="-34" y="-60">
 			<name x="-17" y="-77">Unlocked</name>
 		</location>
@@ -86,16 +77,16 @@ bool full_queue() {
 		<transition id="id3">
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-280" y="25">full_queue() == false</label>
-			<label kind="synchronisation" x="-187" y="8">tick?</label>
-			<label kind="assignment" x="-331" y="42">out_sensors_state[id] = false</label>
+			<label kind="guard" x="-416" y="25">system_state[position] == false</label>
+			<label kind="synchronisation" x="-195" y="8">tick?</label>
+			<label kind="assignment" x="-399" y="42">out_sensors_state[id] = false</label>
 			<nail x="-144" y="93"/>
 			<nail x="-144" y="-25"/>
 		</transition>
 		<transition id="id4">
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="76" y="25">full_queue() == true</label>
+			<label kind="guard" x="76" y="25">system_state[position] == true</label>
 			<label kind="synchronisation" x="76" y="8">tick?</label>
 			<label kind="assignment" x="76" y="42">out_sensors_state[id] = true</label>
 			<nail x="68" y="-25"/>
@@ -272,8 +263,8 @@ x = 0</label>
 		<transition id="id14">
 			<source ref="id13"/>
 			<target ref="id12"/>
-			<label kind="synchronisation" x="-365" y="-178">station_free[station_controlled]?</label>
-			<label kind="assignment" x="-339" y="-161">in_sensors_state[id] = false</label>
+			<label kind="synchronisation" x="-442" y="-178">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-399" y="-161">in_sensors_state[id] = false</label>
 			<nail x="-153" y="-102"/>
 			<nail x="-153" y="-212"/>
 		</transition>
@@ -489,8 +480,8 @@ void complete_elaboration() {
 		<transition id="id54">
 			<source ref="id44"/>
 			<target ref="id45"/>
-			<label kind="guard" x="-2168" y="-1683">system_state[CONTROLLER_POS+1] == true</label>
-			<label kind="synchronisation" x="-1921" y="-1666">tick?</label>
+			<label kind="guard" x="-2184" y="-1691">system_state[CONTROLLER_POS+1] == true</label>
+			<label kind="synchronisation" x="-1904" y="-1674">tick?</label>
 		</transition>
 		<transition id="id55">
 			<source ref="id37"/>
@@ -520,7 +511,7 @@ out_sensors_state[3] == true</label>
 		<transition id="id59">
 			<source ref="id40"/>
 			<target ref="id41"/>
-			<label kind="guard" x="-2091" y="-2346">x &gt;= 1 &amp;&amp; out_sensors_state[2] == true</label>
+			<label kind="guard" x="-2176" y="-2346">x &gt;= 1 &amp;&amp; out_sensors_state[2] == true</label>
 			<label kind="synchronisation" x="-1895" y="-2329">tick?</label>
 		</transition>
 		<transition id="id60">
@@ -598,11 +589,11 @@ inSensor3 = InSensor(3, 2);
 inSensor4 = InSensor(4, 4);
 inSensor5 = InSensor(5, 5);
 
-outSensor0 = OutSensor(0, POS_IN_SENSORS[0], POS_OUT_SENSORS[0]);
-outSensor1 = OutSensor(1, POS_IN_SENSORS[1], POS_OUT_SENSORS[1]);
-outSensor2 = OutSensor(2, POS_IN_SENSORS[3], POS_OUT_SENSORS[2]);
-outSensor3 = OutSensor(3, POS_IN_SENSORS[4], POS_OUT_SENSORS[3]);
-outSensor4 = OutSensor(4, POS_IN_SENSORS[5], POS_OUT_SENSORS[4]);
+outSensor0 = OutSensor(0, POS_OUT_SENSORS[0]);
+outSensor1 = OutSensor(1, POS_OUT_SENSORS[1]);
+outSensor2 = OutSensor(2, POS_OUT_SENSORS[2]);
+outSensor3 = OutSensor(3, POS_OUT_SENSORS[3]);
+outSensor4 = OutSensor(4, POS_OUT_SENSORS[4]);
 
 flowController = FlowController(POLICY, RAND_FLOW_CONTROLLER);
 
@@ -626,8 +617,6 @@ system
 Verifies properties:
 P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:22:40 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>station0.Processing --&gt; (system_state[16] == false &amp;&amp; system_state[17] == true)</formula>
@@ -635,8 +624,6 @@ P2. it never happens that two pieces occupy the same belt slot.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:32:38 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>station1.Processing --&gt; (system_state[37] == false &amp;&amp; system_state[38] == true)</formula>
@@ -644,8 +631,6 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:33:46 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>station2.Processing --&gt; (system_state[80] == false &amp;&amp; system_state[81] == true)</formula>
@@ -653,8 +638,6 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:02 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>station3.Processing --&gt; (system_state[87] == false &amp;&amp; system_state[88] == true)</formula>
@@ -662,8 +645,6 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:16 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>station4.Processing --&gt; (system_state[96] == false &amp;&amp; system_state[97] == true)</formula>
@@ -671,8 +652,6 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:28 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>station5.Processing --&gt; (system_state[108] == false &amp;&amp; system_state[109] == true)</formula>
@@ -680,8 +659,6 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-19 15:26:40 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
