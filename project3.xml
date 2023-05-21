@@ -74,10 +74,10 @@ void init_system(const int[0, N_SLOTS-1] head_pos, const int[0, N_SLOTS-1] tail_
 		<location id="id2" x="-34" y="-170">
 		</location>
 		<location id="id3" x="59" y="34">
-			<committed/>
+			<urgent/>
 		</location>
 		<location id="id4" x="-136" y="34">
-			<committed/>
+			<urgent/>
 		</location>
 		<init ref="id2"/>
 		<transition id="id5">
@@ -472,34 +472,34 @@ void complete_elaboration() {
 			<name x="-2057" y="-2295">Not_Taken_0</name>
 		</location>
 		<location id="id51" x="-1785" y="-2337">
-			<committed/>
+			<urgent/>
 		</location>
 		<location id="id52" x="-1615" y="-2261">
 			<name x="-1598" y="-2278">Taken_0</name>
 		</location>
 		<location id="id53" x="-1785" y="-2184">
-			<committed/>
+			<urgent/>
 		</location>
 		<location id="id54" x="-1964" y="-1607">
 			<name x="-2065" y="-1640">Not_Taken_4</name>
 		</location>
-		<location id="id55" x="-1794" y="-1683">
-			<committed/>
+		<location id="id55" x="-1793" y="-1683">
+			<urgent/>
 		</location>
 		<location id="id56" x="-1641" y="-1598">
 			<name x="-1651" y="-1632">Taken_4</name>
 		</location>
-		<location id="id57" x="-1794" y="-1522">
-			<committed/>
+		<location id="id57" x="-1793" y="-1521">
+			<urgent/>
 		</location>
 		<location id="id58" x="-1964" y="-1989">
-			<committed/>
+			<urgent/>
 		</location>
 		<location id="id59" x="-2550" y="-1989">
 			<name x="-2560" y="-2023">Start</name>
 		</location>
 		<location id="id60" x="-2397" y="-1989">
-			<committed/>
+			<urgent/>
 		</location>
 		<init ref="id59"/>
 		<transition id="id61">
@@ -649,7 +649,7 @@ out_sensors_state[2] == true</label>
 
 const int SPEED = 3;
 const int TICK_FREQUENCY = 1;    // TICK_FREQUENCY SHOULD BE &lt; SPEED
-const int N_DISKS = 1;
+const int N_DISKS = 2;
 const int[0, 4] POLICY = 1;
 const int RAND_FLOW_CONTROLLER = 1;    // Useful only if POLICY = 3
 
