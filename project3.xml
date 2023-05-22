@@ -649,7 +649,7 @@ out_sensors_state[2] == true</label>
 
 const int SPEED = 3;
 const int TICK_FREQUENCY = 1;    // TICK_FREQUENCY SHOULD BE &lt; SPEED
-const int N_DISKS = 2;
+const int N_DISKS = 3;
 const int[0, 4] POLICY = 1;
 const int RAND_FLOW_CONTROLLER = 1;    // Useful only if POLICY = 3
 
@@ -664,12 +664,10 @@ initializer = Initializer(TICK_FREQUENCY, POS_IN_SENSORS[0], POS_OUT_SENSORS[0],
 
 conveyorBelt = ConveyorBelt(SPEED);
 
-station0 = Station(0, POS_STATIONS[0], STATIONS_ELABORATION_TIME[0], POS_IN_SENSORS[0], 1);
-station1 = Station(1, POS_STATIONS[1], STATIONS_ELABORATION_TIME[1], POS_IN_SENSORS[1], 2);
-station2 = Station(2, POS_STATIONS[2], STATIONS_ELABORATION_TIME[2], POS_IN_SENSORS[3], 4);
-station3 = Station(3, POS_STATIONS[3], STATIONS_ELABORATION_TIME[3], POS_IN_SENSORS[2], 3);
-station4 = Station(4, POS_STATIONS[4], STATIONS_ELABORATION_TIME[4], POS_IN_SENSORS[4], 4);
-station5 = Station(5, POS_STATIONS[5], STATIONS_ELABORATION_TIME[5], POS_IN_SENSORS[5], 0);
+const int POS_IN_SENSORS_IN_ORDER[N_STATIONS] = {POS_IN_SENSORS[0], POS_IN_SENSORS[1], POS_IN_SENSORS[3], POS_IN_SENSORS[2], POS_IN_SENSORS[4], POS_IN_SENSORS[5]};
+const int OUT_SENSORS_ID_IN_ORDER[N_STATIONS] = {1, 2, 4, 3, 4, 0};
+
+station(const int[0, N_STATIONS - 1] id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id]);
 
 inSensor0 = InSensor(0, 0);
 inSensor1 = InSensor(1, 1);
@@ -678,22 +676,14 @@ inSensor3 = InSensor(3, 2);
 inSensor4 = InSensor(4, 4);
 inSensor5 = InSensor(5, 5);
 
-outSensor(const int[0,N_OUT_SENSOR-1] id) = OutSensor(id, POS_OUT_SENSORS[id]);
-
-/*
-outSensor0 = OutSensor(0, POS_OUT_SENSORS[0]);
-outSensor1 = OutSensor(1, POS_OUT_SENSORS[1]);
-outSensor2 = OutSensor(2, POS_OUT_SENSORS[2]);
-outSensor3 = OutSensor(3, POS_OUT_SENSORS[3]);
-outSensor4 = OutSensor(4, POS_OUT_SENSORS[4]);
-*/
+outSensor(const int[0,N_OUT_SENSORS - 1] id) = OutSensor(id, POS_OUT_SENSORS[id]);
 
 flowController = FlowController(POLICY, RAND_FLOW_CONTROLLER);
 
 system 
     initializer, 
     conveyorBelt, 
-    station0, station1, station2, station3, station4, station5,
+    station,
     inSensor0, inSensor1, inSensor2, inSensor3, inSensor4, inSensor5,
     outSensor,
     flowController;
@@ -712,86 +702,23 @@ P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
 		</query>
 		<query>
-			<formula>station0.Processing --&gt; (system_state[16] == false &amp;&amp; system_state[17] == true)</formula>
+			<formula>A[] forall(id:int[0,N_STATIONS - 1]) (station(id).Processing imply (system_state[POS_STATIONS[id] - 1] == false &amp;&amp; system_state[POS_STATIONS[id]] == true))</formula>
 			<comment>If a station is processing, no other piece is waiting to enter immediately before
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
-			<formula>station1.Processing --&gt; (system_state[37] == false &amp;&amp; system_state[38] == true)</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
-			<formula>station2.Processing --&gt; (system_state[80] == false &amp;&amp; system_state[81] == true)</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
-			<formula>station3.Processing --&gt; (system_state[87] == false &amp;&amp; system_state[88] == true)</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
-			<formula>station4.Processing --&gt; (system_state[96] == false &amp;&amp; system_state[97] == true)</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
-			<formula>station5.Processing --&gt; (system_state[108] == false &amp;&amp; system_state[109] == true)</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
-			<formula>A[] (outSensor0.Locked imply (system_state[POS_OUT_SENSORS[0]-1] == false))</formula>
-			<comment>The slot immediatly before an out sensor is always free when the out sensor is locked
-
-Verifies property:
-P3. No queue ever exceeds the maximum allowed length.</comment>
-		</query>
-		<query>
-			<formula>A[] (outSensor1.Locked imply (system_state[POS_OUT_SENSORS[1]-1] == false))</formula>
-			<comment>The slot immediatly before an out sensor is always free when the out sensor is locked
-
-Verifies property:
-P3. No queue ever exceeds the maximum allowed length.</comment>
-		</query>
-		<query>
-			<formula>A[] (outSensor2.Locked imply (system_state[POS_OUT_SENSORS[2]-1] == false))</formula>
-			<comment>The slot immediatly before an out sensor is always free when the out sensor is locked
-
-Verifies property:
-P3. No queue ever exceeds the maximum allowed length.</comment>
-		</query>
-		<query>
-			<formula>A[] (outSensor3.Locked imply (system_state[POS_OUT_SENSORS[3]-1] == false))</formula>
-			<comment>The slot immediatly before an out sensor is always free when the out sensor is locked
-
-Verifies property:
-P3. No queue ever exceeds the maximum allowed length.</comment>
-		</query>
-		<query>
-			<formula>A[] (outSensor4.Locked imply (system_state[POS_OUT_SENSORS[4]-1] == false))</formula>
-			<comment>The slot immediatly before an out sensor is always free when the out sensor is locked
-
-Verifies property:
-P3. No queue ever exceeds the maximum allowed length.</comment>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment>Verifies property:
 P4. the plant never incurs in deadlock.</comment>
+		</query>
+		<query>
+			<formula>A[] (forall(id:int[0,N_OUT_SENSORS - 1]) outSensor(id).Locked imply (system_state[POS_OUT_SENSORS[id]-1] == false))</formula>
+			<comment>The slot immediatly before an out sensor is always free when the out sensor is locked
+
+Verifies property:
+P3. No queue ever exceeds the maximum allowed length.</comment>
 		</query>
 	</queries>
 </nta>
