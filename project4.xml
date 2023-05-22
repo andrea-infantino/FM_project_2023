@@ -316,6 +316,7 @@ double f() {
 			<source ref="id19"/>
 			<target ref="id20"/>
 			<label kind="synchronisation" x="-4241" y="-153">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-4165" y="-136">pr = stdNormal()</label>
 		</transition>
 		<transition id="id25">
 			<source ref="id21"/>
@@ -334,14 +335,14 @@ double f() {
 		<transition id="id27" controllable="false">
 			<source ref="id18"/>
 			<target ref="id21"/>
-			<label kind="synchronisation" x="-3859" y="-382">station_busy[station_controlled]?</label>
+			<label kind="synchronisation" x="-3859" y="-399">station_busy[station_controlled]?</label>
+			<label kind="assignment" x="-3808" y="-382">pr = stdNormal()</label>
 		</transition>
 		<transition id="id28">
 			<source ref="id17"/>
 			<target ref="id18"/>
 			<label kind="synchronisation" x="-3884" y="-502">initialize?</label>
-			<label kind="assignment" x="-3884" y="-485">in_sensors_state[id] = false,
-pr = stdNormal()</label>
+			<label kind="assignment" x="-3884" y="-484">in_sensors_state[id] = false</label>
 		</transition>
 	</template>
 	<template>
