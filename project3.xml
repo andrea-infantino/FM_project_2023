@@ -678,11 +678,15 @@ inSensor3 = InSensor(3, 2);
 inSensor4 = InSensor(4, 4);
 inSensor5 = InSensor(5, 5);
 
+outSensor(const int[0,N_OUT_SENSOR-1] id) = OutSensor(id, POS_OUT_SENSORS[id]);
+
+/*
 outSensor0 = OutSensor(0, POS_OUT_SENSORS[0]);
 outSensor1 = OutSensor(1, POS_OUT_SENSORS[1]);
 outSensor2 = OutSensor(2, POS_OUT_SENSORS[2]);
 outSensor3 = OutSensor(3, POS_OUT_SENSORS[3]);
 outSensor4 = OutSensor(4, POS_OUT_SENSORS[4]);
+*/
 
 flowController = FlowController(POLICY, RAND_FLOW_CONTROLLER);
 
@@ -691,7 +695,7 @@ system
     conveyorBelt, 
     station0, station1, station2, station3, station4, station5,
     inSensor0, inSensor1, inSensor2, inSensor3, inSensor4, inSensor5,
-    outSensor0, outSensor1, outSensor2, outSensor3, outSensor4,
+    outSensor,
     flowController;
 </system>
 	<queries>
