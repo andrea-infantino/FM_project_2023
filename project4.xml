@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
 <nta>
 	<declaration>/**
  * Constants
@@ -19,6 +19,7 @@ const int POS_STATIONS[6] = {17, 38, 81, 88, 97, 109};
 /**
  * Verification
  */
+
 typedef int[0, N_SLOTS - 1] slots;
 typedef int[0, N_STATIONS - 1] stations;
 
@@ -89,92 +90,90 @@ void init_out_sensor() {
 		</location>
 		<location id="id8" x="-246" y="85">
 		</location>
-		<branchpoint id="id9" x="-391" y="221">
-		</branchpoint>
-		<branchpoint id="id10" x="357" y="-59">
-		</branchpoint>
+		<branchpoint id="id9" x="-391" y="221"/>
+		<branchpoint id="id10" x="357" y="-59"/>
 		<init ref="id2"/>
-		<transition controllable="false">
+		<transition id="id11" controllable="false">
 			<source ref="id8"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-221" y="110">tick?</label>
 			<label kind="assignment" x="-221" y="93">out_sensors_state[id] = false</label>
 			<nail x="-34" y="85"/>
 		</transition>
-		<transition>
+		<transition id="id12">
 			<source ref="id9"/>
 			<target ref="id8"/>
 			<label kind="probability" x="-323" y="161">probWeight_2</label>
 		</transition>
-		<transition>
+		<transition id="id13">
 			<source ref="id9"/>
 			<target ref="id7"/>
 			<label kind="probability" x="-552" y="161">probWeight_1</label>
 		</transition>
-		<transition controllable="false">
+		<transition id="id14" controllable="false">
 			<source ref="id1"/>
 			<target ref="id9"/>
 		</transition>
-		<transition>
+		<transition id="id15">
 			<source ref="id6"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="229" y="229">tick?</label>
 			<label kind="assignment" x="229" y="246">out_sensors_state[id] = true</label>
 			<nail x="561" y="221"/>
 		</transition>
-		<transition>
+		<transition id="id16">
 			<source ref="id10"/>
 			<target ref="id6"/>
 			<label kind="probability" x="459" y="-34">probWeight_2</label>
 		</transition>
-		<transition>
+		<transition id="id17">
 			<source ref="id10"/>
 			<target ref="id5"/>
 			<label kind="probability" x="136" y="-42">probWeight_1</label>
 		</transition>
-		<transition controllable="false">
+		<transition id="id18" controllable="false">
 			<source ref="id0"/>
 			<target ref="id10"/>
 		</transition>
-		<transition>
+		<transition id="id19">
 			<source ref="id4"/>
 			<target ref="id0"/>
 			<label kind="guard" x="-416" y="-93">system_state[position] == false</label>
 			<label kind="assignment" x="-408" y="-110">out_sensors_state[id] = false</label>
 			<nail x="-493" y="-59"/>
 		</transition>
-		<transition>
+		<transition id="id20">
 			<source ref="id4"/>
 			<target ref="id7"/>
 			<label kind="guard" x="-782" y="59">system_state[position] == true</label>
 			<nail x="-544" y="25"/>
 		</transition>
-		<transition>
+		<transition id="id21">
 			<source ref="id7"/>
 			<target ref="id4"/>
 			<label kind="synchronisation" x="-433" y="0">tick?</label>
 			<nail x="-442" y="34"/>
 		</transition>
-		<transition>
+		<transition id="id22">
 			<source ref="id3"/>
 			<target ref="id1"/>
 			<label kind="guard" x="-17" y="153">system_state[position] == true</label>
 			<label kind="assignment" x="-17" y="170">out_sensors_state[id] = true</label>
 			<nail x="-34" y="119"/>
 		</transition>
-		<transition>
+		<transition id="id23">
 			<source ref="id3"/>
 			<target ref="id5"/>
 			<label kind="guard" x="178" y="60">system_state[position] == false</label>
 			<nail x="169" y="68"/>
 		</transition>
-		<transition>
+		<transition id="id24">
 			<source ref="id5"/>
 			<target ref="id3"/>
 			<label kind="synchronisation" x="33" y="59">tick?</label>
 			<nail x="84" y="68"/>
 		</transition>
-		<transition>
+		<transition id="id25">
 			<source ref="id2"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-25" y="-144">initialize?</label>
@@ -321,32 +320,32 @@ void update(){
         i--;
     }
 }</declaration>
-		<location id="id11" x="-2541" y="-2593">
+		<location id="id26" x="-2541" y="-2593">
 			<label kind="invariant" x="-2524" y="-2618">x &lt;= speed</label>
 		</location>
-		<location id="id12" x="-2541" y="-2728">
+		<location id="id27" x="-2541" y="-2728">
 		</location>
-		<init ref="id12"/>
-		<transition>
-			<source ref="id11"/>
-			<target ref="id11"/>
+		<init ref="id27"/>
+		<transition id="id28">
+			<source ref="id26"/>
+			<target ref="id26"/>
 			<label kind="guard" x="-2465" y="-2558">x &gt;= speed</label>
 			<label kind="assignment" x="-2465" y="-2541">update(),
 x = 0</label>
 			<nail x="-2456" y="-2575"/>
 			<nail x="-2499" y="-2516"/>
 		</transition>
-		<transition>
-			<source ref="id11"/>
-			<target ref="id11"/>
+		<transition id="id29">
+			<source ref="id26"/>
+			<target ref="id26"/>
 			<label kind="synchronisation" x="-2737" y="-2558">switch_branch?</label>
 			<label kind="assignment" x="-2839" y="-2541">take_branch = !take_branch</label>
 			<nail x="-2592" y="-2516"/>
 			<nail x="-2626" y="-2575"/>
 		</transition>
-		<transition>
-			<source ref="id12"/>
-			<target ref="id11"/>
+		<transition id="id30">
+			<source ref="id27"/>
+			<target ref="id26"/>
 			<label kind="synchronisation" x="-2533" y="-2703">initialize?</label>
 			<label kind="assignment" x="-2533" y="-2686">take_branch = false,
 x = 0</label>
@@ -355,84 +354,82 @@ x = 0</label>
 	<template>
 		<name>InSensor</name>
 		<parameter>const int[0, N_IN_SENSORS-1] id, const int [0, N_STATIONS-1] station_controlled, const int probWeight_1, const int probWeight_2</parameter>
-		<location id="id13" x="-3893" y="-297">
+		<location id="id31" x="-3893" y="-297">
 		</location>
-		<location id="id14" x="-4114" y="-195">
+		<location id="id32" x="-4114" y="-195">
 			<name x="-4140" y="-178">Locked</name>
 		</location>
-		<location id="id15" x="-4241" y="-501">
+		<location id="id33" x="-4241" y="-501">
 		</location>
-		<location id="id16" x="-4241" y="-391">
+		<location id="id34" x="-4241" y="-391">
 			<name x="-4326" y="-416">Unlocked</name>
 		</location>
-		<location id="id17" x="-3723" y="-297">
+		<location id="id35" x="-3723" y="-297">
 		</location>
-		<location id="id18" x="-4717" y="-297">
+		<location id="id36" x="-4717" y="-297">
 		</location>
-		<location id="id19" x="-4530" y="-297">
+		<location id="id37" x="-4530" y="-297">
 		</location>
-		<branchpoint id="id20" x="-4632" y="-195">
-		</branchpoint>
-		<branchpoint id="id21" x="-3808" y="-390">
-		</branchpoint>
-		<init ref="id15"/>
-		<transition>
-			<source ref="id19"/>
-			<target ref="id16"/>
+		<branchpoint id="id38" x="-4632" y="-195"/>
+		<branchpoint id="id39" x="-3808" y="-390"/>
+		<init ref="id33"/>
+		<transition id="id40">
+			<source ref="id37"/>
+			<target ref="id34"/>
 			<label kind="assignment" x="-4505" y="-289">in_sensors_state[id] = false</label>
 			<nail x="-4241" y="-297"/>
 		</transition>
-		<transition>
-			<source ref="id20"/>
-			<target ref="id18"/>
+		<transition id="id41">
+			<source ref="id38"/>
+			<target ref="id36"/>
 			<label kind="probability" x="-4785" y="-246">probWeight_1</label>
 		</transition>
-		<transition>
-			<source ref="id20"/>
-			<target ref="id19"/>
+		<transition id="id42">
+			<source ref="id38"/>
+			<target ref="id37"/>
 			<label kind="probability" x="-4573" y="-246">probWeight_2</label>
 		</transition>
-		<transition>
-			<source ref="id13"/>
-			<target ref="id14"/>
+		<transition id="id43">
+			<source ref="id31"/>
+			<target ref="id32"/>
 			<label kind="assignment" x="-4165" y="-322">in_sensors_state[id] = true</label>
 			<nail x="-4114" y="-297"/>
 		</transition>
-		<transition controllable="false">
-			<source ref="id14"/>
-			<target ref="id20"/>
+		<transition id="id44" controllable="false">
+			<source ref="id32"/>
+			<target ref="id38"/>
 		</transition>
-		<transition>
-			<source ref="id21"/>
-			<target ref="id13"/>
+		<transition id="id45">
+			<source ref="id39"/>
+			<target ref="id31"/>
 			<label kind="probability" x="-3961" y="-365">probWeight_2</label>
 		</transition>
-		<transition>
-			<source ref="id21"/>
-			<target ref="id17"/>
+		<transition id="id46">
+			<source ref="id39"/>
+			<target ref="id35"/>
 			<label kind="probability" x="-3748" y="-365">probWeight_1</label>
 		</transition>
-		<transition controllable="false">
-			<source ref="id16"/>
-			<target ref="id21"/>
+		<transition id="id47" controllable="false">
+			<source ref="id34"/>
+			<target ref="id39"/>
 		</transition>
-		<transition>
-			<source ref="id18"/>
-			<target ref="id16"/>
+		<transition id="id48">
+			<source ref="id36"/>
+			<target ref="id34"/>
 			<label kind="synchronisation" x="-4666" y="-433">station_free[station_controlled]?</label>
 			<label kind="assignment" x="-4624" y="-416">in_sensors_state[id] = false</label>
 			<nail x="-4717" y="-391"/>
 		</transition>
-		<transition>
-			<source ref="id17"/>
-			<target ref="id14"/>
+		<transition id="id49">
+			<source ref="id35"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="-4029" y="-187">station_busy[station_controlled]?</label>
 			<label kind="assignment" x="-4029" y="-170">in_sensors_state[id] = true</label>
 			<nail x="-3724" y="-195"/>
 		</transition>
-		<transition>
-			<source ref="id15"/>
-			<target ref="id16"/>
+		<transition id="id50">
+			<source ref="id33"/>
+			<target ref="id34"/>
 			<label kind="synchronisation" x="-4232" y="-476">initialize?</label>
 			<label kind="assignment" x="-4232" y="-459">in_sensors_state[id] = false</label>
 		</transition>
@@ -442,25 +439,25 @@ x = 0</label>
 		<parameter>const int frequency, const int[0, N_SLOTS-1] headPos, const int[0, N_SLOTS-1] tailPos, const int nDisks</parameter>
 		<declaration>clock x;
 </declaration>
-		<location id="id22" x="-178" y="-170">
+		<location id="id51" x="-178" y="-170">
 		</location>
-		<location id="id23" x="-178" y="-34">
+		<location id="id52" x="-178" y="-34">
 			<name x="-280" y="-51">run_state</name>
 			<label kind="invariant" x="-161" y="-42">x &lt;= frequency</label>
 		</location>
-		<init ref="id22"/>
-		<transition>
-			<source ref="id23"/>
-			<target ref="id23"/>
+		<init ref="id51"/>
+		<transition id="id53">
+			<source ref="id52"/>
+			<target ref="id52"/>
 			<label kind="guard" x="-221" y="25">x &gt;= frequency</label>
 			<label kind="synchronisation" x="-187" y="42">tick!</label>
 			<label kind="assignment" x="-187" y="59">x = 0</label>
 			<nail x="-144" y="25"/>
 			<nail x="-204" y="25"/>
 		</transition>
-		<transition>
-			<source ref="id22"/>
-			<target ref="id23"/>
+		<transition id="id54">
+			<source ref="id51"/>
+			<target ref="id52"/>
 			<label kind="synchronisation" x="-170" y="-136">initialize!</label>
 			<label kind="assignment" x="-170" y="-119">x = 0,
 init_system(headPos, tailPos, nDisks)</label>
@@ -509,6 +506,7 @@ bool next_slot_is_free() {
     return false;
 }
 
+/**    value generator according to a Normal distribution    **/
 double stdNormal(){
     return sqrt(-2 * ln(1 - random(1))) * cos(2*PI * random (1));
 }
@@ -525,96 +523,96 @@ int f() {
     
     return fint(var);
 }</declaration>
-		<location id="id24" x="128" y="-255">
+		<location id="id55" x="128" y="-255">
 		</location>
-		<location id="id25" x="128" y="-136">
+		<location id="id56" x="128" y="-136">
 			<name x="136" y="-161">Idle</name>
 		</location>
-		<location id="id26" x="603" y="68">
+		<location id="id57" x="603" y="68">
 			<name x="620" y="60">Pre_processing</name>
 		</location>
-		<location id="id27" x="-93" y="68">
+		<location id="id58" x="-93" y="68">
 			<name x="-136" y="34">Processing</name>
 			<label kind="invariant" x="-221" y="85">x &lt;= stochasticProcessingTime</label>
 		</location>
-		<location id="id28" x="-476" y="68">
+		<location id="id59" x="-476" y="68">
 			<name x="-527" y="52">Done</name>
 		</location>
-		<location id="id29" x="603" y="-136">
+		<location id="id60" x="603" y="-136">
 			<committed/>
 		</location>
-		<location id="id30" x="-476" y="-136">
+		<location id="id61" x="-476" y="-136">
 			<committed/>
 		</location>
-		<location id="id31" x="297" y="68">
+		<location id="id62" x="297" y="68">
 			<committed/>
 		</location>
-		<init ref="id24"/>
-		<transition>
-			<source ref="id31"/>
-			<target ref="id27"/>
+		<init ref="id55"/>
+		<transition id="id63">
+			<source ref="id62"/>
+			<target ref="id58"/>
 			<label kind="guard" x="-25" y="8">system_state[slot_id] == true</label>
 			<label kind="assignment" x="-25" y="25">x = 0, 
 stochasticProcessingTime = f()</label>
 		</transition>
-		<transition>
-			<source ref="id31"/>
-			<target ref="id26"/>
+		<transition id="id64">
+			<source ref="id62"/>
+			<target ref="id57"/>
 			<label kind="guard" x="331" y="93">system_state[slot_id] == false</label>
 			<nail x="323" y="93"/>
 			<nail x="586" y="93"/>
 		</transition>
-		<transition>
-			<source ref="id26"/>
-			<target ref="id31"/>
+		<transition id="id65">
+			<source ref="id57"/>
+			<target ref="id62"/>
 			<label kind="synchronisation" x="323" y="42">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id30"/>
-			<target ref="id28"/>
+		<transition id="id66">
+			<source ref="id61"/>
+			<target ref="id59"/>
 			<label kind="guard" x="-442" y="-42">out_sensors_state[out_sensor_id] == true || next_slot_is_free() == false</label>
 			<nail x="-450" y="-110"/>
 			<nail x="-450" y="51"/>
 		</transition>
-		<transition>
-			<source ref="id29"/>
-			<target ref="id25"/>
+		<transition id="id67">
+			<source ref="id60"/>
+			<target ref="id56"/>
 			<label kind="guard" x="195" y="-85">system_state[first_proc_slot] == false</label>
 			<label kind="synchronisation" x="255" y="-68">station_free[station_id]!</label>
 			<nail x="561" y="-93"/>
 			<nail x="161" y="-93"/>
 		</transition>
-		<transition>
-			<source ref="id25"/>
-			<target ref="id29"/>
+		<transition id="id68">
+			<source ref="id56"/>
+			<target ref="id60"/>
 			<label kind="synchronisation" x="340" y="-161">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id30"/>
-			<target ref="id25"/>
+		<transition id="id69">
+			<source ref="id61"/>
+			<target ref="id56"/>
 			<label kind="guard" x="-450" y="-195">out_sensors_state[out_sensor_id] == false &amp;&amp; next_slot_is_free() == true</label>
 			<label kind="synchronisation" x="-450" y="-178">station_free[station_id]!</label>
 			<label kind="assignment" x="-450" y="-161">complete_elaboration()</label>
 		</transition>
-		<transition>
-			<source ref="id29"/>
-			<target ref="id26"/>
+		<transition id="id70">
+			<source ref="id60"/>
+			<target ref="id57"/>
 			<label kind="guard" x="612" y="-59">system_state[first_proc_slot] == true</label>
 			<label kind="synchronisation" x="612" y="-42">station_busy[station_id]!</label>
 		</transition>
-		<transition>
-			<source ref="id28"/>
-			<target ref="id30"/>
+		<transition id="id71">
+			<source ref="id59"/>
+			<target ref="id61"/>
 			<label kind="synchronisation" x="-527" y="-42">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id27"/>
-			<target ref="id28"/>
+		<transition id="id72">
+			<source ref="id58"/>
+			<target ref="id59"/>
 			<label kind="guard" x="-408" y="42">x &gt;= stochasticProcessingTime</label>
 		</transition>
-		<transition>
-			<source ref="id24"/>
-			<target ref="id25"/>
+		<transition id="id73">
+			<source ref="id55"/>
+			<target ref="id56"/>
 			<label kind="synchronisation" x="136" y="-229">initialize?</label>
 			<label kind="assignment" x="136" y="-212">init_station()</label>
 		</transition>
@@ -623,111 +621,111 @@ stochasticProcessingTime = f()</label>
 		<name x="5" y="5">FlowController</name>
 		<parameter>const int policy, const int T</parameter>
 		<declaration>clock x;</declaration>
-		<location id="id32" x="-1964" y="-2091">
+		<location id="id74" x="-1964" y="-2091">
 			<name x="-1946" y="-2099">Not_Taken_1</name>
 		</location>
-		<location id="id33" x="-1752" y="-1989">
+		<location id="id75" x="-1752" y="-1989">
 			<name x="-1735" y="-2015">Taken_2</name>
 		</location>
-		<location id="id34" x="-1964" y="-1862">
+		<location id="id76" x="-1964" y="-1862">
 			<name x="-2040" y="-1912">Not_Taken_3</name>
 			<label kind="invariant" x="-2023" y="-1895">x &lt;= 2*T</label>
 		</location>
-		<location id="id35" x="-1751" y="-1862">
+		<location id="id77" x="-1751" y="-1862">
 			<name x="-1752" y="-1912">Taken_3</name>
 			<label kind="invariant" x="-1752" y="-1895">x &lt;= 2*T</label>
 		</location>
-		<location id="id36" x="-1955" y="-2261">
+		<location id="id78" x="-1955" y="-2261">
 			<name x="-2057" y="-2295">Not_Taken_0</name>
 		</location>
-		<location id="id37" x="-1785" y="-2337">
+		<location id="id79" x="-1785" y="-2337">
 			<urgent/>
 		</location>
-		<location id="id38" x="-1615" y="-2261">
+		<location id="id80" x="-1615" y="-2261">
 			<name x="-1598" y="-2278">Taken_0</name>
 		</location>
-		<location id="id39" x="-1785" y="-2184">
+		<location id="id81" x="-1785" y="-2184">
 			<urgent/>
 		</location>
-		<location id="id40" x="-1964" y="-1607">
+		<location id="id82" x="-1964" y="-1607">
 			<name x="-2065" y="-1640">Not_Taken_4</name>
 		</location>
-		<location id="id41" x="-1793" y="-1683">
+		<location id="id83" x="-1793" y="-1683">
 			<urgent/>
 		</location>
-		<location id="id42" x="-1641" y="-1598">
+		<location id="id84" x="-1641" y="-1598">
 			<name x="-1651" y="-1632">Taken_4</name>
 		</location>
-		<location id="id43" x="-1793" y="-1521">
+		<location id="id85" x="-1793" y="-1521">
 			<urgent/>
 		</location>
-		<location id="id44" x="-1964" y="-1989">
+		<location id="id86" x="-1964" y="-1989">
 			<committed/>
 		</location>
-		<location id="id45" x="-2550" y="-1989">
+		<location id="id87" x="-2550" y="-1989">
 			<name x="-2560" y="-2023">Start</name>
 		</location>
-		<location id="id46" x="-2397" y="-1989">
+		<location id="id88" x="-2397" y="-1989">
 			<committed/>
 		</location>
-		<init ref="id45"/>
-		<transition>
-			<source ref="id37"/>
-			<target ref="id36"/>
+		<init ref="id87"/>
+		<transition id="id89">
+			<source ref="id79"/>
+			<target ref="id78"/>
 			<label kind="guard" x="-2057" y="-2363">out_sensors_state[2] == false</label>
 			<nail x="-1955" y="-2337"/>
 		</transition>
-		<transition>
-			<source ref="id39"/>
-			<target ref="id38"/>
+		<transition id="id90">
+			<source ref="id81"/>
+			<target ref="id80"/>
 			<label kind="guard" x="-1759" y="-2176">system_state[station_slots[3]] == false ||
 out_sensors_state[3] == false</label>
 			<nail x="-1615" y="-2184"/>
 		</transition>
-		<transition>
-			<source ref="id43"/>
-			<target ref="id42"/>
+		<transition id="id91">
+			<source ref="id85"/>
+			<target ref="id84"/>
 			<label kind="guard" x="-1768" y="-1521">system_state[BRANCH_FIRST_POS] == false</label>
 			<nail x="-1640" y="-1521"/>
 		</transition>
-		<transition>
-			<source ref="id41"/>
-			<target ref="id40"/>
+		<transition id="id92">
+			<source ref="id83"/>
+			<target ref="id82"/>
 			<label kind="guard" x="-2150" y="-1708">system_state[CONTROLLER_POS+1] == false</label>
 			<nail x="-1963" y="-1683"/>
 		</transition>
-		<transition>
-			<source ref="id46"/>
-			<target ref="id36"/>
+		<transition id="id93">
+			<source ref="id88"/>
+			<target ref="id78"/>
 			<label kind="guard" x="-2244" y="-2286">policy == 0</label>
 			<nail x="-2252" y="-2261"/>
 		</transition>
-		<transition>
-			<source ref="id46"/>
-			<target ref="id40"/>
+		<transition id="id94">
+			<source ref="id88"/>
+			<target ref="id82"/>
 			<label kind="guard" x="-2235" y="-1632">policy == 4</label>
 			<nail x="-2244" y="-1606"/>
 		</transition>
-		<transition>
-			<source ref="id46"/>
-			<target ref="id34"/>
+		<transition id="id95">
+			<source ref="id88"/>
+			<target ref="id76"/>
 			<label kind="guard" x="-2244" y="-1887">policy == 3</label>
 			<nail x="-2252" y="-1861"/>
 		</transition>
-		<transition>
-			<source ref="id46"/>
-			<target ref="id44"/>
+		<transition id="id96">
+			<source ref="id88"/>
+			<target ref="id86"/>
 			<label kind="guard" x="-2244" y="-2014">policy == 2</label>
 		</transition>
-		<transition>
-			<source ref="id46"/>
-			<target ref="id32"/>
+		<transition id="id97">
+			<source ref="id88"/>
+			<target ref="id74"/>
 			<label kind="guard" x="-2244" y="-2116">policy == 1</label>
 			<nail x="-2252" y="-2091"/>
 		</transition>
-		<transition>
-			<source ref="id46"/>
-			<target ref="id45"/>
+		<transition id="id98">
+			<source ref="id88"/>
+			<target ref="id87"/>
 			<label kind="guard" x="-2533" y="-1955">policy != 0 &amp;&amp;
 policy != 1 &amp;&amp;
 policy != 2 &amp;&amp;
@@ -736,75 +734,75 @@ policy != 4</label>
 			<nail x="-2431" y="-1955"/>
 			<nail x="-2525" y="-1955"/>
 		</transition>
-		<transition>
-			<source ref="id45"/>
-			<target ref="id46"/>
+		<transition id="id99">
+			<source ref="id87"/>
+			<target ref="id88"/>
 			<label kind="synchronisation" x="-2525" y="-1989">initialize?</label>
 		</transition>
-		<transition>
-			<source ref="id44"/>
-			<target ref="id33"/>
+		<transition id="id100">
+			<source ref="id86"/>
+			<target ref="id75"/>
 			<label kind="synchronisation" x="-1939" y="-2014">switch_branch!</label>
 		</transition>
-		<transition>
-			<source ref="id42"/>
-			<target ref="id43"/>
+		<transition id="id101">
+			<source ref="id84"/>
+			<target ref="id85"/>
 			<label kind="synchronisation" x="-1751" y="-1581">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id43"/>
-			<target ref="id40"/>
+		<transition id="id102">
+			<source ref="id85"/>
+			<target ref="id82"/>
 			<label kind="guard" x="-2218" y="-1572">system_state[BRANCH_FIRST_POS] == true</label>
 			<label kind="synchronisation" x="-2014" y="-1555">switch_branch!</label>
 		</transition>
-		<transition>
-			<source ref="id41"/>
-			<target ref="id42"/>
+		<transition id="id103">
+			<source ref="id83"/>
+			<target ref="id84"/>
 			<label kind="guard" x="-1725" y="-1683">system_state[CONTROLLER_POS+1] == true</label>
 			<label kind="synchronisation" x="-1725" y="-1666">switch_branch!</label>
 		</transition>
-		<transition>
-			<source ref="id40"/>
-			<target ref="id41"/>
+		<transition id="id104">
+			<source ref="id82"/>
+			<target ref="id83"/>
 			<label kind="synchronisation" x="-1878" y="-1649">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id39"/>
-			<target ref="id36"/>
+		<transition id="id105">
+			<source ref="id81"/>
+			<target ref="id78"/>
 			<label kind="guard" x="-2193" y="-2235">x &gt;= 1 &amp;&amp; 
 system_state[station_slots[3]] == true &amp;&amp;
 out_sensors_state[3] == true</label>
 			<label kind="synchronisation" x="-2193" y="-2176">switch_branch!</label>
 		</transition>
-		<transition>
-			<source ref="id38"/>
-			<target ref="id39"/>
+		<transition id="id106">
+			<source ref="id80"/>
+			<target ref="id81"/>
 			<label kind="synchronisation" x="-1742" y="-2244">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id37"/>
-			<target ref="id38"/>
+		<transition id="id107">
+			<source ref="id79"/>
+			<target ref="id80"/>
 			<label kind="guard" x="-1717" y="-2371">x &gt;= 1 &amp;&amp;
 out_sensors_state[2] == true</label>
 			<label kind="synchronisation" x="-1717" y="-2329">switch_branch!</label>
 		</transition>
-		<transition>
-			<source ref="id36"/>
-			<target ref="id37"/>
+		<transition id="id108">
+			<source ref="id78"/>
+			<target ref="id79"/>
 			<label kind="synchronisation" x="-1878" y="-2295">tick?</label>
 		</transition>
-		<transition>
-			<source ref="id34"/>
-			<target ref="id35"/>
+		<transition id="id109">
+			<source ref="id76"/>
+			<target ref="id77"/>
 			<label kind="guard" x="-1912" y="-1955">x &gt;= T</label>
 			<label kind="synchronisation" x="-1912" y="-1972">switch_branch!</label>
 			<label kind="assignment" x="-1913" y="-1939">x = 0</label>
 			<nail x="-1921" y="-1913"/>
 			<nail x="-1785" y="-1913"/>
 		</transition>
-		<transition>
-			<source ref="id35"/>
-			<target ref="id34"/>
+		<transition id="id110">
+			<source ref="id77"/>
+			<target ref="id76"/>
 			<label kind="guard" x="-1912" y="-1785">x &gt;= T</label>
 			<label kind="synchronisation" x="-1912" y="-1768">switch_branch!</label>
 			<label kind="assignment" x="-1913" y="-1802">x = 0</label>
@@ -833,7 +831,7 @@ const int POS_IN_SENSORS_IN_ORDER[N_STATIONS] = {POS_IN_SENSORS[0], POS_IN_SENSO
 const int OUT_SENSORS_ID_IN_ORDER[N_STATIONS] = {1, 2, 4, 3, 4, 0};
 const double STD_DEV_STATIONS[N_STATIONS] = {5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
 const int IN_SENSORS_STATION[N_IN_SENSORS] = {0, 1, 3, 2, 4, 5};
-const int IN_SENSORS_WEIGHT_ERR[N_IN_SENSORS] = {2, 2, 2, 2, 2, 2};
+const int IN_SENSORS_WEIGHT_ERR[N_IN_SENSORS] = {5, 5, 5, 5, 5, 5};
 const int IN_SENSORS_WEIGHT_RIGHT[N_IN_SENSORS] = {1, 1, 1, 1, 1, 1};
 const int OUT_SENSORS_WEIGHT_ERR[N_IN_SENSORS] = {2, 2, 2, 2, 2, 2};
 const int OUT_SENSORS_WEIGHT_RIGHT[N_IN_SENSORS] = {1, 1, 1, 1, 1, 1};
@@ -849,7 +847,7 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 </system>
 	<queries>
 		<query>
-			<formula></formula>
+			<formula/>
 			<comment>------ Mandatory properties ------</comment>
 		</query>
 		<query>
