@@ -887,5 +887,9 @@ P3. No queue ever exceeds the maximum allowed length.</comment>
 			<comment>Verifies property:
 P4. the plant never incurs in deadlock.</comment>
 		</query>
+		<query>
+			<formula>simulate[&lt;=100]{station(0).x}</formula>
+			<comment/>
+		</query>
 	</queries>
 </nta>
