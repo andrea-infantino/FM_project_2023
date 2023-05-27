@@ -107,8 +107,8 @@ def run_all(verifier: str, projects: list[str], queries: list[str]) -> dict:
     results = {}
     print('\033[;1m')
     for result, project, query, time in tqdm(pool.imap_unordered(run_query, args), desc='Verifying', total=len(args)):
-        project = project.strip('project_').strip('.xml')
-        query = query.strip('query_').strip('.txt')
+        project = project.split('project_')[1].strip('.xml')
+        query = query.split('query_')[1].strip('.txt')
         results[(project, query)] = (result, '{0:.2f} seconds'.format(time))
     pool.close()
     pool.join()
