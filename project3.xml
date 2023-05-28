@@ -530,113 +530,99 @@ next_slot_is_free() == true</label>
 	</template>
 	<template>
 		<name x="5" y="5">FlowController</name>
-		<parameter>const int policy, const int T</parameter>
-		<declaration>clock x;</declaration>
+		<parameter>const int policy</parameter>
 		<location id="id52" x="-1964" y="-2091">
 			<name x="-1946" y="-2099">Not_Taken_1</name>
 		</location>
-		<location id="id53" x="-1752" y="-1989">
-			<name x="-1735" y="-2015">Taken_2</name>
+		<location id="id53" x="-1751" y="-1887">
+			<name x="-1734" y="-1913">Taken_2</name>
 		</location>
-		<location id="id54" x="-1964" y="-1862">
-			<name x="-2040" y="-1912">Not_Taken_3</name>
-			<label kind="invariant" x="-2023" y="-1895">x &lt;= 2*T</label>
-		</location>
-		<location id="id55" x="-1751" y="-1862">
-			<name x="-1752" y="-1912">Taken_3</name>
-			<label kind="invariant" x="-1752" y="-1895">x &lt;= 2*T</label>
-		</location>
-		<location id="id56" x="-1955" y="-2261">
+		<location id="id54" x="-1955" y="-2261">
 			<name x="-2057" y="-2295">Not_Taken_0</name>
 		</location>
-		<location id="id57" x="-1785" y="-2337">
+		<location id="id55" x="-1785" y="-2337">
 			<urgent/>
 		</location>
-		<location id="id58" x="-1615" y="-2261">
+		<location id="id56" x="-1615" y="-2261">
 			<name x="-1598" y="-2278">Taken_0</name>
 		</location>
-		<location id="id59" x="-1785" y="-2184">
+		<location id="id57" x="-1785" y="-2184">
 			<urgent/>
 		</location>
-		<location id="id60" x="-1964" y="-1607">
-			<name x="-2065" y="-1640">Not_Taken_4</name>
+		<location id="id58" x="-1972" y="-1691">
+			<name x="-2073" y="-1724">Not_Taken_3</name>
 		</location>
-		<location id="id61" x="-1793" y="-1683">
+		<location id="id59" x="-1801" y="-1767">
 			<urgent/>
 		</location>
-		<location id="id62" x="-1641" y="-1598">
-			<name x="-1651" y="-1632">Taken_4</name>
+		<location id="id60" x="-1649" y="-1682">
+			<name x="-1659" y="-1716">Taken_3</name>
 		</location>
-		<location id="id63" x="-1793" y="-1521">
+		<location id="id61" x="-1801" y="-1605">
 			<urgent/>
 		</location>
-		<location id="id64" x="-1964" y="-1989">
+		<location id="id62" x="-1963" y="-1887">
 			<committed/>
 		</location>
-		<location id="id65" x="-2550" y="-1989">
+		<location id="id63" x="-2550" y="-1989">
 			<name x="-2560" y="-2023">Start</name>
 		</location>
-		<location id="id66" x="-2397" y="-1989">
+		<location id="id64" x="-2397" y="-1989">
 			<committed/>
 		</location>
-		<init ref="id65"/>
-		<transition id="id67">
-			<source ref="id57"/>
-			<target ref="id56"/>
+		<init ref="id63"/>
+		<transition id="id65">
+			<source ref="id55"/>
+			<target ref="id54"/>
 			<label kind="guard" x="-2057" y="-2363">out_sensors_state[2] == false</label>
 			<nail x="-1955" y="-2337"/>
 		</transition>
-		<transition id="id68">
-			<source ref="id59"/>
-			<target ref="id58"/>
+		<transition id="id66">
+			<source ref="id57"/>
+			<target ref="id56"/>
 			<label kind="guard" x="-1759" y="-2176">system_state[station_slots[3]] == false ||
 out_sensors_state[3] == false</label>
 			<nail x="-1615" y="-2184"/>
 		</transition>
-		<transition id="id69">
-			<source ref="id63"/>
-			<target ref="id62"/>
-			<label kind="guard" x="-1768" y="-1521">system_state[BRANCH_FIRST_POS] == false</label>
-			<nail x="-1640" y="-1521"/>
-		</transition>
-		<transition id="id70">
+		<transition id="id67">
 			<source ref="id61"/>
 			<target ref="id60"/>
-			<label kind="guard" x="-2150" y="-1708">system_state[CONTROLLER_POS+1] == false</label>
-			<nail x="-1963" y="-1683"/>
+			<label kind="guard" x="-1776" y="-1605">system_state[BRANCH_FIRST_POS] == false</label>
+			<nail x="-1648" y="-1605"/>
 		</transition>
-		<transition id="id71">
-			<source ref="id66"/>
-			<target ref="id56"/>
+		<transition id="id68">
+			<source ref="id59"/>
+			<target ref="id58"/>
+			<label kind="guard" x="-2158" y="-1792">system_state[CONTROLLER_POS+1] == false</label>
+			<nail x="-1971" y="-1767"/>
+		</transition>
+		<transition id="id69">
+			<source ref="id64"/>
+			<target ref="id54"/>
 			<label kind="guard" x="-2244" y="-2286">policy == 0</label>
 			<nail x="-2252" y="-2261"/>
 		</transition>
+		<transition id="id70">
+			<source ref="id64"/>
+			<target ref="id58"/>
+			<label kind="guard" x="-2243" y="-1716">policy == 3</label>
+			<nail x="-2252" y="-1690"/>
+		</transition>
+		<transition id="id71">
+			<source ref="id64"/>
+			<target ref="id62"/>
+			<label kind="guard" x="-2243" y="-1912">policy == 2</label>
+			<nail x="-2251" y="-1887"/>
+		</transition>
 		<transition id="id72">
-			<source ref="id66"/>
-			<target ref="id60"/>
-			<label kind="guard" x="-2235" y="-1632">policy == 4</label>
-			<nail x="-2244" y="-1606"/>
-		</transition>
-		<transition id="id73">
-			<source ref="id66"/>
-			<target ref="id54"/>
-			<label kind="guard" x="-2244" y="-1887">policy == 3</label>
-			<nail x="-2252" y="-1861"/>
-		</transition>
-		<transition id="id74">
-			<source ref="id66"/>
-			<target ref="id64"/>
-			<label kind="guard" x="-2244" y="-2014">policy == 2</label>
-		</transition>
-		<transition id="id75">
-			<source ref="id66"/>
+			<source ref="id64"/>
 			<target ref="id52"/>
 			<label kind="guard" x="-2244" y="-2116">policy == 1</label>
 			<nail x="-2252" y="-2091"/>
 		</transition>
-		<transition id="id76">
-			<source ref="id66"/>
-			<target ref="id65"/>
+		<transition id="id73">
+			<source ref="id64"/>
+			<target ref="id63"/>
 			<label kind="guard" x="-2533" y="-1955">policy != 0 &amp;&amp;
 policy != 1 &amp;&amp;
 policy != 2 &amp;&amp;
@@ -645,80 +631,60 @@ policy != 4</label>
 			<nail x="-2431" y="-1955"/>
 			<nail x="-2525" y="-1955"/>
 		</transition>
-		<transition id="id77">
-			<source ref="id65"/>
-			<target ref="id66"/>
+		<transition id="id74">
+			<source ref="id63"/>
+			<target ref="id64"/>
 			<label kind="synchronisation" x="-2525" y="-1989">initialize?</label>
 		</transition>
-		<transition id="id78">
-			<source ref="id64"/>
-			<target ref="id53"/>
-			<label kind="synchronisation" x="-1939" y="-2014">switch_branch!</label>
-		</transition>
-		<transition id="id79">
+		<transition id="id75">
 			<source ref="id62"/>
-			<target ref="id63"/>
-			<label kind="synchronisation" x="-1751" y="-1581">tick?</label>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="-1938" y="-1912">switch_branch!</label>
 		</transition>
-		<transition id="id80">
-			<source ref="id63"/>
-			<target ref="id60"/>
-			<label kind="guard" x="-2218" y="-1572">system_state[BRANCH_FIRST_POS] == true</label>
-			<label kind="synchronisation" x="-2014" y="-1555">switch_branch!</label>
-		</transition>
-		<transition id="id81">
-			<source ref="id61"/>
-			<target ref="id62"/>
-			<label kind="guard" x="-1725" y="-1683">system_state[CONTROLLER_POS+1] == true</label>
-			<label kind="synchronisation" x="-1725" y="-1666">switch_branch!</label>
-		</transition>
-		<transition id="id82">
+		<transition id="id76">
 			<source ref="id60"/>
 			<target ref="id61"/>
-			<label kind="synchronisation" x="-1878" y="-1649">tick?</label>
+			<label kind="synchronisation" x="-1759" y="-1665">tick?</label>
 		</transition>
-		<transition id="id83">
+		<transition id="id77">
+			<source ref="id61"/>
+			<target ref="id58"/>
+			<label kind="guard" x="-2226" y="-1656">system_state[BRANCH_FIRST_POS] == true</label>
+			<label kind="synchronisation" x="-2022" y="-1639">switch_branch!</label>
+		</transition>
+		<transition id="id78">
 			<source ref="id59"/>
-			<target ref="id56"/>
-			<label kind="guard" x="-2193" y="-2235">x &gt;= 1 &amp;&amp; 
-system_state[station_slots[3]] == true &amp;&amp;
-out_sensors_state[3] == true</label>
-			<label kind="synchronisation" x="-2193" y="-2176">switch_branch!</label>
+			<target ref="id60"/>
+			<label kind="guard" x="-1733" y="-1767">system_state[CONTROLLER_POS+1] == true</label>
+			<label kind="synchronisation" x="-1733" y="-1750">switch_branch!</label>
 		</transition>
-		<transition id="id84">
+		<transition id="id79">
 			<source ref="id58"/>
 			<target ref="id59"/>
-			<label kind="synchronisation" x="-1742" y="-2244">tick?</label>
+			<label kind="synchronisation" x="-1886" y="-1733">tick?</label>
 		</transition>
-		<transition id="id85">
+		<transition id="id80">
 			<source ref="id57"/>
-			<target ref="id58"/>
-			<label kind="guard" x="-1717" y="-2371">x &gt;= 1 &amp;&amp;
-out_sensors_state[2] == true</label>
-			<label kind="synchronisation" x="-1717" y="-2329">switch_branch!</label>
+			<target ref="id54"/>
+			<label kind="guard" x="-2193" y="-2210">system_state[station_slots[3]] == true &amp;&amp;
+out_sensors_state[3] == true</label>
+			<label kind="synchronisation" x="-2193" y="-2167">switch_branch!</label>
 		</transition>
-		<transition id="id86">
+		<transition id="id81">
 			<source ref="id56"/>
 			<target ref="id57"/>
-			<label kind="synchronisation" x="-1878" y="-2295">tick?</label>
+			<label kind="synchronisation" x="-1742" y="-2244">tick?</label>
 		</transition>
-		<transition id="id87">
+		<transition id="id82">
+			<source ref="id55"/>
+			<target ref="id56"/>
+			<label kind="guard" x="-1717" y="-2346">out_sensors_state[2] == true</label>
+			<label kind="synchronisation" x="-1717" y="-2329">switch_branch!</label>
+		</transition>
+		<transition id="id83">
 			<source ref="id54"/>
 			<target ref="id55"/>
-			<label kind="guard" x="-1912" y="-1955">x &gt;= T</label>
-			<label kind="synchronisation" x="-1912" y="-1972">switch_branch!</label>
-			<label kind="assignment" x="-1913" y="-1939">x = 0</label>
-			<nail x="-1921" y="-1913"/>
-			<nail x="-1785" y="-1913"/>
-		</transition>
-		<transition id="id88">
-			<source ref="id55"/>
-			<target ref="id54"/>
-			<label kind="guard" x="-1912" y="-1785">x &gt;= T</label>
-			<label kind="synchronisation" x="-1912" y="-1768">switch_branch!</label>
-			<label kind="assignment" x="-1913" y="-1802">x = 0</label>
-			<nail x="-1785" y="-1803"/>
-			<nail x="-1929" y="-1803"/>
+			<label kind="synchronisation" x="-1878" y="-2295">tick?</label>
 		</transition>
 	</template>
 	<system>/**
@@ -728,7 +694,6 @@ out_sensors_state[2] == true</label>
 const int SPEED = 1;
 const int N_DISKS = 2;
 const int[0, 4] POLICY = 0;
-const int RAND_FLOW_CONTROLLER = 1;    // Useful only if POLICY = 3
 
 const int POS_OUT_SENSORS[N_OUT_SENSORS] = {2, 24, 68, 90, 105};
 const int STATIONS_ELABORATION_TIME[N_STATIONS] = {6, 7, 8, 9, 8, 7};
@@ -746,7 +711,7 @@ conveyorBelt = ConveyorBelt();
 station(const int[0, N_STATIONS - 1] id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id]);
 inSensor(const int[0, N_IN_SENSORS - 1] id) = InSensor(id, IN_SENSORS_STATION[id]);
 outSensor(const int[0,N_OUT_SENSORS - 1] id) = OutSensor(id, POS_OUT_SENSORS[id]);
-flowController = FlowController(POLICY, RAND_FLOW_CONTROLLER);
+flowController = FlowController(POLICY);
 
 system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 </system>
@@ -762,6 +727,8 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 Verifies properties:
 P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-28 08:59:56 +0200">
+			</result>
 		</query>
 		<query>
 			<formula>A[] forall(id:int[0,N_STATIONS - 1]) (station(id).Processing imply (system_state[POS_STATIONS[id] - 1] == false &amp;&amp; system_state[POS_STATIONS[id]] == true))</formula>
@@ -769,6 +736,8 @@ P2. it never happens that two pieces occupy the same belt slot.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-28 09:00:07 +0200">
+			</result>
 		</query>
 		<query>
 			<formula>A[] (forall(id:int[0, N_OUT_SENSORS - 1]) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id]))</formula>
@@ -776,11 +745,15 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P3. No queue ever exceeds the maximum allowed length.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-28 09:00:17 +0200">
+			</result>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment>Verifies property:
 P4. the plant never incurs in deadlock.</comment>
+			<result outcome="success" type="quality" timestamp="2023-05-28 09:00:32 +0200">
+			</result>
 		</query>
 	</queries>
 </nta>

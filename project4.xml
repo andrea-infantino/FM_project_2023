@@ -29,7 +29,7 @@ typedef int[0, N_STATIONS - 1] stations;
  */
 
 broadcast chan tick, initialize, station_free[N_STATIONS], station_busy[N_STATIONS];
-chan switch_branch;
+broadcast chan switch_branch;
 
 /**
  * Variables
@@ -80,9 +80,11 @@ void init_out_sensor() {
 </declaration>
 		<location id="id0" x="-34" y="-60">
 			<name x="-25" y="-85">Unlocked</name>
+			<committed/>
 		</location>
 		<location id="id1" x="-34" y="221">
 			<name x="-68" y="246">Locked</name>
+			<committed/>
 		</location>
 		<location id="id2" x="-34" y="-170">
 		</location>
@@ -393,11 +395,13 @@ void update(){
 		</location>
 		<location id="id38" x="-4114" y="-195">
 			<name x="-4140" y="-178">Locked</name>
+			<committed/>
 		</location>
 		<location id="id39" x="-4241" y="-501">
 		</location>
 		<location id="id40" x="-4241" y="-391">
 			<name x="-4326" y="-416">Unlocked</name>
+			<committed/>
 		</location>
 		<location id="id41" x="-3723" y="-297">
 		</location>
@@ -475,6 +479,7 @@ void update(){
 		<declaration>clock x;
 </declaration>
 		<location id="id57" x="-178" y="-170">
+			<committed/>
 		</location>
 		<location id="id58" x="-178" y="-34">
 			<name x="-280" y="-51">run_state</name>
@@ -494,8 +499,7 @@ void update(){
 			<source ref="id57"/>
 			<target ref="id58"/>
 			<label kind="synchronisation" x="-170" y="-136">initialize!</label>
-			<label kind="assignment" x="-170" y="-119">x = 0,
-init_system(headPos, tailPos, nDisks)</label>
+			<label kind="assignment" x="-170" y="-119">init_system(headPos, tailPos, nDisks)</label>
 		</transition>
 	</template>
 	<template>
