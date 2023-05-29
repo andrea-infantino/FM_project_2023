@@ -415,6 +415,7 @@ void update(){
 		<transition id="id46">
 			<source ref="id43"/>
 			<target ref="id40"/>
+			<label kind="synchronisation" x="-4505" y="-272">tick?</label>
 			<label kind="assignment" x="-4505" y="-289">in_sensors_state[id] = false</label>
 			<nail x="-4241" y="-297"/>
 		</transition>
@@ -431,6 +432,7 @@ void update(){
 		<transition id="id49">
 			<source ref="id37"/>
 			<target ref="id38"/>
+			<label kind="synchronisation" x="-4063" y="-289">tick?</label>
 			<label kind="assignment" x="-4165" y="-322">in_sensors_state[id] = true</label>
 			<nail x="-4114" y="-297"/>
 		</transition>
@@ -505,11 +507,11 @@ void update(){
 	<template>
 		<name>Station</name>
 		<parameter>const int[0, N_STATIONS-1] station_id, const int[0, N_SLOTS-1] slot_id, const int elaboration_time, const int[0, N_SLOTS-1] in_sensor_slot, const int[0, N_OUT_SENSORS-1] out_sensor_id, const double stdDeviation</parameter>
-		<declaration>hybrid clock x;
+		<declaration>clock x;
 int[0, N_SLOTS-1] first_proc_slot;
 
 const double PI = 3.14;
-double stochasticProcessingTime;
+int stochasticProcessingTime;
 
 /**    set the Station on the initial configuration    **/
 void init_station() {
@@ -554,13 +556,13 @@ double Normal (double mean, double stdDev) {
     return mean + stdDev * stdNormal();
 }
 
-double f() {
+int f() {
     double var = Normal (elaboration_time, stdDeviation);
     if (var &lt;= 0) {
         var = 1;
     }
     
-    return var;
+    return fint(var);
 }</declaration>
 		<location id="id61" x="128" y="-255">
 		</location>
@@ -860,7 +862,7 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 Verifies properties:
 P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
-			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-28 09:25:00 +0200">
+			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-29 14:19:27 +0200">
 				<details>≥ 0.950056 (95% CI)</details>
 				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
 					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,4.503599627370496E15
@@ -955,7 +957,7 @@ Mean estimate of displayed sample: ≈ 0</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-28 09:25:11 +0200">
+			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-29 14:19:27 +0200">
 				<details>≥ 0.950056 (95% CI)</details>
 				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
 					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,4.503599627370496E15
@@ -1050,7 +1052,7 @@ Mean estimate of displayed sample: ≈ 0</comment>
 
 Verifies property:
 P3. No queue ever exceeds the maximum allowed length.</comment>
-			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-28 09:25:11 +0200">
+			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-29 14:19:27 +0200">
 				<details>≥ 0.950056 (95% CI)</details>
 				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
 					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,4.503599627370496E15
@@ -1145,8 +1147,60 @@ Mean estimate of displayed sample: ≈ 0</comment>
 P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
-			<formula>simulate[&lt;=100]{station(0).x}</formula>
+			<formula>simulate[&lt;=1000]{station(0).x}</formula>
 			<comment/>
+			<result outcome="success" type="quality" timestamp="2023-05-29 14:25:08 +0200">
+				<plot title="Simulations (1)" xaxis="time" yaxis="value">
+					<series title="station[0].x" type="l" color="0xff0000" encoding="csv">0.0,0.0
+12.0,12.0
+12.0,0.0
+33.0,21.0
+33.0,0.0
+54.0,21.0
+54.0,0.0
+69.0,15.0
+69.0,0.0
+76.0,7.0
+76.0,0.0
+84.0,8.0
+84.0,0.0
+88.0,4.0
+88.0,0.0
+100.0,12.0
+100.0,0.0
+103.0,3.0
+103.0,0.0
+280.0,177.0
+280.0,0.0
+304.0,24.0
+304.0,0.0
+346.0,42.0
+346.0,0.0
+363.0,17.0
+363.0,0.0
+382.0,19.0
+382.0,0.0
+538.0,156.0
+538.0,0.0
+583.0,45.0
+583.0,0.0
+616.0,33.0
+616.0,0.0
+658.0,42.0
+658.0,0.0
+799.0,141.0
+799.0,0.0
+850.0,51.0
+850.0,0.0
+877.0,27.0
+877.0,0.0
+925.0,48.0
+925.0,0.0
+1000.000002,75.000002
+					</series>
+					<comment/>
+				</plot>
+			</result>
 		</query>
 	</queries>
 </nta>
