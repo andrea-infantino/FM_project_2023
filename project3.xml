@@ -29,7 +29,7 @@ typedef int[0, N_STATIONS - 1] stations;
  */
 
 broadcast chan tick, initialize, station_free[N_STATIONS], station_busy[N_STATIONS];
-chan switch_branch;
+broadcast chan switch_branch;
 
 /**
  * Variables
@@ -85,11 +85,14 @@ void init_out_sensor() {
 			<name x="-17" y="136">Locked</name>
 		</location>
 		<location id="id2" x="-34" y="-170">
+			<name x="-44" y="-204">Start</name>
 		</location>
 		<location id="id3" x="59" y="34">
+			<name x="68" y="0">C1</name>
 			<urgent/>
 		</location>
 		<location id="id4" x="-136" y="34">
+			<name x="-146" y="0">C2</name>
 			<urgent/>
 		</location>
 		<init ref="id2"/>
@@ -435,6 +438,7 @@ bool next_slot_is_free() {
     return false;
 }</declaration>
 		<location id="id33" x="-8" y="-255">
+			<name x="-18" y="-289">Start</name>
 		</location>
 		<location id="id34" x="-8" y="-136">
 			<name x="0" y="-161">Idle</name>
@@ -450,12 +454,15 @@ bool next_slot_is_free() {
 			<name x="-620" y="52">Done</name>
 		</location>
 		<location id="id38" x="467" y="-136">
+			<name x="457" y="-170">C1</name>
 			<committed/>
 		</location>
 		<location id="id39" x="-569" y="-136">
+			<name x="-579" y="-170">C3</name>
 			<committed/>
 		</location>
 		<location id="id40" x="161" y="68">
+			<name x="151" y="34">C2</name>
 			<committed/>
 		</location>
 		<init ref="id33"/>
@@ -727,8 +734,6 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 Verifies properties:
 P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-28 08:59:56 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>A[] forall(id:int[0,N_STATIONS - 1]) (station(id).Processing imply (system_state[POS_STATIONS[id] - 1] == false &amp;&amp; system_state[POS_STATIONS[id]] == true))</formula>
@@ -736,8 +741,6 @@ P2. it never happens that two pieces occupy the same belt slot.</comment>
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-28 09:00:07 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>A[] (forall(id:int[0, N_OUT_SENSORS - 1]) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id]))</formula>
@@ -745,15 +748,47 @@ P1. It never happens that a station holds more than 1 piece.</comment>
 
 Verifies property:
 P3. No queue ever exceeds the maximum allowed length.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-28 09:00:17 +0200">
-			</result>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment>Verifies property:
 P4. the plant never incurs in deadlock.</comment>
-			<result outcome="success" type="quality" timestamp="2023-05-28 09:00:32 +0200">
-			</result>
+		</query>
+		<query>
+			<formula/>
+			<comment>------ Simulations ------</comment>
+		</query>
+		<query>
+			<formula>simulate[&lt;=1000] {
+	station(0).Pre_processing + station(0).C2 + station(0).Processing * 2 + (station(0).Done + station(0).C3) * 3,
+	station(1).Pre_processing + station(1).C2 + station(1).Processing * 2 + (station(1).Done + station(1).C3) * 3,
+	station(2).Pre_processing + station(2).C2 + station(2).Processing * 2 + (station(2).Done + station(2).C3) * 3,
+	station(3).Pre_processing + station(3).C2 + station(3).Processing * 2 + (station(3).Done + station(3).C3) * 3,
+	station(4).Pre_processing + station(4).C2 + station(4).Processing * 2 + (station(4).Done + station(4).C3) * 3,
+	station(5).Pre_processing + station(5).C2 + station(5).Processing * 2 + (station(5).Done + station(5).C3) * 3
+}</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>simulate[&lt;=1000] {
+	outSensor(0).Locked + outSensor(0).C2,
+	outSensor(1).Locked + outSensor(1).C2,
+	outSensor(2).Locked + outSensor(2).C2,
+	outSensor(3).Locked + outSensor(3).C2,
+	outSensor(4).Locked + outSensor(4).C2
+}</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>simulate[&lt;=1000] {
+	inSensor(0).Locked,
+	inSensor(1).Locked,
+	inSensor(2).Locked,
+	inSensor(3).Locked,
+	inSensor(4).Locked,
+	inSensor(5).Locked
+}</formula>
+			<comment/>
 		</query>
 	</queries>
 </nta>

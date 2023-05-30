@@ -87,20 +87,27 @@ void init_out_sensor() {
 			<committed/>
 		</location>
 		<location id="id2" x="-34" y="-170">
+			<name x="-44" y="-204">Start</name>
 		</location>
 		<location id="id3" x="127" y="119">
+			<name x="117" y="85">C3</name>
 			<urgent/>
 		</location>
 		<location id="id4" x="-493" y="-25">
+			<name x="-510" y="-59">C6</name>
 			<urgent/>
 		</location>
 		<location id="id5" x="127" y="17">
+			<name x="117" y="-17">C2</name>
 		</location>
 		<location id="id6" x="561" y="34">
+			<name x="551" y="0">C1</name>
 		</location>
 		<location id="id7" x="-493" y="85">
+			<name x="-503" y="51">C5</name>
 		</location>
 		<location id="id8" x="-246" y="85">
+			<name x="-256" y="51">C4</name>
 		</location>
 		<branchpoint id="id9" x="-391" y="221"/>
 		<branchpoint id="id10" x="357" y="-59"/>
@@ -391,50 +398,55 @@ void update(){
 	<template>
 		<name>InSensor</name>
 		<parameter>const int[0, N_IN_SENSORS-1] id, const int [0, N_STATIONS-1] station_controlled, const int probWeight_1, const int probWeight_2</parameter>
-		<location id="id37" x="-3893" y="-297">
+		<location id="id37" x="-4259" y="-4046">
+			<name x="-4269" y="-4080">C2</name>
 		</location>
-		<location id="id38" x="-4114" y="-195">
-			<name x="-4140" y="-178">Locked</name>
+		<location id="id38" x="-4480" y="-3944">
+			<name x="-4506" y="-3927">Locked</name>
 			<committed/>
 		</location>
-		<location id="id39" x="-4241" y="-501">
+		<location id="id39" x="-4607" y="-4250">
+			<name x="-4617" y="-4284">Start</name>
 		</location>
-		<location id="id40" x="-4241" y="-391">
-			<name x="-4326" y="-416">Unlocked</name>
+		<location id="id40" x="-4607" y="-4140">
+			<name x="-4692" y="-4165">Unlocked</name>
 			<committed/>
 		</location>
-		<location id="id41" x="-3723" y="-297">
+		<location id="id41" x="-4089" y="-4046">
+			<name x="-4099" y="-4080">C1</name>
 		</location>
-		<location id="id42" x="-4717" y="-297">
+		<location id="id42" x="-5083" y="-4046">
+			<name x="-5093" y="-4080">C4</name>
 		</location>
-		<location id="id43" x="-4530" y="-297">
+		<location id="id43" x="-4896" y="-4046">
+			<name x="-4906" y="-4080">C3</name>
 		</location>
-		<branchpoint id="id44" x="-4632" y="-195"/>
-		<branchpoint id="id45" x="-3808" y="-390"/>
+		<branchpoint id="id44" x="-4998" y="-3944"/>
+		<branchpoint id="id45" x="-4174" y="-4139"/>
 		<init ref="id39"/>
 		<transition id="id46">
 			<source ref="id43"/>
 			<target ref="id40"/>
-			<label kind="synchronisation" x="-4505" y="-272">tick?</label>
-			<label kind="assignment" x="-4505" y="-289">in_sensors_state[id] = false</label>
-			<nail x="-4241" y="-297"/>
+			<label kind="synchronisation" x="-4871" y="-4021">tick?</label>
+			<label kind="assignment" x="-4871" y="-4038">in_sensors_state[id] = false</label>
+			<nail x="-4607" y="-4046"/>
 		</transition>
 		<transition id="id47">
 			<source ref="id44"/>
 			<target ref="id42"/>
-			<label kind="probability" x="-4785" y="-246">probWeight_1</label>
+			<label kind="probability" x="-5151" y="-3995">probWeight_1</label>
 		</transition>
 		<transition id="id48">
 			<source ref="id44"/>
 			<target ref="id43"/>
-			<label kind="probability" x="-4573" y="-246">probWeight_2</label>
+			<label kind="probability" x="-4939" y="-3995">probWeight_2</label>
 		</transition>
 		<transition id="id49">
 			<source ref="id37"/>
 			<target ref="id38"/>
-			<label kind="synchronisation" x="-4063" y="-289">tick?</label>
-			<label kind="assignment" x="-4165" y="-322">in_sensors_state[id] = true</label>
-			<nail x="-4114" y="-297"/>
+			<label kind="synchronisation" x="-4429" y="-4038">tick?</label>
+			<label kind="assignment" x="-4531" y="-4071">in_sensors_state[id] = true</label>
+			<nail x="-4480" y="-4046"/>
 		</transition>
 		<transition id="id50" controllable="false">
 			<source ref="id38"/>
@@ -443,12 +455,12 @@ void update(){
 		<transition id="id51">
 			<source ref="id45"/>
 			<target ref="id37"/>
-			<label kind="probability" x="-3961" y="-365">probWeight_2</label>
+			<label kind="probability" x="-4327" y="-4114">probWeight_2</label>
 		</transition>
 		<transition id="id52">
 			<source ref="id45"/>
 			<target ref="id41"/>
-			<label kind="probability" x="-3748" y="-365">probWeight_1</label>
+			<label kind="probability" x="-4114" y="-4114">probWeight_1</label>
 		</transition>
 		<transition id="id53" controllable="false">
 			<source ref="id40"/>
@@ -457,22 +469,22 @@ void update(){
 		<transition id="id54">
 			<source ref="id42"/>
 			<target ref="id40"/>
-			<label kind="synchronisation" x="-4666" y="-433">station_free[station_controlled]?</label>
-			<label kind="assignment" x="-4624" y="-416">in_sensors_state[id] = false</label>
-			<nail x="-4717" y="-391"/>
+			<label kind="synchronisation" x="-5032" y="-4182">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-4990" y="-4165">in_sensors_state[id] = false</label>
+			<nail x="-5083" y="-4140"/>
 		</transition>
 		<transition id="id55">
 			<source ref="id41"/>
 			<target ref="id38"/>
-			<label kind="synchronisation" x="-4029" y="-187">station_busy[station_controlled]?</label>
-			<label kind="assignment" x="-4029" y="-170">in_sensors_state[id] = true</label>
-			<nail x="-3724" y="-195"/>
+			<label kind="synchronisation" x="-4395" y="-3936">station_busy[station_controlled]?</label>
+			<label kind="assignment" x="-4395" y="-3919">in_sensors_state[id] = true</label>
+			<nail x="-4090" y="-3944"/>
 		</transition>
 		<transition id="id56">
 			<source ref="id39"/>
 			<target ref="id40"/>
-			<label kind="synchronisation" x="-4232" y="-476">initialize?</label>
-			<label kind="assignment" x="-4232" y="-459">in_sensors_state[id] = false</label>
+			<label kind="synchronisation" x="-4598" y="-4225">initialize?</label>
+			<label kind="assignment" x="-4598" y="-4208">in_sensors_state[id] = false</label>
 		</transition>
 	</template>
 	<template>
@@ -565,6 +577,7 @@ int f() {
     return fint(var);
 }</declaration>
 		<location id="id61" x="128" y="-255">
+			<name x="118" y="-289">Start</name>
 		</location>
 		<location id="id62" x="128" y="-136">
 			<name x="136" y="-161">Idle</name>
@@ -580,12 +593,15 @@ int f() {
 			<name x="-527" y="52">Done</name>
 		</location>
 		<location id="id66" x="603" y="-136">
+			<name x="593" y="-170">C1</name>
 			<committed/>
 		</location>
 		<location id="id67" x="-476" y="-136">
+			<name x="-486" y="-170">C3</name>
 			<committed/>
 		</location>
 		<location id="id68" x="297" y="68">
+			<name x="287" y="34">C2</name>
 			<committed/>
 		</location>
 		<init ref="id61"/>
@@ -856,290 +872,26 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 			<comment>------ Mandatory properties ------</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=300] (&lt;&gt; (initializer.run_state imply ((sum(i:slots) system_state[i] == true) == N_DISKS)))</formula>
+			<formula>Pr[&lt;=10000] (&lt;&gt; (initializer.run_state imply ((sum(i:slots) system_state[i] == true) == N_DISKS)))</formula>
 			<comment>No spawn or disappear of disk
 
 Verifies properties:
 P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
-			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-29 14:19:27 +0200">
-				<details>≥ 0.950056 (95% CI)</details>
-				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
-					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,4.503599627370496E15
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,4.503599627370496E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Density Confidence Intervals" xaxis="run duration in time" yaxis="probability density">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,0.9500559162941453
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,4.503599627370496E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Distribution" xaxis="run duration in time" yaxis="probability">
-					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,0.9500559162941453
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Cumulative Probability Distribution" xaxis="run duration in time" yaxis="probability">
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">0.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Cumulative Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
-					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">0.0,0.04994408370585468
-					</series>
-					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">0.0,0.0
-					</series>
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">0.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Frequency Histogram" xaxis="run duration in time" yaxis="count">
-					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,72.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,72.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-			</result>
 		</query>
 		<query>
-			<formula>Pr[&lt;=300](&lt;&gt; (forall(id:int[0,N_STATIONS - 1]) (station(id).Processing imply (system_state[POS_STATIONS[id] - 1] == false &amp;&amp; system_state[POS_STATIONS[id]] == true))))</formula>
+			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id:int[0,N_STATIONS - 1]) (station(id).Processing imply (system_state[POS_STATIONS[id] - 1] == false &amp;&amp; system_state[POS_STATIONS[id]] == true))))</formula>
 			<comment>If a station is processing, no other piece is waiting to enter immediately before
 
 Verifies property:
 P1. It never happens that a station holds more than 1 piece.</comment>
-			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-29 14:19:27 +0200">
-				<details>≥ 0.950056 (95% CI)</details>
-				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
-					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,4.503599627370496E15
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,4.503599627370496E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Density Confidence Intervals" xaxis="run duration in time" yaxis="probability density">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,0.9500559162941453
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,4.503599627370496E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Distribution" xaxis="run duration in time" yaxis="probability">
-					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,0.9500559162941453
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Cumulative Probability Distribution" xaxis="run duration in time" yaxis="probability">
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">0.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Cumulative Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
-					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">0.0,0.04994408370585468
-					</series>
-					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">0.0,0.0
-					</series>
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">0.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Frequency Histogram" xaxis="run duration in time" yaxis="count">
-					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,72.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,72.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-			</result>
 		</query>
 		<query>
-			<formula>Pr[&lt;=300] (&lt;&gt; (forall(id:int[0, N_OUT_SENSORS - 1]) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id])))</formula>
+			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id:int[0, N_OUT_SENSORS - 1]) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id])))</formula>
 			<comment>If the sensor is locked, at least one position between it's input sensor and the location right before it is free
 
 Verifies property:
 P3. No queue ever exceeds the maximum allowed length.</comment>
-			<result outcome="success" type="interval" value="≥ 0.950056 (95% CI)" timestamp="2023-05-29 14:19:27 +0200">
-				<details>≥ 0.950056 (95% CI)</details>
-				<plot title="Probability Density Distribution" xaxis="run duration in time" yaxis="probability density">
-					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,4.503599627370496E15
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,4.503599627370496E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Density Confidence Intervals" xaxis="run duration in time" yaxis="probability density">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,0.9500559162941453
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,4.503599627370496E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Distribution" xaxis="run duration in time" yaxis="probability">
-					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">0.0,1.0
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,0.9500559162941453
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Cumulative Probability Distribution" xaxis="run duration in time" yaxis="probability">
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">0.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Cumulative Probability Confidence Intervals" xaxis="run duration in time" yaxis="probability">
-					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">0.0,0.04994408370585468
-					</series>
-					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">0.0,0.0
-					</series>
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">0.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,1.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-				<plot title="Frequency Histogram" xaxis="run duration in time" yaxis="count">
-					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">0.0,72.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">0.0,0.0
-0.0,72.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 72 in total, 72 (100%) displayed, 0 (0%) remaining
-Span of displayed sample: [0, 0]
-Mean estimate of displayed sample: ≈ 0</comment>
-				</plot>
-			</result>
 		</query>
 		<query>
 			<formula>Pr[&lt;=100] (&lt;&gt; not deadlock)</formula>
@@ -1147,60 +899,40 @@ Mean estimate of displayed sample: ≈ 0</comment>
 P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
-			<formula>simulate[&lt;=1000]{station(0).x}</formula>
+			<formula/>
+			<comment>------ Simulations ------</comment>
+		</query>
+		<query>
+			<formula>simulate[&lt;=1000] {
+	station(0).Pre_processing + station(0).C2 + station(0).Processing * 2 + (station(0).Done + station(0).C3) * 3,
+	station(1).Pre_processing + station(1).C2 + station(1).Processing * 2 + (station(1).Done + station(1).C3) * 3,
+	station(2).Pre_processing + station(2).C2 + station(2).Processing * 2 + (station(2).Done + station(2).C3) * 3,
+	station(3).Pre_processing + station(3).C2 + station(3).Processing * 2 + (station(3).Done + station(3).C3) * 3,
+	station(4).Pre_processing + station(4).C2 + station(4).Processing * 2 + (station(4).Done + station(4).C3) * 3,
+	station(5).Pre_processing + station(5).C2 + station(5).Processing * 2 + (station(5).Done + station(5).C3) * 3
+}</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2023-05-29 14:25:08 +0200">
-				<plot title="Simulations (1)" xaxis="time" yaxis="value">
-					<series title="station[0].x" type="l" color="0xff0000" encoding="csv">0.0,0.0
-12.0,12.0
-12.0,0.0
-33.0,21.0
-33.0,0.0
-54.0,21.0
-54.0,0.0
-69.0,15.0
-69.0,0.0
-76.0,7.0
-76.0,0.0
-84.0,8.0
-84.0,0.0
-88.0,4.0
-88.0,0.0
-100.0,12.0
-100.0,0.0
-103.0,3.0
-103.0,0.0
-280.0,177.0
-280.0,0.0
-304.0,24.0
-304.0,0.0
-346.0,42.0
-346.0,0.0
-363.0,17.0
-363.0,0.0
-382.0,19.0
-382.0,0.0
-538.0,156.0
-538.0,0.0
-583.0,45.0
-583.0,0.0
-616.0,33.0
-616.0,0.0
-658.0,42.0
-658.0,0.0
-799.0,141.0
-799.0,0.0
-850.0,51.0
-850.0,0.0
-877.0,27.0
-877.0,0.0
-925.0,48.0
-925.0,0.0
-1000.000002,75.000002
-					</series>
-					<comment/>
-				</plot>
-			</result>
+		</query>
+		<query>
+			<formula>simulate[&lt;=1000] {
+	outSensor(0).Locked + outSensor(0).C4 + outSensor(0).C5 + outSensor(0).C6,
+	outSensor(1).Locked + outSensor(1).C4 + outSensor(1).C5 + outSensor(1).C6,
+	outSensor(2).Locked + outSensor(2).C4 + outSensor(2).C5 + outSensor(2).C6,
+	outSensor(3).Locked + outSensor(3).C4 + outSensor(3).C5 + outSensor(3).C6,
+	outSensor(4).Locked + outSensor(4).C4 + outSensor(4).C5 + outSensor(4).C6
+}</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>simulate[&lt;=1000] {
+	inSensor(0).Locked + inSensor(0).C3 + inSensor(0).C4,
+	inSensor(1).Locked + inSensor(1).C3 + inSensor(1).C4,
+	inSensor(2).Locked + inSensor(2).C3 + inSensor(2).C4,
+	inSensor(3).Locked + inSensor(3).C3 + inSensor(3).C4,
+	inSensor(4).Locked + inSensor(4).C3 + inSensor(4).C4,
+	inSensor(5).Locked + inSensor(5).C3 + inSensor(5).C4
+}</formula>
+			<comment/>
 		</query>
 	</queries>
 </nta>
