@@ -13,10 +13,6 @@
             "value": 0
         },
         {
-            "param": "RAND_FLOW_CONTROLLER",
-            "value": 1
-        },
-        {
             "param": "POS_OUT_SENSORS",
             "value": [2, 24, 68, 90, 105]
         },
@@ -39,10 +35,6 @@
             "value": 0
         },
         {
-            "param": "RAND_FLOW_CONTROLLER",
-            "value": 1
-        },
-        {
             "param": "POS_OUT_SENSORS",
             "value": [2, 24, 68, 90, 105]
         },
@@ -63,10 +55,6 @@
         {
             "param": "POLICY",
             "value": 0
-        },
-        {
-            "param": "RAND_FLOW_CONTROLLER",
-            "value": 1
         },
         {
             "param": "POS_OUT_SENSORS",
