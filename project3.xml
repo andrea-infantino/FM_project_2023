@@ -37,8 +37,8 @@ broadcast chan switch_branch;
 
 typedef int[0, 3] element; // 0 = only slot; 1 = station; 2 = in sensor; 3 = out sensor
 
-element system_structure[N_SLOTS];
-int[0, N_SLOTS-1] station_slots[N_STATIONS];
+meta element system_structure[N_SLOTS];
+meta int[0, N_SLOTS-1] station_slots[N_STATIONS];
 
 bool system_state[N_SLOTS];    // true if the piece is in that position
 bool in_sensors_state[N_IN_SENSORS]; // true = locked; false = unlocked;
@@ -684,7 +684,7 @@ out_sensors_state[3] == true</label>
  */
 
 const int SPEED = 1;
-const int N_DISKS = 2;
+const int N_DISKS = 3;
 const int[0, 4] POLICY = 0;
 
 const int POS_OUT_SENSORS[N_OUT_SENSORS] = {2, 24, 68, 90, 105};
