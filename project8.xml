@@ -33,9 +33,9 @@ broadcast chan switch_branch;
  * Variables
  */
 
-bool system_state[SLOTS];
-bool in_sensors_state[IN_SENSORS]; // true = locked; false = unlocked;
-bool out_sensors_state[OUT_SENSORS]; // true = queue is full; false = can send piece;
+bool system_state[SLOTS];              // true = busy; false = free;
+bool in_sensors_state[IN_SENSORS];     // true = locked; false = unlocked;
+bool out_sensors_state[OUT_SENSORS];   // true = queue is full; false = can send piece;
 
 /**
  * Functions
@@ -336,100 +336,105 @@ bool next_slot_is_free() {
     }
     return false;
 }</declaration>
-		<location id="id13" x="-8" y="-255">
-			<name x="-18" y="-289">Start</name>
+		<location id="id13" x="-289" y="-416">
+			<name x="-299" y="-450">Start</name>
 		</location>
-		<location id="id14" x="-8" y="-136">
-			<name x="0" y="-161">Idle</name>
+		<location id="id14" x="-289" y="-297">
+			<name x="-281" y="-322">Idle</name>
 		</location>
-		<location id="id15" x="467" y="68">
-			<name x="484" y="60">Pre_processing</name>
+		<location id="id15" x="501" y="-297">
+			<name x="518" y="-305">Pre_processing</name>
 		</location>
-		<location id="id16" x="-161" y="67">
-			<name x="-195" y="76">Processing</name>
-			<label kind="invariant" x="-246" y="93">x &lt;= elaboration_time</label>
+		<location id="id16" x="-442" y="-94">
+			<name x="-476" y="-85">Processing</name>
+			<label kind="invariant" x="-527" y="-68">x &lt;= elaboration_time</label>
 		</location>
-		<location id="id17" x="-569" y="68">
-			<name x="-620" y="52">Done</name>
+		<location id="id17" x="-850" y="-93">
+			<name x="-901" y="-109">Done</name>
 		</location>
-		<location id="id18" x="467" y="-136">
-			<name x="457" y="-170">C1</name>
+		<location id="id18" x="136" y="-297">
+			<name x="126" y="-331">C1</name>
 			<committed/>
 		</location>
-		<location id="id19" x="-569" y="-136">
-			<name x="-579" y="-170">C3</name>
+		<location id="id19" x="-850" y="-297">
+			<name x="-860" y="-331">C3</name>
 			<committed/>
 		</location>
-		<location id="id20" x="161" y="68">
-			<name x="151" y="34">C2</name>
+		<location id="id20" x="136" y="-93">
+			<name x="127" y="-76">C2</name>
 			<committed/>
 		</location>
 		<init ref="id13"/>
 		<transition>
+			<source ref="id18"/>
+			<target ref="id20"/>
+			<label kind="guard" x="17" y="-195">slot_busy(slot_id)</label>
+		</transition>
+		<transition>
 			<source ref="id20"/>
 			<target ref="id15"/>
-			<label kind="guard" x="195" y="93">!slot_busy(slot_id)</label>
-			<nail x="187" y="93"/>
-			<nail x="450" y="93"/>
+			<label kind="guard" x="280" y="-85">!slot_busy(slot_id)</label>
+			<nail x="501" y="-93"/>
 		</transition>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id20"/>
-			<label kind="synchronisation" x="187" y="42">tick?</label>
+			<label kind="synchronisation" x="263" y="-204">tick?</label>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id16"/>
-			<label kind="guard" x="-136" y="25">slot_busy(slot_id)</label>
-			<label kind="assignment" x="-136" y="42">x = 0</label>
+			<label kind="guard" x="-238" y="-93">slot_busy(slot_id)</label>
+			<label kind="assignment" x="-238" y="-76">x = 0</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id17"/>
-			<label kind="guard" x="-535" y="-42">out_sensors_state[out_sensor_id] || !next_slot_is_free()</label>
-			<nail x="-543" y="-110"/>
-			<nail x="-543" y="51"/>
+			<label kind="guard" x="-816" y="-203">out_sensors_state[out_sensor_id] || !next_slot_is_free()</label>
+			<nail x="-824" y="-271"/>
+			<nail x="-824" y="-110"/>
 		</transition>
 		<transition>
 			<source ref="id18"/>
 			<target ref="id14"/>
-			<label kind="guard" x="59" y="-119">!slot_busy(first_proc_slot)</label>
-			<nail x="425" y="-93"/>
-			<nail x="25" y="-93"/>
+			<label kind="guard" x="-238" y="-255">!slot_busy(first_proc_slot) &amp;&amp; !slot_busy(slot_id)</label>
+			<label kind="synchronisation" x="-238" y="-238">station_free[station_id]!</label>
+			<nail x="94" y="-254"/>
+			<nail x="-256" y="-254"/>
 		</transition>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id18"/>
-			<label kind="synchronisation" x="204" y="-161">tick?</label>
+			<label kind="synchronisation" x="-77" y="-322">tick?</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id14"/>
-			<label kind="guard" x="-544" y="-178">!out_sensors_state[out_sensor_id] &amp;&amp; next_slot_is_free()</label>
-			<label kind="synchronisation" x="-544" y="-195">station_free[station_id]!</label>
-			<label kind="assignment" x="-544" y="-161">complete_elaboration()</label>
+			<label kind="guard" x="-825" y="-339">!out_sensors_state[out_sensor_id] &amp;&amp; next_slot_is_free()</label>
+			<label kind="synchronisation" x="-825" y="-356">station_free[station_id]!</label>
+			<label kind="assignment" x="-825" y="-322">complete_elaboration()</label>
 		</transition>
 		<transition>
 			<source ref="id18"/>
 			<target ref="id15"/>
-			<label kind="guard" x="476" y="-59">slot_busy(first_proc_slot)</label>
-			<label kind="synchronisation" x="476" y="-42">station_busy[station_id]!</label>
+			<label kind="guard" x="170" y="-323">slot_busy(first_proc_slot) &amp;&amp; !slot_busy(slot_id)</label>
+			<label kind="synchronisation" x="170" y="-340">station_busy[station_id]!</label>
 		</transition>
 		<transition>
 			<source ref="id17"/>
 			<target ref="id19"/>
-			<label kind="synchronisation" x="-620" y="-42">tick?</label>
+			<label kind="synchronisation" x="-901" y="-203">tick?</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
 			<target ref="id17"/>
-			<label kind="guard" x="-509" y="68">x &gt;= elaboration_time</label>
+			<label kind="guard" x="-790" y="-93">x &gt;= elaboration_time</label>
 		</transition>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id14"/>
-			<label kind="synchronisation" x="0" y="-229">initialize?</label>
-			<label kind="assignment" x="0" y="-212">init_station()</label>
+			<label kind="synchronisation" x="-281" y="-390">initialize?</label>
+			<label kind="assignment" x="-281" y="-373">init_station()</label>
 		</transition>
 	</template>
 	<template>
@@ -597,7 +602,7 @@ const int SPEED =                                 /***/     1                   
                                                   /***     ID of the Policy followed by the Flow Controller:                      ***/ 
 const int[0, 4] POLICY =                          /***/     0                                                                   ;/***/
                                                   /***     Number of Disks:                                                       ***/
-const int[1, 12] DISKS =                          /***/     3                                                                  ;/***/
+const int[1, 12] DISKS =                          /***/     12                                                                  ;/***/
                                                   /***/                                                                          /***/
                                                   /***     Positions of the 5 Out-Sensors:                                        ***/
 const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {     /***/     2    /** ID: 0 (1st) */                                             ,/***/
@@ -638,7 +643,7 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 			<comment>------ Mandatory properties ------</comment>
 		</query>
 		<query>
-			<formula>A[] (initializer.run_state imply ((sum(i : SlotId) system_state[i] == true) == DISKS))</formula>
+			<formula>A[] (initializer.run_state imply ((sum(i : SlotId) slot_busy(i)) == DISKS))</formula>
 			<comment>No spawn or disappear of disk
 
 Verifies properties:
@@ -646,7 +651,7 @@ P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
 		</query>
 		<query>
-			<formula>A[] forall(id : StationId) (station(id).Processing imply (system_state[POS_STATIONS[id] - 1] == false &amp;&amp; system_state[POS_STATIONS[id]] == true))</formula>
+			<formula>A[] forall(id : StationId) (station(id).Processing imply (!slot_busy(POS_STATIONS[id] - 1) &amp;&amp; slot_busy(POS_STATIONS[id])))</formula>
 			<comment>If a station is processing, no other piece is waiting to enter immediately before
 
 Verifies property:
@@ -698,6 +703,10 @@ P4. the plant never incurs in deadlock.</comment>
 	inSensor(4).Locked + 4,
 	inSensor(5).Locked
 }</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>simulate[&lt;=200] { system_state[17], station(0).Idle + 2 }</formula>
 			<comment></comment>
 		</query>
 		<query>
