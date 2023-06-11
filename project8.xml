@@ -386,6 +386,24 @@ bool next_slot_is_free() {
 	</template>
 	<template>
 		<name>FlowController_0</name>
+		<parameter>const int[0, 109] pos_out_sensor_2, const int[0, 109] pos_out_sensor_3</parameter>
+		<declaration>bool queue_2_full() {
+    int i = POS_IN_SENSORS[3];
+    while (i &gt;= pos_out_sensor_2) {
+        if (!slot_busy[i]) return false;
+        i--;
+    }
+    return true;
+}
+
+bool queue_4_full() {
+    int i = POS_IN_SENSORS[4];
+    while (i &gt;= pos_out_sensor_3) {
+        if (!slot_busy[i]) return false;
+        i--;
+    }
+    return true;
+}</declaration>
 		<location id="id39" x="-2244" y="-2116">
 			<name x="-2346" y="-2150">Not_Taken_0</name>
 		</location>
@@ -415,7 +433,7 @@ bool next_slot_is_free() {
 		<transition id="id46">
 			<source ref="id41"/>
 			<target ref="id42"/>
-			<label kind="guard" x="-1980" y="-2057">slot_busy[POS_STATIONS[3]] &amp;&amp; out_sensors_state[3]</label>
+			<label kind="guard" x="-1980" y="-2057">slot_busy[POS_STATIONS[3]] &amp;&amp; queue_4_full()</label>
 			<label kind="synchronisation" x="-1980" y="-2074">tick?</label>
 		</transition>
 		<transition id="id47">
@@ -426,7 +444,7 @@ bool next_slot_is_free() {
 		<transition id="id48">
 			<source ref="id39"/>
 			<target ref="id40"/>
-			<label kind="guard" x="-2303" y="-2210">out_sensors_state[2]</label>
+			<label kind="guard" x="-2235" y="-2210">queue_2_full()</label>
 			<label kind="synchronisation" x="-2176" y="-2193">tick?</label>
 		</transition>
 	</template>
@@ -551,7 +569,8 @@ conveyorBelt = ConveyorBelt();
 station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id]);
 inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id]);
 outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
-flowController = FlowController_0();
+flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);
+// flowController = FlowController_1();
 
 system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 </system>
