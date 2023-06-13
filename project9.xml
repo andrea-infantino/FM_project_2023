@@ -33,7 +33,7 @@ broadcast chan switch_branch;
  * Variables
  */
 
-bool slot_busy[SLOTS];              // true = busy; false = free;
+bool slot_busy[SLOTS];                 // true = busy; false = free;
 bool in_sensors_state[IN_SENSORS];     // true = locked; false = unlocked;
 bool out_sensors_state[OUT_SENSORS];   // true = queue is full; false = can send piece;
 bool updateSensor = true;
@@ -224,11 +224,11 @@ stochasticProcessingTime = f()</label>
 			<name x="-4420" y="-4012">C2</name>
 		</location>
 		<location id="id20" x="-4607" y="-3859">
-			<name x="-4633" y="-3842">Locked</name>
+			<name x="-4675" y="-3842">Locked</name>
 			<committed/>
 		</location>
-		<location id="id21" x="-4607" y="-4250">
-			<name x="-4617" y="-4284">Start</name>
+		<location id="id21" x="-4607" y="-4258">
+			<name x="-4617" y="-4292">Start</name>
 		</location>
 		<location id="id22" x="-4607" y="-4140">
 			<name x="-4590" y="-4173">Unlocked</name>
@@ -237,32 +237,32 @@ stochasticProcessingTime = f()</label>
 		<location id="id23" x="-4216" y="-3978">
 			<name x="-4199" y="-4012">C1</name>
 		</location>
-		<location id="id24" x="-5032" y="-4046">
-			<name x="-5049" y="-4080">C4</name>
+		<location id="id24" x="-4981" y="-4046">
+			<name x="-5015" y="-4080">C4</name>
 		</location>
-		<location id="id25" x="-4845" y="-4046">
-			<name x="-4855" y="-4080">C3</name>
+		<location id="id25" x="-4811" y="-4046">
+			<name x="-4845" y="-4080">C3</name>
 		</location>
-		<branchpoint id="id26" x="-4947" y="-3944"/>
+		<branchpoint id="id26" x="-4896" y="-3944"/>
 		<branchpoint id="id27" x="-4301" y="-4080"/>
 		<init ref="id21"/>
 		<transition id="id28">
 			<source ref="id25"/>
 			<target ref="id22"/>
-			<label kind="guard" x="-4819" y="-4003">updateSensor</label>
-			<label kind="synchronisation" x="-4819" y="-4037">tick?</label>
-			<label kind="assignment" x="-4819" y="-4020">in_sensors_state[id] = false</label>
+			<label kind="guard" x="-4717" y="-4080">updateSensor</label>
+			<label kind="synchronisation" x="-4658" y="-4097">tick?</label>
+			<label kind="assignment" x="-4853" y="-4114">in_sensors_state[id] = false</label>
 			<nail x="-4607" y="-4046"/>
 		</transition>
 		<transition id="id29">
 			<source ref="id26"/>
 			<target ref="id24"/>
-			<label kind="probability" x="-5100" y="-3978">probWeight_1</label>
+			<label kind="probability" x="-5057" y="-3986">probWeight_1</label>
 		</transition>
 		<transition id="id30">
 			<source ref="id26"/>
 			<target ref="id25"/>
-			<label kind="probability" x="-4896" y="-3978">probWeight_2</label>
+			<label kind="probability" x="-4836" y="-3986">probWeight_2</label>
 		</transition>
 		<transition id="id31">
 			<source ref="id19"/>
@@ -275,7 +275,7 @@ stochasticProcessingTime = f()</label>
 		<transition id="id32" controllable="false">
 			<source ref="id20"/>
 			<target ref="id26"/>
-			<nail x="-4947" y="-3859"/>
+			<nail x="-4896" y="-3859"/>
 		</transition>
 		<transition id="id33">
 			<source ref="id27"/>
@@ -295,9 +295,9 @@ stochasticProcessingTime = f()</label>
 		<transition id="id36">
 			<source ref="id24"/>
 			<target ref="id22"/>
-			<label kind="synchronisation" x="-4981" y="-4182">station_free[station_controlled]?</label>
-			<label kind="assignment" x="-4939" y="-4165">in_sensors_state[id] = false</label>
-			<nail x="-5032" y="-4140"/>
+			<label kind="synchronisation" x="-4930" y="-4182">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-4930" y="-4165">in_sensors_state[id] = false</label>
+			<nail x="-4981" y="-4140"/>
 		</transition>
 		<transition id="id37">
 			<source ref="id23"/>
@@ -309,105 +309,106 @@ stochasticProcessingTime = f()</label>
 		<transition id="id38">
 			<source ref="id21"/>
 			<target ref="id22"/>
-			<label kind="synchronisation" x="-4598" y="-4225">initialize?</label>
-			<label kind="assignment" x="-4598" y="-4208">in_sensors_state[id] = false</label>
+			<label kind="synchronisation" x="-4598" y="-4224">initialize?</label>
+			<label kind="assignment" x="-4598" y="-4207">in_sensors_state[id] = false</label>
 		</transition>
 	</template>
 	<template>
 		<name>OutSensor</name>
 		<parameter>const OutSensorId id, const SlotId position, const int probWeight_1, const int probWeight_2</parameter>
 		<location id="id39" x="-127" y="-349">
-			<name x="-118" y="-374">Unlocked</name>
+			<name x="-110" y="-382">Unlocked</name>
 			<committed/>
 		</location>
-		<location id="id40" x="-127" y="-68">
-			<name x="-161" y="-43">Locked</name>
+		<location id="id40" x="-127" y="-25">
+			<name x="-195" y="-8">Locked</name>
 			<committed/>
 		</location>
-		<location id="id41" x="-127" y="-459">
-			<name x="-137" y="-493">Start</name>
+		<location id="id41" x="-127" y="-467">
+			<name x="-137" y="-501">Start</name>
 		</location>
-		<location id="id42" x="34" y="-272">
-			<name x="24" y="-306">C2</name>
+		<location id="id42" x="161" y="-170">
+			<name x="127" y="-204">C2</name>
 		</location>
-		<location id="id43" x="468" y="-255">
-			<name x="458" y="-289">C1</name>
+		<location id="id43" x="357" y="-170">
+			<name x="365" y="-204">C1</name>
 		</location>
-		<location id="id44" x="-586" y="-204">
-			<name x="-620" y="-238">C5</name>
+		<location id="id44" x="-569" y="-204">
+			<name x="-603" y="-238">C5</name>
 		</location>
-		<location id="id45" x="-339" y="-204">
-			<name x="-349" y="-238">C4</name>
+		<location id="id45" x="-399" y="-204">
+			<name x="-433" y="-238">C4</name>
 		</location>
-		<branchpoint id="id46" x="-484" y="-68"/>
-		<branchpoint id="id47" x="264" y="-348"/>
+		<branchpoint id="id46" x="-484" y="-127"/>
+		<branchpoint id="id47" x="263" y="-263"/>
 		<init ref="id41"/>
 		<transition id="id48">
 			<source ref="id45"/>
 			<target ref="id39"/>
-			<label kind="guard" x="-238" y="-263">updateSensor</label>
-			<label kind="synchronisation" x="-178" y="-297">tick?</label>
-			<label kind="assignment" x="-382" y="-280">out_sensors_state[id] = false</label>
-			<nail x="-127" y="-204"/>
+			<label kind="guard" x="-239" y="-263">updateSensor</label>
+			<label kind="synchronisation" x="-179" y="-297">tick?</label>
+			<label kind="assignment" x="-383" y="-280">out_sensors_state[id] = false</label>
+			<nail x="-128" y="-204"/>
 		</transition>
 		<transition id="id49">
 			<source ref="id46"/>
 			<target ref="id45"/>
-			<label kind="probability" x="-416" y="-128">probWeight_2</label>
+			<label kind="probability" x="-425" y="-161">probWeight_2</label>
 		</transition>
 		<transition id="id50">
 			<source ref="id46"/>
 			<target ref="id44"/>
-			<label kind="probability" x="-645" y="-128">probWeight_1</label>
+			<label kind="probability" x="-637" y="-161">probWeight_1</label>
 		</transition>
 		<transition id="id51" controllable="false">
 			<source ref="id40"/>
 			<target ref="id46"/>
+			<nail x="-484" y="-25"/>
 		</transition>
 		<transition id="id52">
 			<source ref="id43"/>
 			<target ref="id40"/>
-			<label kind="guard" x="-109" y="-102">updateSensor</label>
-			<label kind="synchronisation" x="136" y="-60">tick?</label>
-			<label kind="assignment" x="136" y="-43">out_sensors_state[id] = true</label>
-			<nail x="468" y="-68"/>
+			<label kind="guard" x="34" y="0">updateSensor</label>
+			<label kind="synchronisation" x="34" y="17">tick?</label>
+			<label kind="assignment" x="34" y="-17">out_sensors_state[id] = true</label>
+			<nail x="357" y="-25"/>
 		</transition>
 		<transition id="id53">
 			<source ref="id47"/>
 			<target ref="id43"/>
-			<label kind="probability" x="366" y="-323">probWeight_2</label>
+			<label kind="probability" x="314" y="-246">probWeight_2</label>
 		</transition>
 		<transition id="id54">
 			<source ref="id47"/>
 			<target ref="id42"/>
-			<label kind="probability" x="43" y="-331">probWeight_1</label>
+			<label kind="probability" x="102" y="-246">probWeight_1</label>
 		</transition>
 		<transition id="id55" controllable="false">
 			<source ref="id39"/>
 			<target ref="id47"/>
+			<nail x="263" y="-348"/>
 		</transition>
 		<transition id="id56">
 			<source ref="id44"/>
 			<target ref="id39"/>
-			<label kind="guard" x="-501" y="-382">!slot_busy[position]</label>
-			<label kind="synchronisation" x="-501" y="-416">tick?</label>
-			<label kind="assignment" x="-501" y="-399">out_sensors_state[id] = false</label>
-			<nail x="-586" y="-348"/>
+			<label kind="guard" x="-459" y="-374">!slot_busy[position]</label>
+			<label kind="synchronisation" x="-459" y="-408">tick?</label>
+			<label kind="assignment" x="-459" y="-391">out_sensors_state[id] = false</label>
+			<nail x="-569" y="-348"/>
 		</transition>
 		<transition id="id57">
 			<source ref="id42"/>
 			<target ref="id40"/>
-			<label kind="guard" x="-110" y="-136">slot_busy[position]</label>
-			<label kind="synchronisation" x="-110" y="-153">tick?</label>
-			<label kind="assignment" x="-110" y="-119">out_sensors_state[id] = true</label>
-			<nail x="34" y="-170"/>
+			<label kind="guard" x="-110" y="-110">slot_busy[position]</label>
+			<label kind="synchronisation" x="-110" y="-127">tick?</label>
+			<label kind="assignment" x="-110" y="-93">out_sensors_state[id] = true</label>
 			<nail x="-127" y="-170"/>
 		</transition>
 		<transition id="id58">
 			<source ref="id41"/>
 			<target ref="id39"/>
-			<label kind="synchronisation" x="-118" y="-433">initialize?</label>
-			<label kind="assignment" x="-119" y="-416">out_sensors_state[id] = false</label>
+			<label kind="synchronisation" x="-110" y="-433">initialize?</label>
+			<label kind="assignment" x="-111" y="-416">out_sensors_state[id] = false</label>
 		</transition>
 	</template>
 	<template>
@@ -489,39 +490,40 @@ void update(){
 		<transition id="id62">
 			<source ref="id61"/>
 			<target ref="id61"/>
-			<label kind="synchronisation" x="-2865" y="-2890">switch_branch?</label>
-			<label kind="assignment" x="-2865" y="-2873">take_branch = !take_branch</label>
-			<nail x="-2865" y="-2847"/>
-			<nail x="-2814" y="-2847"/>
+			<label kind="synchronisation" x="-2788" y="-2830">switch_branch?</label>
+			<label kind="assignment" x="-2788" y="-2813">take_branch = !take_branch</label>
+			<nail x="-2796" y="-2779"/>
+			<nail x="-2796" y="-2839"/>
 		</transition>
 		<transition id="id63">
 			<source ref="id61"/>
 			<target ref="id59"/>
-			<label kind="synchronisation" x="-3060" y="-2805">tick?</label>
+			<label kind="synchronisation" x="-3060" y="-2737">tick?</label>
 			<label kind="assignment" x="-3060" y="-2779">update(),
-updateSensor = false</label>
+updateSensor = true</label>
 			<nail x="-2873" y="-2779"/>
 			<nail x="-3068" y="-2779"/>
 		</transition>
 		<transition id="id64">
 			<source ref="id59"/>
 			<target ref="id61"/>
-			<label kind="synchronisation" x="-3085" y="-2856">tick?</label>
-			<label kind="assignment" x="-3085" y="-2839">updateSensor = true</label>
+			<label kind="synchronisation" x="-3051" y="-2856">tick?</label>
+			<label kind="assignment" x="-3051" y="-2839">updateSensor = false</label>
 		</transition>
 		<transition id="id65">
 			<source ref="id59"/>
 			<target ref="id59"/>
-			<label kind="synchronisation" x="-3264" y="-2830">switch_branch?</label>
-			<label kind="assignment" x="-3366" y="-2813">take_branch = !take_branch</label>
+			<label kind="synchronisation" x="-3272" y="-2839">switch_branch?</label>
+			<label kind="assignment" x="-3374" y="-2822">take_branch = !take_branch</label>
 			<nail x="-3145" y="-2788"/>
 			<nail x="-3145" y="-2847"/>
 		</transition>
 		<transition id="id66">
 			<source ref="id60"/>
 			<target ref="id59"/>
-			<label kind="synchronisation" x="-3094" y="-2924">initialize?</label>
-			<label kind="assignment" x="-3094" y="-2907">take_branch = false</label>
+			<label kind="synchronisation" x="-3094" y="-2907">initialize?</label>
+			<label kind="assignment" x="-3094" y="-2890">take_branch = false,
+updateSensor = false</label>
 		</transition>
 	</template>
 	<template>
@@ -704,20 +706,20 @@ const double STD_DEV_STATIONS[STATIONS] = {          /***/     1.0  /** ID: 0 (1
                                                      /***/     1.0  /** ID: 5 (6nd)*/                                             };/***/
                                                      /***/                                                                          /***/
                                                      /***     Probabilistic Error of the 6 In-Sensors:                               ***/            
-const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     10    /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     10    /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     10    /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     10    /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     10    /** ID: 4 (5th)*/                                              ,/***/
-                                                     /***/     10    /** ID: 5 (6nd)*/                                             };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Probabilistic Right of the 6 In-Sensors:                               ***/            
-const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     1    /** ID: 0 (1st)*/                                              ,/***/
+const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     1    /** ID: 0 (1st)*/                                              ,/***/
                                                      /***/     1    /** ID: 1 (2nd)*/                                              ,/***/
                                                      /***/     1    /** ID: 2 (3rd)*/                                              ,/***/
                                                      /***/     1    /** ID: 3 (4th)*/                                              ,/***/
                                                      /***/     1    /** ID: 4 (5th)*/                                              ,/***/
                                                      /***/     1    /** ID: 5 (6nd)*/                                             };/***/
+                                                     /***/                                                                          /***/
+                                                     /***     Probabilistic Right of the 6 In-Sensors:                               ***/            
+const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     10    /** ID: 0 (1st)*/                                              ,/***/
+                                                     /***/     10    /** ID: 1 (2nd)*/                                              ,/***/
+                                                     /***/     10    /** ID: 2 (3rd)*/                                              ,/***/
+                                                     /***/     10    /** ID: 3 (4th)*/                                              ,/***/
+                                                     /***/     10    /** ID: 4 (5th)*/                                              ,/***/
+                                                     /***/     10    /** ID: 5 (6nd)*/                                             };/***/
                                                      /***/                                                                          /***/
                                                      /***     Probabilistic Error of the 5 Out-Sensors:                              ***/            
 const int OUT_SENSORS_WEIGHT_ERR[OUT_SENSORS] = {    /***/     1    /** ID: 0 (1st)*/                                              ,/***/
@@ -733,7 +735,6 @@ const int OUT_SENSORS_WEIGHT_RIGHT[OUT_SENSORS] = {  /***/     3    /** ID: 0 (1
                                                      /***/     3    /** ID: 3 (4th)*/                                              ,/***/
                                                      /***/     3    /** ID: 4 (5th)*/                                             };/***/
                                                      /**********************************************************************************/
-
 
 /**
  * System definition
@@ -767,7 +768,7 @@ P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id : StationId) (station(id).Processing and (!slot_busy[POS_STATIONS[id] - 1] &amp;&amp; slot_busy[POS_STATIONS[id]]))))</formula>
+			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id : StationId) (station(id).Processing &amp;&amp; !slot_busy[POS_STATIONS[id] - 1])))</formula>
 			<comment>If a station is processing, no other piece is waiting to enter immediately before
 
 Verifies property:
@@ -781,38 +782,44 @@ Verifies property:
 P3. No queue ever exceeds the maximum allowed length.</comment>
 		</query>
 		<query>
+			<formula>Pr[&lt;=10000] (&lt;&gt; ((forall(id_s : StationId) (station(id_s).Processing or station(id_s).Done)) &amp;&amp; 
+		 (forall(id_o : OutSensorId) (outSensor(id_o).Locked)) &amp;&amp; 
+		 (forall(id_i : InSensorId) (inSensor(id_i).Locked))))</formula>
+			<comment>Deadlock</comment>
+		</query>
+		<query>
 			<formula/>
 			<comment>------ Simulations ------</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	station(0).Pre_processing + station(0).C2 + station(0).Processing * 2 + (station(0).Done + station(0).C3) * 3 + 4*5,
-	station(1).Pre_processing + station(1).C2 + station(1).Processing * 2 + (station(1).Done + station(1).C3) * 3 + 4*4,
-	station(2).Pre_processing + station(2).C2 + station(2).Processing * 2 + (station(2).Done + station(2).C3) * 3 + 4*3,
-	station(3).Pre_processing + station(3).C2 + station(3).Processing * 2 + (station(3).Done + station(3).C3) * 3 + 4*2,
-	station(4).Pre_processing + station(4).C2 + station(4).Processing * 2 + (station(4).Done + station(4).C3) * 3 + 4,
-	station(5).Pre_processing + station(5).C2 + station(5).Processing * 2 + (station(5).Done + station(5).C3) * 3
+	station(0).Pre_processing + station(0).Processing * 2 + station(0).Done * 3 + 4*5,
+	station(1).Pre_processing + station(1).Processing * 2 + station(1).Done * 3 + 4*4,
+	station(2).Pre_processing + station(2).Processing * 2 + station(2).Done * 3 + 4*3,
+	station(3).Pre_processing + station(3).Processing * 2 + station(3).Done * 3 + 4*2,
+	station(4).Pre_processing + station(4).Processing * 2 + station(4).Done * 3 + 4,
+	station(5).Pre_processing + station(5).Processing * 2 + station(5).Done * 3
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	outSensor(0).Locked + outSensor(0).C2 + 4*4,
-	outSensor(1).Locked + outSensor(1).C2 + 4*3,
-	outSensor(2).Locked + outSensor(2).C2 + 4*2,
-	outSensor(3).Locked + outSensor(3).C2 + 4,
-	outSensor(4).Locked + outSensor(4).C2
+	outSensor(0).Locked + 4*4,
+	outSensor(1).Locked + 4*3,
+	outSensor(2).Locked + 4*2,
+	outSensor(3).Locked + 4,
+	outSensor(4).Locked
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	inSensor(0).Locked + inSensor(0).C3 + inSensor(0).C4 + 4*5,
-	inSensor(1).Locked + inSensor(1).C3 + inSensor(1).C4 + 4*4,
-	inSensor(2).Locked + inSensor(2).C3 + inSensor(2).C4 + 4*3,
-	inSensor(3).Locked + inSensor(3).C3 + inSensor(3).C4 + 4*2,
-	inSensor(4).Locked + inSensor(4).C3 + inSensor(4).C4 + 4,
-	inSensor(5).Locked + inSensor(5).C3 + inSensor(5).C4
+	inSensor(0).Locked + 4*5,
+	inSensor(1).Locked + 4*4,
+	inSensor(2).Locked + 4*3,
+	inSensor(3).Locked + 4*2,
+	inSensor(4).Locked + 4,
+	inSensor(5).Locked
 }</formula>
 			<comment/>
 		</query>
