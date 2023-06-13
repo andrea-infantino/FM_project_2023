@@ -38,9 +38,6 @@ bool slot_busy[SLOTS];                 // true = busy; false = free;
 bool in_sensors_state[IN_SENSORS];     // true = locked; false = unlocked;
 bool out_sensors_state[OUT_SENSORS];   // true = queue is full; false = can send piece;
 
-
-
-
 /**
  * Verification
  */
@@ -53,41 +50,225 @@ bool check_queue(const OutSensorId id, const SlotId position) {
     return false;
 }</declaration>
 	<template>
+		<name>Initializer</name>
+		<parameter>const int speed, const int[1, 12] n_disks</parameter>
+		<declaration>clock x;
+
+/**    Set the entire System on the initial configuration    **/
+void init_system() {
+    SlotId i = POS_IN_SENSORS[0];
+    for(d : int[0, n_disks-1]) {
+        slot_busy[i-d] = true;
+    }
+}
+</declaration>
+		<location id="id0" x="-178" y="-170">
+			<committed/>
+		</location>
+		<location id="id1" x="-178" y="-34">
+			<name x="-280" y="-51">run_state</name>
+			<label kind="invariant" x="-161" y="-42">x &lt;= speed</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id2">
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-212" y="25">x &gt;= speed</label>
+			<label kind="synchronisation" x="-195" y="42">tick!</label>
+			<label kind="assignment" x="-195" y="59">x = 0</label>
+			<nail x="-144" y="25"/>
+			<nail x="-204" y="25"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-170" y="-136">initialize!</label>
+			<label kind="assignment" x="-170" y="-119">x = 0,
+init_system()</label>
+		</transition>
+	</template>
+	<template>
+		<name>Station</name>
+		<parameter>const StationId station_id, const SlotId slot_id, const int elaboration_time, const SlotId in_sensor_slot, const OutSensorId out_sensor_id</parameter>
+		<declaration>clock x;
+SlotId first_proc_slot;
+
+/**    Set the Station on the initial configuration    **/
+void init_station() {
+    if(in_sensor_slot == CONTROLLER_POS)
+        first_proc_slot = BRANCH_FIRST_POS;
+    else
+        first_proc_slot = in_sensor_slot + 1;
+}
+
+/**    Produce a disk and place it on the next slot    **/
+void complete_elaboration() {
+    slot_busy[slot_id] = false;
+    if (slot_id == SLOTS-1)
+        slot_busy[0] = true;
+    else
+        slot_busy[slot_id + 1] = true;
+}
+
+/**    Check whether the next slot is free to receive a disk or not    **/
+bool next_slot_is_free() {
+    if (slot_id == SLOTS-1) {
+        if (!slot_busy[0])
+            return true;
+    }
+    else {
+        if (!slot_busy[slot_id+1])
+            return true;
+    }
+    return false;
+}</declaration>
+		<location id="id4" x="-357" y="-782">
+			<name x="-416" y="-816">Start</name>
+		</location>
+		<location id="id5" x="-357" y="-663">
+			<name x="-416" y="-697">Idle</name>
+		</location>
+		<location id="id6" x="153" y="-348">
+			<name x="178" y="-340">Pre_processing</name>
+		</location>
+		<location id="id7" x="-357" y="-348">
+			<name x="-391" y="-339">Processing</name>
+			<label kind="invariant" x="-442" y="-322">x &lt;= elaboration_time</label>
+		</location>
+		<location id="id8" x="-867" y="-347">
+			<name x="-926" y="-331">Done</name>
+		</location>
+		<location id="id9" x="153" y="-663">
+			<name x="170" y="-697">C1</name>
+			<committed/>
+		</location>
+		<location id="id10" x="-867" y="-663">
+			<name x="-901" y="-697">C2</name>
+			<committed/>
+		</location>
+		<init ref="id4"/>
+		<transition id="id11">
+			<source ref="id8"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-858" y="-527">!out_sensors_state[out_sensor_id] &amp;&amp; next_slot_is_free()</label>
+			<label kind="synchronisation" x="-858" y="-510">tick?</label>
+		</transition>
+		<transition id="id12">
+			<source ref="id5"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-297" y="-688">slot_busy[first_proc_slot] &amp;&amp; !slot_busy[slot_id]</label>
+			<label kind="synchronisation" x="-297" y="-705">tick?</label>
+		</transition>
+		<transition id="id13">
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-348" y="-527">slot_busy[slot_id]</label>
+			<label kind="synchronisation" x="-348" y="-493">tick?</label>
+			<label kind="assignment" x="-348" y="-510">x = 0</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-161" y="-340">slot_busy[slot_id]</label>
+			<label kind="synchronisation" x="-161" y="-306">tick?</label>
+			<label kind="assignment" x="-161" y="-323">x = 0</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id10"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-714" y="-705">station_free[station_id]!</label>
+			<label kind="assignment" x="-714" y="-688">complete_elaboration()</label>
+		</transition>
+		<transition id="id16">
+			<source ref="id9"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="161" y="-527">station_busy[station_id]!</label>
+		</transition>
+		<transition id="id17">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-722" y="-340">x &gt;= elaboration_time</label>
+		</transition>
+		<transition id="id18">
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-349" y="-756">initialize?</label>
+			<label kind="assignment" x="-349" y="-739">init_station()</label>
+		</transition>
+	</template>
+	<template>
+		<name>InSensor</name>
+		<parameter>const InSensorId id, const StationId station_controlled</parameter>
+		<location id="id19" x="-34" y="-365">
+		</location>
+		<location id="id20" x="-34" y="-255">
+			<name x="-8" y="-280">Unlocked</name>
+		</location>
+		<location id="id21" x="-34" y="-59">
+			<name x="-8" y="-51">Locked</name>
+		</location>
+		<init ref="id19"/>
+		<transition id="id22">
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-433" y="-178">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-391" y="-161">in_sensors_state[id] = false</label>
+			<nail x="-145" y="-110"/>
+			<nail x="-145" y="-204"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="85" y="-178">station_busy[station_controlled]?</label>
+			<label kind="assignment" x="85" y="-161">in_sensors_state[id] = true</label>
+			<nail x="76" y="-204"/>
+			<nail x="76" y="-110"/>
+		</transition>
+		<transition id="id24">
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-25" y="-331">initialize?</label>
+			<label kind="assignment" x="-25" y="-314">in_sensors_state[id] = false</label>
+		</transition>
+	</template>
+	<template>
 		<name>OutSensor</name>
 		<parameter>const OutSensorId id, const SlotId position</parameter>
 		<declaration>
 </declaration>
-		<location id="id0" x="-34" y="-60">
-			<name x="-25" y="-85">Unlocked</name>
+		<location id="id25" x="-34" y="-60">
+			<name x="-8" y="-85">Unlocked</name>
 		</location>
-		<location id="id1" x="-34" y="136">
-			<name x="-17" y="136">Locked</name>
+		<location id="id26" x="-34" y="136">
+			<name x="0" y="136">Locked</name>
 		</location>
-		<location id="id2" x="-34" y="-170">
+		<location id="id27" x="-34" y="-170">
 			<name x="-44" y="-204">Start</name>
 		</location>
-		<init ref="id2"/>
-		<transition id="id3">
-			<source ref="id1"/>
-			<target ref="id0"/>
-			<label kind="guard" x="-374" y="0">!slot_busy[position]</label>
-			<label kind="synchronisation" x="-374" y="-17">tick?</label>
-			<label kind="assignment" x="-374" y="17">out_sensors_state[id] = false</label>
-			<nail x="-127" y="42"/>
+		<init ref="id27"/>
+		<transition id="id28">
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<label kind="guard" x="-305" y="34">!slot_busy[position]</label>
+			<label kind="synchronisation" x="-178" y="17">tick?</label>
+			<label kind="assignment" x="-382" y="51">out_sensors_state[id] = false</label>
+			<nail x="-127" y="77"/>
+			<nail x="-127" y="9"/>
 		</transition>
-		<transition id="id4">
-			<source ref="id0"/>
-			<target ref="id1"/>
-			<label kind="guard" x="85" y="25">slot_busy[position]</label>
-			<label kind="synchronisation" x="85" y="8">tick?</label>
-			<label kind="assignment" x="85" y="42">out_sensors_state[id] = true</label>
-			<nail x="59" y="34"/>
+		<transition id="id29">
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="guard" x="68" y="34">slot_busy[position]</label>
+			<label kind="synchronisation" x="68" y="17">tick?</label>
+			<label kind="assignment" x="68" y="51">out_sensors_state[id] = true</label>
+			<nail x="59" y="9"/>
+			<nail x="59" y="77"/>
 		</transition>
-		<transition id="id5">
-			<source ref="id2"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="-25" y="-144">initialize?</label>
-			<label kind="assignment" x="-25" y="-127">out_sensors_state[id] = false</label>
+		<transition id="id30">
+			<source ref="id27"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-25" y="-136">initialize?</label>
+			<label kind="assignment" x="-25" y="-119">out_sensors_state[id] = false</label>
 		</transition>
 	</template>
 	<template>
@@ -159,229 +340,47 @@ void update(){
         }
     }
 }</declaration>
-		<location id="id6" x="-3102" y="-2814">
+		<location id="id31" x="-3102" y="-2814">
 		</location>
-		<location id="id7" x="-3102" y="-2949">
+		<location id="id32" x="-3102" y="-2949">
 		</location>
-		<location id="id8" x="-2898" y="-2813">
+		<location id="id33" x="-2898" y="-2813">
 		</location>
-		<init ref="id7"/>
-		<transition id="id9">
-			<source ref="id8"/>
-			<target ref="id8"/>
+		<init ref="id32"/>
+		<transition id="id34">
+			<source ref="id33"/>
+			<target ref="id33"/>
 			<label kind="synchronisation" x="-2847" y="-2830">switch_branch?</label>
 			<label kind="assignment" x="-2847" y="-2813">take_branch = !take_branch</label>
 			<nail x="-2856" y="-2839"/>
 			<nail x="-2856" y="-2788"/>
 		</transition>
-		<transition id="id10">
-			<source ref="id8"/>
-			<target ref="id6"/>
-			<label kind="synchronisation" x="-3060" y="-2805">tick?</label>
-			<label kind="assignment" x="-3060" y="-2779">update()</label>
+		<transition id="id35">
+			<source ref="id33"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-3026" y="-2762">tick?</label>
+			<label kind="assignment" x="-3026" y="-2779">update()</label>
 			<nail x="-2932" y="-2779"/>
 			<nail x="-3068" y="-2779"/>
 		</transition>
-		<transition id="id11">
-			<source ref="id6"/>
-			<target ref="id8"/>
-			<label kind="synchronisation" x="-3085" y="-2839">tick?</label>
-		</transition>
-		<transition id="id12">
-			<source ref="id6"/>
-			<target ref="id6"/>
-			<label kind="synchronisation" x="-3264" y="-2830">switch_branch?</label>
-			<label kind="assignment" x="-3366" y="-2813">take_branch = !take_branch</label>
-			<nail x="-3145" y="-2788"/>
-			<nail x="-3145" y="-2847"/>
-		</transition>
-		<transition id="id13">
-			<source ref="id7"/>
-			<target ref="id6"/>
-			<label kind="synchronisation" x="-3094" y="-2924">initialize?</label>
-			<label kind="assignment" x="-3094" y="-2907">take_branch = false</label>
-		</transition>
-	</template>
-	<template>
-		<name>InSensor</name>
-		<parameter>const InSensorId id, const StationId station_controlled</parameter>
-		<location id="id14" x="-34" y="-365">
-		</location>
-		<location id="id15" x="-34" y="-255">
-			<name x="-17" y="-272">Unlocked</name>
-		</location>
-		<location id="id16" x="-34" y="-59">
-			<name x="-8" y="-59">Locked</name>
-		</location>
-		<init ref="id14"/>
-		<transition id="id17">
-			<source ref="id16"/>
-			<target ref="id15"/>
-			<label kind="synchronisation" x="-442" y="-178">station_free[station_controlled]?</label>
-			<label kind="assignment" x="-399" y="-161">in_sensors_state[id] = false</label>
-			<nail x="-153" y="-102"/>
-			<nail x="-153" y="-212"/>
-		</transition>
-		<transition id="id18">
-			<source ref="id15"/>
-			<target ref="id16"/>
-			<label kind="synchronisation" x="85" y="-178">station_busy[station_controlled]?</label>
-			<label kind="assignment" x="85" y="-161">in_sensors_state[id] = true</label>
-			<nail x="76" y="-212"/>
-			<nail x="76" y="-93"/>
-		</transition>
-		<transition id="id19">
-			<source ref="id14"/>
-			<target ref="id15"/>
-			<label kind="synchronisation" x="-25" y="-331">initialize?</label>
-			<label kind="assignment" x="-25" y="-314">in_sensors_state[id] = false</label>
-		</transition>
-	</template>
-	<template>
-		<name>Initializer</name>
-		<parameter>const int speed, const int[1, 12] n_disks</parameter>
-		<declaration>clock x;
-
-/**    Set the entire System on the initial configuration    **/
-void init_system() {
-    SlotId i = POS_IN_SENSORS[0];
-    for(d : int[0, n_disks-1]) {
-        slot_busy[i-d] = true;
-    }
-}
-</declaration>
-		<location id="id20" x="-178" y="-170">
-			<committed/>
-		</location>
-		<location id="id21" x="-178" y="-34">
-			<name x="-280" y="-51">run_state</name>
-			<label kind="invariant" x="-161" y="-42">x &lt;= speed</label>
-		</location>
-		<init ref="id20"/>
-		<transition id="id22">
-			<source ref="id21"/>
-			<target ref="id21"/>
-			<label kind="guard" x="-212" y="25">x &gt;= speed</label>
-			<label kind="synchronisation" x="-195" y="42">tick!</label>
-			<label kind="assignment" x="-195" y="59">x = 0</label>
-			<nail x="-144" y="25"/>
-			<nail x="-204" y="25"/>
-		</transition>
-		<transition id="id23">
-			<source ref="id20"/>
-			<target ref="id21"/>
-			<label kind="synchronisation" x="-170" y="-136">initialize!</label>
-			<label kind="assignment" x="-170" y="-119">x = 0,
-init_system()</label>
-		</transition>
-	</template>
-	<template>
-		<name>Station</name>
-		<parameter>const StationId station_id, const SlotId slot_id, const int elaboration_time, const SlotId in_sensor_slot, const OutSensorId out_sensor_id</parameter>
-		<declaration>clock x;
-SlotId first_proc_slot;
-
-/**    Set the Station on the initial configuration    **/
-void init_station() {
-    if(in_sensor_slot == CONTROLLER_POS)
-        first_proc_slot = BRANCH_FIRST_POS;
-    else
-        first_proc_slot = in_sensor_slot + 1;
-}
-
-/**    Produce a disk and place it on the next slot    **/
-void complete_elaboration() {
-    slot_busy[slot_id] = false;
-    if (slot_id == SLOTS-1)
-        slot_busy[0] = true;
-    else
-        slot_busy[slot_id + 1] = true;
-}
-
-/**    Check whether the next slot is free to receive a disk or not    **/
-bool next_slot_is_free() {
-    if (slot_id == SLOTS-1) {
-        if (!slot_busy[0])
-            return true;
-    }
-    else {
-        if (!slot_busy[slot_id+1])
-            return true;
-    }
-    return false;
-}</declaration>
-		<location id="id24" x="-306" y="-782">
-			<name x="-316" y="-816">Start</name>
-		</location>
-		<location id="id25" x="-306" y="-663">
-			<name x="-298" y="-688">Idle</name>
-		</location>
-		<location id="id26" x="433" y="-348">
-			<name x="450" y="-356">Pre_processing</name>
-		</location>
-		<location id="id27" x="-306" y="-348">
-			<name x="-340" y="-339">Processing</name>
-			<label kind="invariant" x="-391" y="-322">x &lt;= elaboration_time</label>
-		</location>
-		<location id="id28" x="-867" y="-347">
-			<name x="-918" y="-363">Done</name>
-		</location>
-		<location id="id29" x="433" y="-663">
-			<name x="423" y="-697">C1</name>
-			<committed/>
-		</location>
-		<location id="id30" x="-867" y="-663">
-			<name x="-877" y="-697">C2</name>
-			<committed/>
-		</location>
-		<init ref="id24"/>
-		<transition id="id31">
-			<source ref="id28"/>
-			<target ref="id30"/>
-			<label kind="guard" x="-858" y="-544">!out_sensors_state[out_sensor_id] &amp;&amp; next_slot_is_free()</label>
-			<label kind="synchronisation" x="-858" y="-527">tick?</label>
-		</transition>
-		<transition id="id32">
-			<source ref="id25"/>
-			<target ref="id29"/>
-			<label kind="guard" x="-221" y="-646">slot_busy[first_proc_slot] &amp;&amp; !slot_busy[slot_id]</label>
-			<label kind="synchronisation" x="-221" y="-663">tick?</label>
-		</transition>
-		<transition id="id33">
-			<source ref="id25"/>
-			<target ref="id27"/>
-			<label kind="guard" x="-297" y="-561">slot_busy[slot_id]</label>
-			<label kind="synchronisation" x="-297" y="-527">tick?</label>
-			<label kind="assignment" x="-297" y="-544">x = 0</label>
-		</transition>
-		<transition id="id34">
-			<source ref="id26"/>
-			<target ref="id27"/>
-			<label kind="guard" x="178" y="-323">slot_busy[slot_id]</label>
-			<label kind="synchronisation" x="178" y="-289">tick?</label>
-			<label kind="assignment" x="178" y="-306">x = 0</label>
-		</transition>
-		<transition id="id35">
-			<source ref="id30"/>
-			<target ref="id25"/>
-			<label kind="synchronisation" x="-841" y="-705">station_free[station_id]!</label>
-			<label kind="assignment" x="-841" y="-688">complete_elaboration()</label>
-		</transition>
 		<transition id="id36">
-			<source ref="id29"/>
-			<target ref="id26"/>
-			<label kind="synchronisation" x="187" y="-518">station_busy[station_id]!</label>
+			<source ref="id31"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-3026" y="-2839">tick?</label>
 		</transition>
 		<transition id="id37">
-			<source ref="id27"/>
-			<target ref="id28"/>
-			<label kind="guard" x="-807" y="-347">x &gt;= elaboration_time</label>
+			<source ref="id31"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-3272" y="-2830">switch_branch?</label>
+			<label kind="assignment" x="-3374" y="-2813">take_branch = !take_branch</label>
+			<nail x="-3145" y="-2788"/>
+			<nail x="-3145" y="-2839"/>
 		</transition>
 		<transition id="id38">
-			<source ref="id24"/>
-			<target ref="id25"/>
-			<label kind="synchronisation" x="-298" y="-756">initialize?</label>
-			<label kind="assignment" x="-298" y="-739">init_station()</label>
+			<source ref="id32"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-3094" y="-2907">initialize?</label>
+			<label kind="assignment" x="-3094" y="-2890">take_branch = false</label>
 		</transition>
 	</template>
 	<template>
@@ -549,11 +548,11 @@ const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {     /***/     2    /** ID: 0 (1st)
                                                   /***/                                                                          /***/
                                                   /***     Elaboration Times of the 6 Stations:                                   ***/            
 const int STATIONS_ELABORATION_TIME[STATIONS] = { /***/     3    /** ID: 0 (1st)*/                                              ,/***/
-                                                  /***/     4    /** ID: 1 (2nd)*/                                              ,/***/
-                                                  /***/     5    /** ID: 2 (3rd)*/                                              ,/***/
-                                                  /***/     6    /** ID: 3 (4th)*/                                              ,/***/
-                                                  /***/     7    /** ID: 4 (5th)*/                                              ,/***/
-                                                  /***/     8    /** ID: 5 (6nd)*/                                             };/***/
+                                                  /***/     3    /** ID: 1 (2nd)*/                                              ,/***/
+                                                  /***/     3    /** ID: 2 (3rd)*/                                              ,/***/
+                                                  /***/     3    /** ID: 3 (4th)*/                                              ,/***/
+                                                  /***/     3    /** ID: 4 (5th)*/                                              ,/***/
+                                                  /***/     3    /** ID: 5 (6nd)*/                                             };/***/
                                                   /**********************************************************************************/
 
 /**
@@ -611,7 +610,7 @@ P4. the plant never incurs in deadlock.</comment>
 			<comment>------ Simulations ------</comment>
 		</query>
 		<query>
-			<formula>simulate[&lt;=10000] {
+			<formula>simulate[&lt;=1000] {
 	station(0).Pre_processing + station(0).Processing * 2 + station(0).Done * 3 + 4*5,
 	station(1).Pre_processing + station(1).Processing * 2 + station(1).Done * 3 + 4*4,
 	station(2).Pre_processing + station(2).Processing * 2 + station(2).Done * 3 + 4*3,
@@ -623,11 +622,11 @@ P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	outSensor(0).Locked + outSensor(0).C2 + 4*4,
-	outSensor(1).Locked + outSensor(1).C2 + 4*3,
-	outSensor(2).Locked + outSensor(2).C2 + 4*2,
-	outSensor(3).Locked + outSensor(3).C2 + 4,
-	outSensor(4).Locked + outSensor(4).C2
+	outSensor(0).Locked + 4*4,
+	outSensor(1).Locked + 4*3,
+	outSensor(2).Locked + 4*2,
+	outSensor(3).Locked + 4,
+	outSensor(4).Locked
 }</formula>
 			<comment/>
 		</query>
@@ -639,14 +638,6 @@ P4. the plant never incurs in deadlock.</comment>
 	inSensor(3).Locked + 4*2,
 	inSensor(4).Locked + 4,
 	inSensor(5).Locked
-}</formula>
-			<comment/>
-		</query>
-		<query>
-			<formula>simulate[&lt;=10000] {
-	slot_busy[0] * 1,
-	slot_busy[1] * 2,
-	slot_busy[2] * 3
 }</formula>
 			<comment/>
 		</query>
