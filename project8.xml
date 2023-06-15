@@ -135,7 +135,7 @@ void check_speed() {
 		<transition id="id13">
 			<source ref="id5"/>
 			<target ref="id5"/>
-			<label kind="guard" x="-391" y="-408">time &lt; speed - 2</label>
+			<label kind="guard" x="-399" y="-408">time &lt; speed - 2</label>
 			<label kind="synchronisation" x="-306" y="-391">tick?</label>
 			<label kind="assignment" x="-323" y="-374">time ++</label>
 			<nail x="-255" y="-357"/>
@@ -643,7 +643,7 @@ P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
 		</query>
 		<query>
-			<formula>A[] forall(id : StationId) (station(id).Processing imply (!slot_busy[POS_STATIONS[id] - 1] &amp;&amp; slot_busy[POS_STATIONS[id]]))</formula>
+			<formula>A[] (forall(id : StationId) (station(id).Processing imply (!slot_busy[POS_STATIONS[id] - 1] &amp;&amp; slot_busy[POS_STATIONS[id]])))</formula>
 			<comment>If a station is processing, no other piece is waiting to enter immediately before
 
 Verifies property:

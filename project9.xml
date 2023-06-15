@@ -515,8 +515,15 @@ void update(){
 		</location>
 		<location id="id65" x="-2839" y="-2813">
 		</location>
+		<location id="id66" x="-2598" y="-2930">
+		</location>
 		<init ref="id64"/>
-		<transition id="id66">
+		<transition id="id67">
+			<source ref="id66"/>
+			<target ref="id65"/>
+			<label kind="synchronisation" x="-2711" y="-2864">tick?</label>
+		</transition>
+		<transition id="id68">
 			<source ref="id65"/>
 			<target ref="id65"/>
 			<label kind="synchronisation" x="-2788" y="-2830">switch_branch?</label>
@@ -524,7 +531,7 @@ void update(){
 			<nail x="-2796" y="-2779"/>
 			<nail x="-2796" y="-2839"/>
 		</transition>
-		<transition id="id67">
+		<transition id="id69">
 			<source ref="id65"/>
 			<target ref="id63"/>
 			<label kind="synchronisation" x="-3060" y="-2762">tick?</label>
@@ -532,12 +539,12 @@ void update(){
 			<nail x="-2873" y="-2779"/>
 			<nail x="-3068" y="-2779"/>
 		</transition>
-		<transition id="id68">
+		<transition id="id70">
 			<source ref="id63"/>
-			<target ref="id65"/>
+			<target ref="id66"/>
 			<label kind="synchronisation" x="-2992" y="-2839">tick?</label>
 		</transition>
-		<transition id="id69">
+		<transition id="id71">
 			<source ref="id63"/>
 			<target ref="id63"/>
 			<label kind="synchronisation" x="-3272" y="-2839">switch_branch?</label>
@@ -545,11 +552,19 @@ void update(){
 			<nail x="-3145" y="-2788"/>
 			<nail x="-3145" y="-2847"/>
 		</transition>
-		<transition id="id70">
+		<transition id="id72">
 			<source ref="id64"/>
 			<target ref="id63"/>
 			<label kind="synchronisation" x="-3094" y="-2907">initialize?</label>
 			<label kind="assignment" x="-3094" y="-2890">take_branch = false</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id66"/>
+			<target ref="id66"/>
+			<label kind="synchronisation" x="-2547" y="-2947">switch_branch?</label>
+			<label kind="assignment" x="-2547" y="-2930">take_branch = !take_branch</label>
+			<nail x="-2555" y="-2896"/>
+			<nail x="-2555" y="-2956"/>
 		</transition>
 	</template>
 	<template>
@@ -572,130 +587,130 @@ bool queue_4_full() {
     }
     return true;
 }</declaration>
-		<location id="id71" x="-2244" y="-2116">
+		<location id="id74" x="-2244" y="-2116">
 			<name x="-2346" y="-2150">Not_Taken_0</name>
 		</location>
-		<location id="id72" x="-2074" y="-2192">
+		<location id="id75" x="-2074" y="-2192">
 			<urgent/>
 		</location>
-		<location id="id73" x="-1904" y="-2116">
+		<location id="id76" x="-1904" y="-2116">
 			<name x="-1887" y="-2133">Taken_0</name>
 		</location>
-		<location id="id74" x="-2074" y="-2039">
+		<location id="id77" x="-2074" y="-2039">
 			<urgent/>
 		</location>
-		<location id="id75" x="-2567" y="-2116">
+		<location id="id78" x="-2567" y="-2116">
 			<name x="-2609" y="-2150">Start</name>
 		</location>
-		<init ref="id75"/>
-		<transition id="id76">
-			<source ref="id75"/>
-			<target ref="id71"/>
+		<init ref="id78"/>
+		<transition id="id79">
+			<source ref="id78"/>
+			<target ref="id74"/>
 			<label kind="synchronisation" x="-2465" y="-2107">initialize?</label>
 		</transition>
-		<transition id="id77">
-			<source ref="id74"/>
-			<target ref="id71"/>
+		<transition id="id80">
+			<source ref="id77"/>
+			<target ref="id74"/>
 			<label kind="synchronisation" x="-2295" y="-2082">switch_branch!</label>
 		</transition>
-		<transition id="id78">
-			<source ref="id73"/>
-			<target ref="id74"/>
+		<transition id="id81">
+			<source ref="id76"/>
+			<target ref="id77"/>
 			<label kind="guard" x="-1980" y="-2057">slot_busy[POS_STATIONS[3]] &amp;&amp; queue_4_full()</label>
 			<label kind="synchronisation" x="-1980" y="-2074">tick?</label>
 		</transition>
-		<transition id="id79">
-			<source ref="id72"/>
-			<target ref="id73"/>
+		<transition id="id82">
+			<source ref="id75"/>
+			<target ref="id76"/>
 			<label kind="synchronisation" x="-2006" y="-2184">switch_branch!</label>
 		</transition>
-		<transition id="id80">
-			<source ref="id71"/>
-			<target ref="id72"/>
+		<transition id="id83">
+			<source ref="id74"/>
+			<target ref="id75"/>
 			<label kind="guard" x="-2235" y="-2210">queue_2_full()</label>
 			<label kind="synchronisation" x="-2176" y="-2193">tick?</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">FlowController_1</name>
-		<location id="id81" x="-3553" y="-3595">
+		<location id="id84" x="-3553" y="-3595">
 			<name x="-3536" y="-3620">Not_Taken_1</name>
 		</location>
-		<location id="id82" x="-3757" y="-3595">
+		<location id="id85" x="-3757" y="-3595">
 			<name x="-3808" y="-3629">Start</name>
 		</location>
-		<init ref="id82"/>
-		<transition id="id83">
-			<source ref="id82"/>
-			<target ref="id81"/>
+		<init ref="id85"/>
+		<transition id="id86">
+			<source ref="id85"/>
+			<target ref="id84"/>
 			<label kind="synchronisation" x="-3714" y="-3586">initialize?</label>
 		</transition>
 	</template>
 	<template>
 		<name>FlowController_2</name>
-		<location id="id84" x="-2074" y="-2210">
+		<location id="id87" x="-2074" y="-2210">
 			<name x="-2057" y="-2236">Taken_2</name>
 		</location>
-		<location id="id85" x="-2260" y="-2210">
+		<location id="id88" x="-2260" y="-2210">
 			<committed/>
 		</location>
-		<location id="id86" x="-2422" y="-2210">
+		<location id="id89" x="-2422" y="-2210">
 			<name x="-2432" y="-2244">Start</name>
 		</location>
-		<init ref="id86"/>
-		<transition id="id87">
-			<source ref="id86"/>
-			<target ref="id85"/>
+		<init ref="id89"/>
+		<transition id="id90">
+			<source ref="id89"/>
+			<target ref="id88"/>
 			<label kind="synchronisation" x="-2388" y="-2201">initialize?</label>
 		</transition>
-		<transition id="id88">
-			<source ref="id85"/>
-			<target ref="id84"/>
+		<transition id="id91">
+			<source ref="id88"/>
+			<target ref="id87"/>
 			<label kind="synchronisation" x="-2235" y="-2235">switch_branch!</label>
 		</transition>
 	</template>
 	<template>
 		<name>FlowController_3</name>
-		<location id="id89" x="-2337" y="-2329">
+		<location id="id92" x="-2337" y="-2329">
 			<name x="-2438" y="-2362">Not_Taken_3</name>
 		</location>
-		<location id="id90" x="-2166" y="-2405">
+		<location id="id93" x="-2166" y="-2405">
 			<urgent/>
 		</location>
-		<location id="id91" x="-2014" y="-2320">
+		<location id="id94" x="-2014" y="-2320">
 			<name x="-2006" y="-2354">Taken_3</name>
 		</location>
-		<location id="id92" x="-2166" y="-2243">
+		<location id="id95" x="-2166" y="-2243">
 			<urgent/>
 		</location>
-		<location id="id93" x="-2635" y="-2329">
+		<location id="id96" x="-2635" y="-2329">
 			<name x="-2686" y="-2363">Start</name>
 		</location>
-		<init ref="id93"/>
-		<transition id="id94">
-			<source ref="id93"/>
-			<target ref="id89"/>
+		<init ref="id96"/>
+		<transition id="id97">
+			<source ref="id96"/>
+			<target ref="id92"/>
 			<label kind="synchronisation" x="-2541" y="-2320">initialize?</label>
 		</transition>
-		<transition id="id95">
-			<source ref="id91"/>
-			<target ref="id92"/>
+		<transition id="id98">
+			<source ref="id94"/>
+			<target ref="id95"/>
 			<label kind="guard" x="-2091" y="-2269">slot_busy[BRANCH_FIRST_POS]</label>
 			<label kind="synchronisation" x="-2091" y="-2252">tick?</label>
 		</transition>
-		<transition id="id96">
-			<source ref="id92"/>
-			<target ref="id89"/>
+		<transition id="id99">
+			<source ref="id95"/>
+			<target ref="id92"/>
 			<label kind="synchronisation" x="-2363" y="-2269">switch_branch!</label>
 		</transition>
-		<transition id="id97">
-			<source ref="id90"/>
-			<target ref="id91"/>
+		<transition id="id100">
+			<source ref="id93"/>
+			<target ref="id94"/>
 			<label kind="synchronisation" x="-2099" y="-2414">switch_branch!</label>
 		</transition>
-		<transition id="id98">
-			<source ref="id89"/>
-			<target ref="id90"/>
+		<transition id="id101">
+			<source ref="id92"/>
+			<target ref="id93"/>
 			<label kind="guard" x="-2456" y="-2431">slot_busy[CONTROLLER_POS+1]</label>
 			<label kind="synchronisation" x="-2269" y="-2414">tick?</label>
 		</transition>
@@ -740,7 +755,7 @@ const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     1    /** ID: 0 (1
                                                      /***/     1    /** ID: 5 (6nd)*/                                             };/***/
                                                      /***/                                                                          /***/
                                                      /***     Probabilistic Right of the 6 In-Sensors:                               ***/            
-const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     3    /** ID: 0 (1st)*/                                              ,/***/
+const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     0    /** ID: 0 (1st)*/                                              ,/***/
                                                      /***/     3    /** ID: 1 (2nd)*/                                              ,/***/
                                                      /***/     3    /** ID: 2 (3rd)*/                                              ,/***/
                                                      /***/     3    /** ID: 3 (4th)*/                                              ,/***/
@@ -792,13 +807,6 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 Verifies properties:
 P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
-		</query>
-		<query>
-			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id : StationId) (station(id).Processing &amp;&amp; !slot_busy[POS_STATIONS[id] - 1])))</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
 		</query>
 		<query>
 			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id : OutSensorId) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id])))</formula>
@@ -862,6 +870,12 @@ P3. No queue ever exceeds the maximum allowed length.</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] { slot_busy[16], slot_busy[17]+2, slot_busy[18]+4, station(0).C3 + 6 }</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>simulate [&lt;= 100000] {
+	(not station(0).Idle &amp;&amp; (sum(p : int[14, 17]) slot_busy[p]) == 1) 
+}</formula>
 			<comment/>
 		</query>
 	</queries>
