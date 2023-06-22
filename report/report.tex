@@ -10,6 +10,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tabularx}
 
 \setlength{\parindent}{0pt}
 
@@ -23,6 +25,8 @@
 
 \newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
 
+\renewcommand\tabularxcolumn[1]{m{#1}}
+
 \begin{document}
 
     \begin{titlepage}
@@ -35,7 +39,7 @@
 
             \nbvspace[2]
 
-            {\huge \textbf{\textsc{Formal Digital Twin of a LEGO® MINDSTROMS™ Production Plant}}} \\
+            {\huge \textbf{\textsc{Formal Digital Twin of a \\ LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark \\\medskip Production Plant}}} \\
             [3em]
             {\Large Formal Methods for Concurrent and Real-Time Systems} \\
             [1.5em]
@@ -44,7 +48,7 @@
             \nbvspace[8]
 
             \begin{tabular}{lrp{0.04\columnwidth}lrp{0.04\columnwidth}lr}
-                \multicolumn{2}{c}{\Large \textbf{Andrea Infantino}} & & \multicolumn{2}{c}{\Large \textbf{Riccardo Motta}} & & \multicolumn{2}{c}{\Large \textbf{Matteo Negro}} \\
+                \multicolumn{2}{c}{\large \textbf{Andrea Infantino}} & & \multicolumn{2}{c}{\large \textbf{Riccardo Motta}} & & \multicolumn{2}{c}{\large \textbf{Matteo Negro}} \\
                 Person ID & ??? & & Person ID & 10658639 & & Person ID & 10642961 \\
                 Student ID & ??? & & Student ID & 218685 & & Student ID & ???
             \end{tabular}
@@ -79,23 +83,150 @@
 
     The model of our system is made of 6 different components which interact between them in order to coordinate the entire production plant. Some of them are also instantiated many times in order to have a simpler modelling of the entire system.
 
-    \paragraph{Initializer} It's a fictitious component which represents the entry point of the whole system. It allows us to instantiate all the workpieces in the correct positions of the conveyor belt (positions which start from position 13 and ends in position 2 in our model) and works ad the motor, allowing the whole system to move synchronously.
+    \paragraph{Initializer} It's a fictitious component which represents the entry point of the whole system. It allows us to instantiate all the workpieces in the correct positions of the conveyor belt (positions which start from position 13 and ends in position 2 in our model) and works as the general clock of the system.
 
-    \paragraph{Conveyor belt} It's the set of all the various conveyor belts of the plant. It's the one in charge of moving around all the workpieces. In our model it's also the one in charge of blocking pieces and stations from proceeding according to the pieces of information gathered by the laser sensors and the stations and also manages the positions where the two branches of the plant start and merge.
+    \paragraph{Motor} This is the real motor of the system. According to the speed at which the conveyor belt should be moving, uses the clock to make all the workpieces move and synchronizes the whole system.
 
-    \paragraph{Stations} They are the ones in charge of processing the various workpieces one they get into them. We have a single template for them which is instantiated as many times as needed in order to recreate the plant. They have all a position on the conveyor belt which is managed in a special way.
+    \paragraph{Conveyor belt} It's the set of all the various conveyor belts of the plant. It's the one in charge of moving around all the workpieces. In our model it's also the one in charge of blocking workpieces and stations from proceeding according to the pieces of information gathered by the laser sensors and the stations and also manages the positions where the two branches of the plant start and merge.
+
+    \paragraph{Processing stations} They are the ones in charge of processing the various workpieces one they get into them. We have a single template for them which is instantiated as many times as needed in order to recreate the plant. They have all a position on the conveyor belt which is managed in a special way.
 
     \paragraph{Laser sensors} We have modelled them in two different ways according to their functionalities. The ones guarding the entrance of a station are called \texttt{InSensor}, while the ones guarding the queue and preventing the station right before it to release a workpiece are called \texttt{OutSensor}. Like the stations, they are represented as a single template (one for each type) instantiated multiple times.
 
-    \paragraph{Flow controller} This is the green piece of \figureref{figure:scheme}. It is pre-configured with a specific policy (which is customizable) and decides whether to send the pieces once they get at position 65 of the conveyor belt. The available policies are the following ones:
+    \paragraph{Flow controller} This is the green piece of \figureref{figure:scheme}. It is pre-configured with a specific policy (which is customizable) and decides whether to send the workpieces once they get at position 65 of the conveyor belt. The available policies are the following ones:
     \begin{enumerate}
-        \item[0.] % TODO: description of policy 0
-        \item[1.] % TODO: description of policy 1
-        \item[2.] % TODO: description of policy 2
-        \item[3.] % TODO: description of policy 3
+        \item[0.] Sends the workpieces on the alternative branch until its queue is full, otherwise lets the workpieces proceed on the main branch;
+        \item[1.] Lets all the workpieces to flow on the main branch;
+        \item[2.] Sends all the workpieces on the alternative branch;
+        \item[3.] Every time a workpiece is in front of him sends it on a different path with respect to the one taken by the previous workpiece.
     \end{enumerate}
 
-    \subsection{Components Description}
+    \subsection{Initializer (\texttt{Initializer})}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.12\columnwidth]{./images/automata/initializer}
+        \caption{the Timed Automata of the initializer.}
+    \end{figure}
+
+    The initializer is a meta component that performs two different actions on the system and is the fundamental entry point of our whole modelling.
+
+    \paragraph{Initialization} Initializes the system by placing the workpieces starting from the in sensor of the first station (index 0) backward with an upper limit of 12 workpieces.
+
+    \paragraph{Global synchronization} In order to have a simpler model to verify, we decided to have a unique clock for the whole system. This TA performs as the general clock and all the components of our plant directly or indirectly synchronizes with it (usually by means of the signals generated by the motor).
+
+    \subsection{Motor (\texttt{Motor})}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.3\columnwidth]{./images/automata/motor}
+        \caption{the Timed Automata of the motor.}
+    \end{figure}
+
+    As the name says, this is the meta component that manages all the signals used by the sensors and, especially, the conveyor belt and the stations in order to synchronize the movement of the workpieces. The two signals which it generates are presented here.
+
+    \paragraph{Conveyor belt's tick (\texttt{tick\_belt}, also used by the stations)} It's the signal which makes the conveyor belt move all the workpieces it can one step forward (taking into account also the branch in the conveyor belt).
+
+    \paragraph{Laser sensors and stations' tick (\texttt{tick\_sensor})} In order to avoid any potential race condition, we decided to send a signal right before \texttt{tick\_belt}. This allows us to update the state of the laser sensors (i.e., they can check if there is a workpiece right below them) and to perform some state-changing actions on all the stations (if they need to).
+
+    \subsection{Conveyor Belt (\texttt{ConveyorBelt})}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.33\columnwidth]{./images/automata/conveyor_belt}
+        \caption{the Timed Automata of the conveyor belt.}
+    \end{figure}
+
+    It's the entity which collects all the different sectors of the plant's conveyor belt. It's a small automaton since all the underlying complexity of the conveyor belt's management is hidden behind the \texttt{update()} function. This is the most complex component of our plant since manages a lot of different things.
+
+    \paragraph{Workpieces position} Any workpiece on a non-critical position (which is any in the following situations) is moved ahead of one slot every time the \texttt{update()} function is called.
+
+    \paragraph{Stations and sensors management} Once a workpiece passes the input sensor of a station, it blocks any other workpiece wanting to proceed to the station itself until the sensor tells that the station is free and a new workpiece can flow again towards it.
+
+    \paragraph{Queue management} Every time a workpiece is blocked in a specific location and some other one wants to proceed, the conveyor belt blocks it until the first one is free to move again. Since we are scanning the belt from the last positions backward this situation is easily managed since we can't place a workpiece on top or another one.
+
+    \paragraph{Conveyor belt branch and merge} Because of the \texttt{switch\_branch?}, we keep track of the selected branch where to send the workpieces. This allows us to directly use the \texttt{update()} function to move the workpieces on the correct branch. Also, the merge of the two branches is (easily) managed by the conveyor belt, since, by scanning it backward, once we move a piece in the merge position of the belt (the one coming from the alternative branch, if any), no other one can be put in the same place, thus, blocking it from proceeding, which is exactly what happens in reality.
+
+    \subsection{Processing stations (\texttt{Station})}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.84\columnwidth]{./images/automata/station}
+        \caption{the Timed Automata of every station.}
+    \end{figure}
+
+    The stations model the various processes the workpieces need to go through during production. The automaton is divided in four different main states, each one of the for a different portion of the processing.
+
+    \paragraph{Idle} This is the main state of the station, in which it doesn't have to perform any action but to wait for a workpiece to be ready for the processing.
+
+    \paragraph{Preprocessing} When the laser sensors which is guarding the entrance of the station signals that a workpiece is approaching to it, the station moves to this state waiting for the workpiece to be in the right position.
+
+    \paragraph{Processing} Once the workpiece is in the right position, the station starts processing it. In the model, the automaton isn't performing any real task on the workpiece, but it's simply waiting for its processing time to pass. In order to improve verification performance, we discretized the time, and so we use a counter synchronized with the global clock in order to model the time passing.
+
+    \paragraph{Done} Once the processing time is elapsed, the station moves to this state where it waits for the right time to release the workpiece on the conveyor belt. It synchronizes with the conveyor belt itself and with the sensors guarding the entrance queue of the following station in order to know if the workpiece needs to be release or hold inside the station itself. Once the workpiece is released, the station returns to its \textit{idle} state waiting for the next processing cycle.
+
+    \subsection{Processing station's input guard (\texttt{InSensor})}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.5\columnwidth]{./images/automata/in_sensor}
+        \caption{the Timed Automata of every input sensor.}
+    \end{figure}
+
+    These are the laser sensors that guards the entrance of a specific station. If a workpiece oversteps it, the laser sensor is equipped with a physical barrier which blocks any other following workpiece from proceeding towards the station itself until the station is free again.
+
+    \subsection{Queue's guard (\texttt{OutSensor})}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.45\columnwidth]{./images/automata/out_sensor}
+        \caption{the Timed Automata of every output sensor.}
+    \end{figure}
+
+    Right before a station there is an \texttt{InSensor} which guards its entrance, but there may also be another sensor before it which guards the queue. Once the station's guard blocks a workpiece, others may arrive forming a queue of workpieces. This queue may have a maximum length. If the queue reaches its maximum, the sensor blocks the preceding station from releasing a workpiece if it contains one until the queue is no more full.
+
+    \pagebreak
+
+    \subsection{Flow controller (\texttt{FlowController\_*})}
+
+    \begin{figure}[h!]
+        \centering
+        \begin{tabularx}{\linewidth}{*{2}{>{\centering\arraybackslash}X}}
+            \begin{subfigure}{\linewidth}
+                \caption{Controller V0}
+            \end{subfigure} &
+            \begin{subfigure}{\linewidth}
+                \caption{Controller V1}
+            \end{subfigure} \\
+            \begin{subfigure}{0.5\columnwidth}
+                \centering
+                \includegraphics[width=\columnwidth]{images/automata/flow_controller_0}
+            \end{subfigure} &
+            \begin{subfigure}{0.23\columnwidth}  
+                \centering
+                \includegraphics[width=\columnwidth]{images/automata/flow_controller_1}
+            \end{subfigure} \\
+            \begin{subfigure}{0.27\columnwidth}   
+                \centering 
+                \includegraphics[width=\textwidth]{images/automata/flow_controller_2}
+            \end{subfigure} &
+            \begin{subfigure}{0.45\columnwidth}   
+                \centering 
+                \includegraphics[width=\columnwidth]{images/automata/flow_controller_3}
+            \end{subfigure} \\
+            \begin{subfigure}{\linewidth}
+                \caption{Controller V2}
+            \end{subfigure} &
+            \begin{subfigure}{\linewidth}
+                \caption{Controller V3}
+            \end{subfigure}
+        \end{tabularx}
+        \caption{the Timed Automata of the various types of controllers.}
+    \end{figure}
+
+    As explained in the introduction, these are the various policy schedules we implemented. Each one of them represents a different way to schedule the workpieces on the processing stations. Starting from the easiest ones, the ones in which all the workpieces follow the same path (either the direct one or the alternative one), to more complex ones, like the one in which we keep track of the queues in front of the first stations of the branch.\medskip
+
+    Since the real movement of the various workpieces is managed by the conveyor belt, these automata, if they need to change the branch where the workpieces need to be sent, send a message to it in order to notify the change in the path.
 
     \section{Design Decisions} \label{section:design_decisions}
 
