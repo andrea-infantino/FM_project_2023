@@ -1,68 +1,31 @@
 {
-    "1-disk": [
-        {
-            "param": "SPEED",
-            "value": 1
+    "extensive": {
+        "speed": {
+            "min": 1,
+            "max": 3
         },
-        {
-            "param": "N_DISKS",
-            "value": 1
+        "disks": {
+            "min": 1,
+            "max": 12
         },
-        {
-            "param": "POLICY",
-            "value": 0
+        "policy": {
+            "min": 0,
+            "max": 3
         },
-        {
-            "param": "POS_OUT_SENSORS",
-            "value": [2, 24, 68, 90, 105]
+        "out_sensors": {
+            "min": [2, 24, 68, 90, 105],
+            "max": [2, 24, 68, 90, 105]
         },
-        {
-            "param": "STATIONS_ELABORATION_TIME",
-            "value": [6, 7, 8, 9, 8, 7]
+        "stations_processing": {
+            "min": [5, 5, 5, 5, 5, 5],
+            "max": [10, 10, 10, 10, 10, 10]
         }
-    ],
-    "2-disks": [
-        {
-            "param": "SPEED",
-            "value": 1
-        },
-        {
-            "param": "N_DISKS",
-            "value": 2
-        },
-        {
-            "param": "POLICY",
-            "value": 0
-        },
-        {
-            "param": "POS_OUT_SENSORS",
-            "value": [2, 24, 68, 90, 105]
-        },
-        {
-            "param": "STATIONS_ELABORATION_TIME",
-            "value": [6, 7, 8, 9, 8, 7]
-        }
-    ],
-    "3-disks": [
-        {
-            "param": "SPEED",
-            "value": 1
-        },
-        {
-            "param": "N_DISKS",
-            "value": 3
-        },
-        {
-            "param": "POLICY",
-            "value": 0
-        },
-        {
-            "param": "POS_OUT_SENSORS",
-            "value": [2, 24, 68, 90, 105]
-        },
-        {
-            "param": "STATIONS_ELABORATION_TIME",
-            "value": [6, 7, 8, 9, 8, 7]
-        }
-    ]
+    },
+    "standard": {
+        "speed": 1,
+        "disks": 12,
+        "policy": 3,
+        "out_sensors": [2, 24, 68, 90, 105],
+        "stations_processing": [6, 7, 8, 9, 8, 7]
+    }
 }

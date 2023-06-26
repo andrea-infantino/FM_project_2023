@@ -4,6 +4,7 @@
 
 import argparse
 import csv
+from itertools import product
 import json
 import os
 from multiprocessing import Pool
@@ -21,10 +22,11 @@ def handle_sigint(*_):
 def get_args():
     ap = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     ap.add_argument('-v', '--verifyta', type=str, metavar='VERIFYTA_PATH', default='/Applications/UPPAAL.app/Contents/Resources/uppaal/bin/verifyta', help='path to verifyta executable')
-    ap.add_argument('-s', '--scenario', type=str, metavar='SCENARIO', default='all', help='name of the scenario to run ("all" for running them all)')
+    ap.add_argument('-s', '--scenario', type=str, metavar='SCENARIO', default='extensive', help='name of the scenario to run, otherwise an extensive search is performed')
     ap.add_argument('-nq', '--no-queries', default=False, action=argparse.BooleanOptionalAction)
     ap.add_argument('-np', '--no-probabilities', default=False, action=argparse.BooleanOptionalAction)
     ap.add_argument('-ns', '--no-simulations', default=False, action=argparse.BooleanOptionalAction)
+    ap.add_argument('--short', default=False, action=argparse.BooleanOptionalAction)
     ap.add_argument('config_fname', type=str, metavar='config.json', help='configuration to use for the simulation')
     ap.add_argument('project_fname', type=str, metavar='project.xml', help='project template to use for simulation')
     return ap.parse_args()
@@ -46,7 +48,7 @@ def parse_project(content: str, start: str) -> list[str]:
     for formula in tree.iter('formula'):
         if not formula.text == None and formula.text.startswith(start):
             result.append(formula.text)
-    return result
+    return [item.replace('\n', ' ').replace('\t', '') for item in result]
 
 def get_queries(content: str) -> list[str]:
     return parse_project(content, 'A')
@@ -73,30 +75,76 @@ def generate_probabilities(probabilities: list[str], path: str):
 def generate_simulations(simulations: list[str], path: str):
     generate_properties(simulations, path, 'simulation')
 
-def get_line(line: str, change: dict):
-    if type(change['value']) is list:
-        return '{}= {{{}}};\n'.format(line.split('=')[0], ', '.join([str(item) for item in change['value']]))
+def to_array(values: list[int], short: bool = False):
+    if not short:
+        return '{{{}}}'.format(', '.join([str(value) for value in values]))
     else:
-        return '{}= {};\n'.format(line.split('=')[0], change['value'])
+        return '[{}]'.format(','.join([str(value) for value in values]))
 
-def generate_project(project: list[str], changes: list[dict], path: str, name: str):
+def get_space(min: list[int], max: list[int]):
+    ranges = []
+    for index in range(0, len(min)):
+        ranges.append(range(min[index], max[index] + 1))
+    for result in product(*ranges):
+        yield result
+
+def generate_extensive_project(project: list[str], values: list[dict], path: str):
+    for speed in range(values['speed']['min'], values['speed']['max'] + 1):
+        for disks in range(values['disks']['min'], values['disks']['max'] + 1):
+            for policy in range(values['policy']['min'], values['policy']['max'] + 1):
+                for sensors in get_space(values['out_sensors']['min'], values['out_sensors']['max']):
+                    for stations in get_space(values['stations_processing']['min'], values['stations_processing']['max']):
+                        tmp = {
+                            'speed': speed,
+                            'disks': disks,
+                            'policy': policy,
+                            'out_sensors': sensors,
+                            'stations_processing': stations
+                        }
+                        generate_project(project, tmp, path, 's{}-d{}-p{}-os{}-sp{}'.format(speed, disks, policy, to_array(sensors, short=True), to_array(stations, short=True)))
+
+def generate_project(project: list[str], values: list[dict], path: str, name: str):
     new_project = []
+    system = False
+    done = False
+    static = '''
+const SlotId POS_IN_SENSORS_IN_ORDER[STATIONS] = {POS_IN_SENSORS[0], POS_IN_SENSORS[1], POS_IN_SENSORS[3], POS_IN_SENSORS[2], POS_IN_SENSORS[4], POS_IN_SENSORS[5]};
+const OutSensorId OUT_SENSORS_ID_IN_ORDER[STATIONS] = {1, 2, 4, 3, 4, 0};
+const StationId IN_SENSORS_STATION[IN_SENSORS] = {0, 1, 3, 2, 4, 5};
+
+initializer = Initializer(DISKS);
+motor = Motor(SPEED);
+conveyorBelt = ConveyorBelt();
+station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id]);
+inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id]);
+outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
+'''
     for line in project:
-        changed = False
-        for change in changes:
-            if line.startswith('const int') and change['param'] in line.split(';')[0]:
-                new_project.append(get_line(line, change))
-                changed = True
-                break
-        if not changed:
+        if not system and '<system>' not in line:
             new_project.append('{}\n'.format(line))
+        elif '</system>' in line:
+            system = False
+        elif not done:
+            system = True
+            done = True
+            new_project.append('    <system>\n')
+            new_project.append('const int SPEED = {};\n'.format(values['speed']))
+            new_project.append('const int[1, 12] DISKS = {};\n'.format(values['disks']))
+            new_project.append('const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensors'])))
+            new_project.append('const int STATIONS_ELABORATION_TIME[STATIONS] = {};\n'.format(to_array(values['stations_processing'])))
+            new_project.append(static)
+            if values['policy'] == 0:
+                new_project.append('flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);\n')
+            else:
+                new_project.append('flowController = FlowController_{}();\n'.format(values['policy']))
+            new_project.append('system initializer, motor, conveyorBelt, station, inSensor, outSensor, flowController;\n')
+            new_project.append('    </system>\n')
     with open(os.path.join(path,'project_{}.xml'.format(name)), 'w') as file:
         file.writelines(new_project)
 
 def generate_projects(project: list[str], config: dict, scenario: str, path: str) -> bool:
-    if scenario == 'all':
-        for key, value in config.items():
-            generate_project(project, value, path, key)
+    if scenario == 'extensive':
+        generate_extensive_project(project, config[scenario], path)
         return True
     elif scenario in config:
         generate_project(project, config[scenario], path, scenario)
@@ -127,7 +175,7 @@ def output_folder_simulations(path: str) -> list[list[str]]:
 def run_property(parameters: list[tuple[str, str, str]]) -> bool:
     start = time()
     verifier, project, property = parameters
-    result = subprocess.run([verifier, '-C', '-H', '32', '-S', '2', '-w', '1', project, property], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run([verifier, project, property], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         print('[ERROR]', result.stderr.decode().rstrip())
         exit(1)
@@ -156,7 +204,7 @@ def run_all_probabilities(verifier: str, projects: list[str], probabilities: lis
 def run_all_simulations(verifier: str, projects: list[str], simulations: list[str]) -> dict:
     return run_all(verifier, projects, simulations, 'simulation', 'Simulating')
 
-def print_queries(results: dict, queries: str):
+def print_queries(results: dict, queries: str, verbose: bool):
     projects = {}
     failed = False
     for project, query in results:
@@ -173,11 +221,12 @@ def print_queries(results: dict, queries: str):
         print('\033[31;1mSome properties aren\'t satisfied!\033[0m\n')
     else:
         print('\033[32;1mAll the properties are satisfied!\033[0m\n')
-    print('\033[;1mVerification results\033[0m:')
-    print(json.dumps(projects))
-    print()
+    if verbose:
+        print('\033[;1mVerification results\033[0m:')
+        print(json.dumps(projects))
+        print()
 
-def print_probabilities(results: dict, probabilities: str):
+def print_probabilities(results: dict, probabilities: str, verbose: bool):
     projects = {}
     interval_regex = re.compile(r'\[([\d.e-]+),([\d.e-]+)\]\s+\(([\d]+)\% CI\)')
     values_regex = re.compile(r'Values in \[(\d+),(\d+)\] mean=(\d+) steps=1: (.+)')
@@ -203,9 +252,10 @@ def print_probabilities(results: dict, probabilities: str):
     for project in projects:
         projects[project] = dict(sorted(projects[project].items()))
     projects = dict(sorted(projects.items()))
-    print('\033[;1mProbabilities\033[0m:')
-    print(json.dumps(projects))
-    print()
+    if verbose:
+        print('\033[;1mProbabilities\033[0m:')
+        print(json.dumps(projects))
+        print()
 
 def process_values(result: str, index: int, path: str) -> tuple[str, int]:
     get_values = re.compile(r'\(([\d.]+),(\d+)\)')
@@ -225,7 +275,7 @@ def process_values(result: str, index: int, path: str) -> tuple[str, int]:
         result[formula] = file_name
     return result, index
 
-def print_simulations(results: dict, simulations: str, path: str):
+def print_simulations(results: dict, simulations: str, path: str, verbose: bool):
     projects = {}
     index = 0
     for project, simulation in results:
@@ -237,9 +287,10 @@ def print_simulations(results: dict, simulations: str, path: str):
     for project in projects:
         projects[project] = dict(sorted(projects[project].items()))
     projects = dict(sorted(projects.items()))
-    print('\033[;1mSimulations\033[0m:')
-    print(json.dumps(projects))
-    print()
+    if verbose:
+        print('\033[;1mSimulations\033[0m:')
+        print(json.dumps(projects))
+        print()
 
 if __name__ == '__main__':
 
@@ -279,7 +330,7 @@ if __name__ == '__main__':
 
     queries = get_queries(full_project)
     probabilities = get_probabilities(full_project)
-    simulations = [simulation.replace('\n', ' ').replace('\t', '') for simulation in get_simulations(full_project)]
+    simulations = get_simulations(full_project)
 
     generate_queries(queries, output_directory)
     generate_probabilities(probabilities, output_directory)
@@ -288,13 +339,13 @@ if __name__ == '__main__':
     if generate_projects(project, config, args.scenario, output_directory):
         if not args.no_queries and len(queries) > 0:
             projects, queries_numbers = output_folder_queries(output_directory)
-            print_queries(run_all_queries(args.verifyta, projects, queries_numbers), queries)
+            print_queries(run_all_queries(args.verifyta, projects, queries_numbers), queries, not args.short)
         if not args.no_probabilities and len(probabilities) > 0:
             projects, probabilities_number = output_folder_probabilities(output_directory)
-            print_probabilities(run_all_probabilities(args.verifyta, projects, probabilities_number), probabilities)
+            print_probabilities(run_all_probabilities(args.verifyta, projects, probabilities_number), probabilities, not args.short)
         if not args.no_simulations and len(simulations) > 0:
             projects, simulations_number = output_folder_simulations(output_directory)
-            print_simulations(run_all_simulations(args.verifyta, projects, simulations_number), simulations, result_directory)
+            print_simulations(run_all_simulations(args.verifyta, projects, simulations_number), simulations, result_directory, not args.short)
 
     shutil.rmtree(output_directory)
     if len(os.listdir(result_directory)) == 0:
