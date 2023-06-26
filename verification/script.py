@@ -81,6 +81,19 @@ def to_array(values: list[int], short: bool = False):
     else:
         return '[{}]'.format(','.join([str(value) for value in values]))
 
+def get_space_length(max: list[int], min: list[int]) -> int:
+    value = 1
+    for index in range(0, len(max)):
+        value *= (max[index] + 1 - min[index])
+    return value
+
+def get_extensive_length(values: list[dict]):
+    return (int(values['speed']['max']) + 1 - int(values['speed']['min'])) * \
+           (int(values['disks']['max']) + 1 - int(values['disks']['min'])) * \
+           (int(values['policy']['max']) + 1 - int(values['policy']['min'])) * \
+           get_space_length(values['out_sensors']['max'], values['out_sensors']['min']) * \
+           get_space_length(values['stations_processing']['max'], values['stations_processing']['min'])
+
 def get_space(min: list[int], max: list[int]):
     ranges = []
     for index in range(0, len(min)):
@@ -88,22 +101,21 @@ def get_space(min: list[int], max: list[int]):
     for result in product(*ranges):
         yield result
 
-def generate_extensive_project(project: list[str], values: list[dict], path: str):
+def generate_extensive_project(values: list[dict]):
     for speed in range(values['speed']['min'], values['speed']['max'] + 1):
         for disks in range(values['disks']['min'], values['disks']['max'] + 1):
             for policy in range(values['policy']['min'], values['policy']['max'] + 1):
                 for sensors in get_space(values['out_sensors']['min'], values['out_sensors']['max']):
                     for stations in get_space(values['stations_processing']['min'], values['stations_processing']['max']):
-                        tmp = {
+                        yield {
                             'speed': speed,
                             'disks': disks,
                             'policy': policy,
                             'out_sensors': sensors,
                             'stations_processing': stations
                         }
-                        generate_project(project, tmp, path, 's{}-d{}-p{}-os{}-sp{}'.format(speed, disks, policy, to_array(sensors, short=True), to_array(stations, short=True)))
 
-def generate_project(project: list[str], values: list[dict], path: str, name: str):
+def generate_project(project: list[str], values: list[dict], name: str):
     new_project = []
     system = False
     done = False
@@ -139,29 +151,30 @@ outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
                 new_project.append('flowController = FlowController_{}();\n'.format(values['policy']))
             new_project.append('system initializer, motor, conveyorBelt, station, inSensor, outSensor, flowController;\n')
             new_project.append('    </system>\n')
-    with open(os.path.join(path,'project_{}.xml'.format(name)), 'w') as file:
+    with open(name, 'w') as file:
         file.writelines(new_project)
 
-def generate_projects(project: list[str], config: dict, scenario: str, path: str) -> bool:
+def generate_projects(config: dict, scenario: str):
     if scenario == 'extensive':
-        generate_extensive_project(project, config[scenario], path)
-        return True
+        return generate_extensive_project(config[scenario]), get_extensive_length(config[scenario])
     elif scenario in config:
-        generate_project(project, config[scenario], path, scenario)
-        return True
+        return [{
+                'speed': config[scenario]['speed'],
+                'disks': config[scenario]['disks'],
+                'policy': config[scenario]['policy'],
+                'out_sensors': config[scenario]['out_sensors'],
+                'stations_processing': config[scenario]['stations_processing']
+            }], 1
     else:
         print('Configuration not found')
-        return False
+        return (None, 0)
 
 def output_folder_parser(path: str, prefix: str) -> list[list[str]]:
-    projects = []
     items = []
     for item in os.listdir(path):
-        if item.startswith('project'):
-            projects.append(os.path.join(path, item))
-        elif item.startswith(prefix):
+        if item.startswith(prefix):
             items.append(os.path.join(path, item))
-    return projects, items
+    return items
 
 def output_folder_queries(path: str) -> list[list[str]]:
     return output_folder_parser(path, 'query')
@@ -172,22 +185,38 @@ def output_folder_probabilities(path: str) -> list[list[str]]:
 def output_folder_simulations(path: str) -> list[list[str]]:
     return output_folder_parser(path, 'simulation')
 
-def run_property(parameters: list[tuple[str, str, str]]) -> bool:
+def gen_args(content: list[str], verifier: str, projects: list, properties: list[str], path: str):
+    for project in projects:
+        for property in properties:
+            yield content, verifier, project, property, path
+
+def gen_name(values: dict, property: str):
+    return 's{}-d{}-p{}-os{}-sp{}-{}'.format(
+        values['speed'],
+        values['disks'],
+        values['policy'],
+        to_array(values['out_sensors'], short=True),
+        to_array(values['stations_processing'], short=True),
+        property[-6:-4])
+
+def run_property(parameters: list[tuple[list[str], str, dict, str, str]]) -> bool:
     start = time()
-    verifier, project, property = parameters
-    result = subprocess.run([verifier, project, property], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    content, verifier, project, property, path = parameters
+    name = gen_name(project, property)
+    fullname = os.path.join(path, 'project_{}.xml'.format(name))
+    generate_project(content, project, fullname)
+    result = subprocess.run([verifier, fullname, property], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    os.remove(fullname)
     if result.returncode != 0:
         print('[ERROR]', result.stderr.decode().rstrip())
         exit(1)
-    return result.stdout.decode(), project.split('/')[-1], property.split('/')[-1], time() - start
+    return result.stdout.decode(), name, property.split('/')[-1], time() - start
 
-def run_all(verifier: str, projects: list[str], properties: list[str], prefix: str, description: str) -> dict:
+def run_all(content: list[str], verifier: str, projects: list, properties: list[str], path: str, prefix: str, description: str, length: int) -> dict:
     pool = Pool(os.cpu_count() - 1)
-    args = [(verifier, project, property) for project in projects for property in properties]
     results = {}
     print('\033[;1m')
-    for result, project, property, time in tqdm(pool.imap_unordered(run_property, args), desc=description, total=len(args)):
-        project = project.split('project_')[1].strip('.xml')
+    for result, project, property, time in tqdm(pool.imap_unordered(run_property, gen_args(content, verifier, projects, properties, path)), desc=description, total=length * len(properties)):
         property = property.split('{}_'.format(prefix))[1].strip('.txt')
         results[(project, property)] = (result, '{0:.2f} seconds'.format(time))
     pool.close()
@@ -195,14 +224,14 @@ def run_all(verifier: str, projects: list[str], properties: list[str], prefix: s
     print('\033[0m')
     return results
 
-def run_all_queries(verifier: str, projects: list[str], queries: list[str]) -> dict:
-    return run_all(verifier, projects, queries, 'query', 'Verifying queries')
+def run_all_queries(content: list[str], verifier: str, projects: list, queries: list[str], path: str, length: str) -> dict:
+    return run_all(content, verifier, projects, queries, path, 'query', 'Verifying queries', length)
 
-def run_all_probabilities(verifier: str, projects: list[str], probabilities: list[str]) -> dict:
-    return run_all(verifier, projects, probabilities, 'probability', 'Calculating probabilities')
+def run_all_probabilities(content: list[str], verifier: str, projects: list, probabilities: list[str], path: str, length: str) -> dict:
+    return run_all(content, verifier, projects, probabilities, path, 'probability', 'Calculating probabilities', length)
 
-def run_all_simulations(verifier: str, projects: list[str], simulations: list[str]) -> dict:
-    return run_all(verifier, projects, simulations, 'simulation', 'Simulating')
+def run_all_simulations(content: list[str], verifier: str, projects: list, simulations: list[str], path: str, length: str) -> dict:
+    return run_all(content, verifier, projects, simulations, path, 'simulation', 'Simulating', length)
 
 def print_queries(results: dict, queries: str, verbose: bool):
     projects = {}
@@ -335,17 +364,15 @@ if __name__ == '__main__':
     generate_queries(queries, output_directory)
     generate_probabilities(probabilities, output_directory)
     generate_simulations(simulations, output_directory)
+    projects, length = generate_projects(config, args.scenario)
 
-    if generate_projects(project, config, args.scenario, output_directory):
+    if projects is not None:
         if not args.no_queries and len(queries) > 0:
-            projects, queries_numbers = output_folder_queries(output_directory)
-            print_queries(run_all_queries(args.verifyta, projects, queries_numbers), queries, not args.short)
+            print_queries(run_all_queries(project, args.verifyta, projects, output_folder_queries(output_directory), output_directory, length), queries, not args.short)
         if not args.no_probabilities and len(probabilities) > 0:
-            projects, probabilities_number = output_folder_probabilities(output_directory)
-            print_probabilities(run_all_probabilities(args.verifyta, projects, probabilities_number), probabilities, not args.short)
+            print_probabilities(run_all_probabilities(project, args.verifyta, projects, output_folder_probabilities(output_directory), output_directory, length), probabilities, not args.short)
         if not args.no_simulations and len(simulations) > 0:
-            projects, simulations_number = output_folder_simulations(output_directory)
-            print_simulations(run_all_simulations(args.verifyta, projects, simulations_number), simulations, result_directory, not args.short)
+            print_simulations(run_all_simulations(project, args.verifyta, projects, simulations, output_folder_simulations(output_directory), length), simulations, result_directory, not args.short)
 
     shutil.rmtree(output_directory)
     if len(os.listdir(result_directory)) == 0:
