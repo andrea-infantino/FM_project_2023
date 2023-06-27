@@ -218,7 +218,7 @@ def run_all(content: list[str], verifier: str, projects: list, properties: list[
     print('\033[;1m')
     for result, project, property, time in tqdm(pool.imap_unordered(run_property, gen_args(content, verifier, projects, properties, path)), desc=description, total=length * len(properties)):
         property = property.split('{}_'.format(prefix))[1].strip('.txt')
-        results[(project, property)] = (result, '{0:.2f} seconds'.format(time))
+        results[(project[:-3], property)] = (result, '{0:.2f} seconds'.format(time))
     pool.close()
     pool.join()
     print('\033[0m')
@@ -372,7 +372,7 @@ if __name__ == '__main__':
         if not args.no_probabilities and len(probabilities) > 0:
             print_probabilities(run_all_probabilities(project, args.verifyta, projects, output_folder_probabilities(output_directory), output_directory, length), probabilities, not args.short)
         if not args.no_simulations and len(simulations) > 0:
-            print_simulations(run_all_simulations(project, args.verifyta, projects, simulations, output_folder_simulations(output_directory), length), simulations, result_directory, not args.short)
+            print_simulations(run_all_simulations(project, args.verifyta, projects, output_folder_simulations(output_directory), output_directory, length), simulations, result_directory, not args.short)
 
     shutil.rmtree(output_directory)
     if len(os.listdir(result_directory)) == 0:
