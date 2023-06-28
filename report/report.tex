@@ -49,8 +49,8 @@
 
             \begin{tabular}{lrp{0.04\columnwidth}lrp{0.04\columnwidth}lr}
                 \multicolumn{2}{c}{\large \textbf{Andrea Infantino}} & & \multicolumn{2}{c}{\large \textbf{Riccardo Motta}} & & \multicolumn{2}{c}{\large \textbf{Matteo Negro}} \\
-                Person ID & ??? & & Person ID & 10658639 & & Person ID & 10642961 \\
-                Student ID & ??? & & Student ID & 218685 & & Student ID & ???
+                Person ID & 10671720 & & Person ID & 10658639 & & Person ID & 10642961 \\
+                Student ID & 225757 & & Student ID & 218685 & & Student ID & 222025
             \end{tabular}
 
             \nbvspace[1]
@@ -193,10 +193,10 @@
         \centering
         \begin{tabularx}{\linewidth}{*{2}{>{\centering\arraybackslash}X}}
             \begin{subfigure}{\linewidth}
-                \caption{Controller V0}
+                \caption{Controller v0}
             \end{subfigure} &
             \begin{subfigure}{\linewidth}
-                \caption{Controller V1}
+                \caption{Controller v1}
             \end{subfigure} \\
             \begin{subfigure}{0.5\columnwidth}
                 \centering
@@ -215,10 +215,10 @@
                 \includegraphics[width=\columnwidth]{images/automata/flow_controller_3}
             \end{subfigure} \\
             \begin{subfigure}{\linewidth}
-                \caption{Controller V2}
+                \caption{Controller v2}
             \end{subfigure} &
             \begin{subfigure}{\linewidth}
-                \caption{Controller V3}
+                \caption{Controller v3}
             \end{subfigure}
         \end{tabularx}
         \caption{the Timed Automata of the various types of controllers.}
@@ -227,10 +227,31 @@
     As explained in the introduction, these are the various policy schedules we implemented. Each one of them represents a different way to schedule the workpieces on the processing stations. Starting from the easiest ones, the ones in which all the workpieces follow the same path (either the direct one or the alternative one), to more complex ones, like the one in which we keep track of the queues in front of the first stations of the branch.\medskip
 
     Since the real movement of the various workpieces is managed by the conveyor belt, these automata, if they need to change the branch where the workpieces need to be sent, send a message to it in order to notify the change in the path.
-
+    
     \section{Design Decisions} \label{section:design_decisions}
 
+    \paragraph{TODO}
+    \begin{itemize}
+        \item Hypothesis (numbering, flow controller, maximumber of disks\dots)
+        \item Optimizations (clocks removal, automata semplification, timeline of our changes\dots)
+        \item Properties we are verifying (in TCTL and not in UPPAAL's language)
+    \end{itemize}
+
+    \section{Stochastic version}
+
+    Explain it and point out the differences with the automata we changed.
+
     \section{Scenarios}
+
+    \subsection{Scenario 1}
+
+    \subsection{Scenario 2}
+
+    \subsection{Scenario 3}
+
+    \subsection{Scenario 4 (stochastic)}
+
+    \subsection{Scenario 5 (stochastic)}
 
     \section{Conclusions}
 

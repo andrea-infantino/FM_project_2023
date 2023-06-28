@@ -801,7 +801,7 @@ system initializer, conveyorBelt, station, inSensor, outSensor, flowController;
 			<comment>------ Mandatory properties ------</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=10000] (&lt;&gt; (sum(i : SlotId) slot_busy[i]) == DISKS)</formula>
+			<formula>Pr[&lt;=10000] ([] initializer.run_state imply (sum(i : SlotId) slot_busy[i]) == DISKS)</formula>
 			<comment>No spawn or disappear of disk
 
 Verifies properties:
@@ -819,7 +819,8 @@ P3. No queue ever exceeds the maximum allowed length.</comment>
 			<formula>Pr[&lt;=10000] (&lt;&gt; ((forall(id_s : StationId) (station(id_s).Processing or station(id_s).Done)) &amp;&amp; 
 		 (forall(id_o : OutSensorId) (outSensor(id_o).Locked)) &amp;&amp; 
 		 (forall(id_i : InSensorId) (inSensor(id_i).Locked))))</formula>
-			<comment>Deadlock</comment>
+			<comment>Verifies property:
+P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
 			<formula/>
