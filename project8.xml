@@ -274,25 +274,25 @@ bool next_slot_is_free() {
 		<location id="id32" x="-34" y="-255">
 			<name x="-8" y="-280">Unlocked</name>
 		</location>
-		<location id="id33" x="-34" y="-59">
-			<name x="-8" y="-51">Locked</name>
+		<location id="id33" x="-34" y="-68">
+			<name x="-8" y="-60">Locked</name>
 		</location>
 		<init ref="id31"/>
 		<transition id="id34">
 			<source ref="id33"/>
 			<target ref="id32"/>
-			<label kind="synchronisation" x="-433" y="-178">station_free[station_controlled]?</label>
-			<label kind="assignment" x="-391" y="-161">in_sensors_state[id] = false</label>
-			<nail x="-145" y="-110"/>
-			<nail x="-145" y="-204"/>
+			<label kind="synchronisation" x="-391" y="-178">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-349" y="-161">in_sensors_state[id] = false</label>
+			<nail x="-119" y="-127"/>
+			<nail x="-119" y="-195"/>
 		</transition>
 		<transition id="id35">
 			<source ref="id32"/>
 			<target ref="id33"/>
-			<label kind="synchronisation" x="85" y="-178">station_busy[station_controlled]?</label>
-			<label kind="assignment" x="85" y="-161">in_sensors_state[id] = true</label>
-			<nail x="76" y="-204"/>
-			<nail x="76" y="-110"/>
+			<label kind="synchronisation" x="60" y="-178">station_busy[station_controlled]?</label>
+			<label kind="assignment" x="60" y="-161">in_sensors_state[id] = true</label>
+			<nail x="51" y="-195"/>
+			<nail x="51" y="-127"/>
 		</transition>
 		<transition id="id36">
 			<source ref="id31"/>
