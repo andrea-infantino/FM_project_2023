@@ -673,32 +673,32 @@ P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	station(0).Pre_processing + station(0).Processing * 2 + station(0).Done * 3 + 4*5,
-	station(1).Pre_processing + station(1).Processing * 2 + station(1).Done * 3 + 4*4,
-	station(2).Pre_processing + station(2).Processing * 2 + station(2).Done * 3 + 4*3,
-	station(3).Pre_processing + station(3).Processing * 2 + station(3).Done * 3 + 4*2,
-	station(4).Pre_processing + station(4).Processing * 2 + station(4).Done * 3 + 4,
+	station(0).Pre_processing + station(0).Processing * 2 + station(0).Done * 3,
+	station(1).Pre_processing + station(1).Processing * 2 + station(1).Done * 3,
+	station(2).Pre_processing + station(2).Processing * 2 + station(2).Done * 3,
+	station(3).Pre_processing + station(3).Processing * 2 + station(3).Done * 3,
+	station(4).Pre_processing + station(4).Processing * 2 + station(4).Done * 3,
 	station(5).Pre_processing + station(5).Processing * 2 + station(5).Done * 3
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	outSensor(0).Locked + 4*4,
-	outSensor(1).Locked + 4*3,
-	outSensor(2).Locked + 4*2,
-	outSensor(3).Locked + 4,
+	outSensor(0).Locked,
+	outSensor(1).Locked,
+	outSensor(2).Locked,
+	outSensor(3).Locked,
 	outSensor(4).Locked
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	inSensor(0).Locked + 4*5,
-	inSensor(1).Locked + 4*4,
-	inSensor(2).Locked + 4*3,
-	inSensor(3).Locked + 4*2,
-	inSensor(4).Locked + 4,
+	inSensor(0).Locked,
+	inSensor(1).Locked,
+	inSensor(2).Locked,
+	inSensor(3).Locked,
+	inSensor(4).Locked,
 	inSensor(5).Locked
 }</formula>
 			<comment/>
