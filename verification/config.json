@@ -41,5 +41,12 @@
         "policy": 2,
         "out_sensors": [2, 24, 68, 90, 105],
         "stations_processing": [6, 7, 8, 9, 8, 7]
+    },
+    "too-fast": {
+        "speed": 1,
+        "disks": 12,
+        "policy": 3,
+        "out_sensors": [2, 24, 68, 90, 105],
+        "stations_processing": [2, 2, 10, 5, 5, 20]
     }
 }
