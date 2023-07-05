@@ -9,9 +9,11 @@
 \usepackage[margin=60pt]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage{colortbl}
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{tabularx}
+\usepackage{xcolor}
 
 \setlength{\parindent}{0pt}
 
@@ -22,10 +24,11 @@
 
 \newcommand{\figureref}[1]{Figure \ref{#1}}
 \newcommand{\reference}[1]{\ref{#1}: \nameref{#1} (page \pageref{#1})}
-
 \newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
 
 \renewcommand\tabularxcolumn[1]{m{#1}}
+
+\arrayrulecolor{lightgray}
 
 \begin{document}
 
@@ -233,7 +236,7 @@
     \paragraph{TODO}
     \begin{itemize}
         \item Hypothesis (numbering, flow controller, maximum number of disks\dots)
-        \item Optimizations (clocks removal, automata semplification, timeline of our changes\dots)
+        \item Optimizations (clocks removal, automata simplification, timeline of our changes\dots)
         \item Properties we are verifying (in TCTL and not in UPPAAL's language)
     \end{itemize}
 
@@ -243,15 +246,54 @@
 
     \section{Scenarios}
 
-    \subsection{Scenario 1}
+    These are some possible scenarios which want to show that the production plant we modelled works correctly in any (normal) situation. There are some pathological cases in which the plant fails to guarantee some properties, but it's completely normal since they are all pathological cases. Some of them are depicted here.
+
+    \subsection{Scenario 1: the normality}
+
+    \paragraph{Description} This is a general scenario in which the structure of the plant is the same as the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt (each one on the opposite branch with respect to the previous workpiece).
+
+    \paragraph{Parameters}
+
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            {\fontfamily{lmtt}\fontseries{b}\selectfont SPEED} & {\fontfamily{lmtt}\fontseries{b}\selectfont DISKS} & \textbf{Policy} & {\fontfamily{lmtt}\fontseries{b}\selectfont POS\_OUT\_SENSORS} & {\fontfamily{lmtt}\fontseries{b}\selectfont STATIONS\_ELABORATION\_TIME} \\
+            \hline
+            1 & 12 & 3 & [2, 24, 68, 90, 105] & [6, 7, 8, 9, 8, 7] \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \paragraph{Simulations} This is what we obtained by simulating the system for 1000 time instants:
+
+    \begin{figure}[h!]
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{images/scenarios/scenario1_stations}
+        \end{subfigure}
+        \begin{subfigure}{0.49\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/scenarios/scenario1_insensors}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.49\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/scenarios/scenario1_outsensors}
+        \end{subfigure}
+        \caption{the results of the simulation over 1000 time instants.}
+    \end{figure}
+
+    \paragraph{Results} All the properties are \textit{verified}. As it's supposed to, the plant is working without any problem and all the workpieces flow all around the plant without any problem. The sensors are guaranteeing the required properties and the stations do their job flawlessly.
 
     \subsection{Scenario 2}
 
     \subsection{Scenario 3}
 
-    \subsection{Scenario 4 (stochastic)}
+    \subsection{Scenario 4}
 
     \subsection{Scenario 5 (stochastic)}
+
+    \subsection{Scenario 6 (stochastic)}
 
     \section{Conclusions}
 
