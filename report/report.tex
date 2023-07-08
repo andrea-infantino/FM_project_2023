@@ -19,8 +19,10 @@
 
 \hypersetup{
     pdftitle={Formal Digital Twin of a LEGO® MINDSTROMS™ Production Plant},
-    pdfauthor={Andrea Infantino, Riccardo Motta and Matteo Negro}
+    pdfauthor={Andrea Infantino, Riccardo Motta, Matteo Negro}
 }
+
+\captionsetup[figure]{labelfont=bf}
 
 \newcommand{\figureref}[1]{Figure \ref{#1}}
 \newcommand{\reference}[1]{\ref{#1}: \nameref{#1} (page \pageref{#1})}
@@ -78,7 +80,7 @@
         \label{figure:scheme}
     \end{figure}
 
-    This is the plant we modelled in our project. The yellow circles are the workpieces, the blue ones are the processing stations, the light and dark red are the sensors and the green bar is the flow controller of the branch.
+    This is the plant we modelled in our project. The yellow circles are the workpieces, the blue rectangles are the processing stations, the light and dark red circles are the sensors and the green bar is the flow controller.
 
     \paragraph{Notes on the scheme} We enhanced the original scheme with the number the various stations and laser sensors have inside our project and with the numbers of the positions of the conveyor belt, in order to respect what we have done inside the project.
 
@@ -233,16 +235,39 @@
     
     \section{Design Decisions} \label{section:design_decisions}
 
-    \paragraph{TODO}
-    \begin{itemize}
-        \item Hypothesis (numbering, flow controller, maximum number of disks\dots)
-        \item Optimizations (clocks removal, automata simplification, timeline of our changes\dots)
-        \item Properties we are verifying (in TCTL and not in UPPAAL's language)
-    \end{itemize}
+    \subsection{Hypothesis}
+
+    \paragraph{TODO} Hypothesis (numbering, flow controller, maximum number of disks\dots).
+
+    \subsection{Optimizations}
+
+    Here we present all the main optimization steps we performed in order to have the final model.
+
+    \subsubsection{The basic idea}
+
+    \paragraph{Idea} At first, we decided to model every single entity of the plant. We had the template for generating all the single slots of the conveyor belt. This has been done in order to have a precise (and discrete) representation of the plant pointing out all the atomic components that we have.
+
+    \paragraph{Situation} The main issue with this representation is the fact that by doing this, we had a huge verification time created by the huge number of entities and states the software had to process each time.
+
+    \subsubsection{Unique conveyor belt}
+
+    \paragraph{Idea} In order to simplify the modelling of the plant and our code, we decided to group all together the various slots of the conveyor belt into a logically single entity (the \texttt{ConveyorBelt}).
+
+    \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project) since we have a unique entity which manages all the complexity deriving from the movement of the various workpieces. This also works in synchronicity with the various processing stations and sensors in order to block the pieces when needed (and not only when there is a workpiece in front that doesn't move) and with the flow controller which tells the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved a lot the verification time needed to check the properties, but we still had a huge memory consumption.
+
+    \subsubsection{Unique clock}
+
+    \paragraph{Idea} By talking with some colleagues and with the instructors we realized that we had 7 different clocks inside our project (one for the general clock of the system and one for each station) and that they tend to be one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to have all the various templates synchronizing with it.
+
+    \paragraph{Situation} We added a new template, the \texttt{Motor}, which sends the right signals at the right moment to all the components that need it respecting the speed of the conveyor belt's movement, and we synchronized the stations' processing times with the general clock of the system (which is not related to the speed of the conveyor belt). By doing this we reduced the number of possible transitions the system can take at any instance, and we make sure that everything is synchronized with just one single entity. This allowed us to have a skyrocketing verification time, even with 12 different workpieces circulating in the production plant at the same time.
+
+    \section{Properties}
+
+    \paragraph{TODO} Properties we are verifying (in TCTL and not in UPPAAL's language).
 
     \section{Stochastic version}
 
-    Explain it and point out the differences with the automata we changed.
+    \paragraph{TODO} Explain it and point out the differences with the automata we changed.
 
     \section{Scenarios}
 
