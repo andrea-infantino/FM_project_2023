@@ -237,7 +237,11 @@
 
     \subsection{Hypothesis}
 
-    \paragraph{TODO} Hypothesis (numbering, flow controller, maximum number of disks\dots).
+    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of the merge of the two conveyor belt at position 103. Since we needed to decide which workpiece to let flow in case there is one ready on each branch, with our numbering, we always let flow the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
+
+    \paragraph{Maximum number of circulating workpieces} We decided to stick with the representation of \figureref{figure:scheme}. So we have at most twelve workpieces circulating in the production plant, and they all start from position 13 (the one the first \texttt{InSensor}) backward. Please, notice that if the number of workpieces exceeds the position of the first \texttt{OutSensor} (which can be changed by project hypothesis), one of the properties isn't verified. However, this is normal since during the initialization of the plant we are already exceeding the maximum queue's length of the first one.
+
+    \paragraph{Time discretization} This will be more clear in the next part in which we describe the main optimization steps we did, but, in brief, we discretized the time in order to have a better synchronization mechanism of the whole plant.
 
     \subsection{Optimizations}
 
@@ -254,6 +258,12 @@
     \paragraph{Idea} In order to simplify the modelling of the plant and our code, we decided to group all together the various slots of the conveyor belt into a logically single entity (the \texttt{ConveyorBelt}).
 
     \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project) since we have a unique entity which manages all the complexity deriving from the movement of the various workpieces. This also works in synchronicity with the various processing stations and sensors in order to block the pieces when needed (and not only when there is a workpiece in front that doesn't move) and with the flow controller which tells the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved a lot the verification time needed to check the properties, but we still had a huge memory consumption.
+
+    \subsubsection{Automata simplification}
+
+    \paragraph{Idea} Since one of the thinks that make the verification process slow is the number of states it needs to check at each iteration, we decided to try to simplify at most the number of states of all our automata.
+
+    \paragraph{Situation} We removed some superfluous states from our model, and we split the flow controller in different ones in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements in the verification time.
 
     \subsubsection{Unique clock}
 
