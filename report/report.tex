@@ -9,8 +9,11 @@
 \usepackage[margin=60pt]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{colortbl}
 \usepackage{graphicx}
+\usepackage{mathtools}
 \usepackage{subcaption}
 \usepackage{tabularx}
 \usepackage{xcolor}
@@ -27,6 +30,9 @@
 \newcommand{\figureref}[1]{Figure \ref{#1}}
 \newcommand{\reference}[1]{\ref{#1}: \nameref{#1} (page \pageref{#1})}
 \newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
+
+\newcommand{\formulacomment}[2]{\underset{\varphi_{#1}}{\underbrace{#2}}}
+\newcommand{\formulatext}[1]{\text{\texttt{#1}}}
 
 \renewcommand\tabularxcolumn[1]{m{#1}}
 
@@ -273,7 +279,53 @@
 
     \section{Properties}
 
-    \paragraph{TODO} Properties we are verifying (in TCTL and not in UPPAAL's language).
+    \subsection{No two workpieces can be in the same position}
+
+    This property embraces two different requirements of the production plant:
+    \begin{itemize}
+        \item \textit{It never happens that a station holds more than 1 workpiece};
+        \item \textit{It never happens that two pieces occupy the same conveyor belt slot}.
+    \end{itemize}
+
+    This is because we modelled the plant as a unique conveyor belt with all the stations which are placed on a single slot. The slots are modelled as an array of 110 Boolean values, in which \texttt{true} corresponds to the presence of a workpiece in that position.\medskip
+
+    In order to verify this property we check that the number of the workpieces after the plant has been initialized remains constant and equal to its configured number, which can be represented in TCTL as follows:
+    \[\forall \square \left(\formulacomment{1}{\formulatext{initializer.run\_state}} \implies \left(\formulacomment{2}{\sum_{i = 0}^{109} \formulatext{slot\_busy[i]}} = \formulatext{DISKS}\right)\right)\]
+
+    \begin{itemize}
+        \item \(\varphi_1\): the system has been initialized;
+        \item \(\varphi_2\): the number of circulating workpieces in the production plant.
+    \end{itemize}
+
+    \subsection{Queues never exceed their maximum length}
+
+    This verifies the property: \textit{no queue ever exceeds the maximum allowed length}.\medskip
+
+    We verified this thanks to the use of a custom function which, given the position of the two sensors between the queue should form, we check that in the positions between the two sensors (including their positions) and in the one right before the sensor at the end of the queue itself there is at least one free position. If the property is false it means that there is at most one extra piece in the queue. We verified this as follows:
+    \[\forall \square \left(\forall i \in \left[0; 4\right] \left(\formulacomment{1}{\formulatext{outSensor(i).Locked}} \implies \formulacomment{2}{\formulatext{check\_queue(i, POS\_OUT\_SENSORS[i])}}\right)\right)\]
+
+    \begin{itemize}
+        \item \(\varphi_1\): the \(i\)-th \texttt{InSensors} is locked (the guarded station is not in \texttt{Idle});
+        \item \(\varphi_2\): checks that the queue doesn't exceed its maximum length.
+    \end{itemize}
+
+    \subsection{The plant never incurs in a deadlock}
+
+    This verifies the property: \textit{the plant never incurs in deadlock}.\medskip
+
+    In order to verify this, we checked both the automata part and the logic one. This means that we made sure to not incur in a deadlock in the transitions and that all the pieces are continuing to circulate in the plant.\medskip
+
+    The property for the transitions is verified with \(\forall \square \left(\neg \formulatext{deadlock}\right)\), while the second one with:
+    {
+        \scriptsize
+        \[\forall \square \left(\neg \left(\formulacomment{1}{\left(\forall i \in \left[0; 5\right] \left(\formulatext{station(i).Processing} \vee \formulatext{station(i).Done}\right)\right)} \wedge \formulacomment{2}{\left(\forall i \in \left[0; 4\right] \formulatext{outSensor(i).Locked}\right)} \wedge \formulacomment{3}{\left(\forall i \in \left[0; 5\right] \formulatext{inSensor(i).Locked}\right)}\right)\right)\]
+    }
+
+    \begin{itemize}
+        \item \(\varphi_1\): all the stations are either blocked on \texttt{Processing} or \texttt{Done};
+        \item \(\varphi_2\): all the \texttt{OutSensor} are preventing pieces from exiting the stations;
+        \item \(\varphi_3\): all the \texttt{InSensor} are blocking pieces from reaching the stations.
+    \end{itemize}
 
     \section{Stochastic version}
 
