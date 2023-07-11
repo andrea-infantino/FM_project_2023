@@ -22,6 +22,7 @@ const SlotId POS_IN_SENSORS[IN_SENSORS] = {13, 34, 64, 77, 93, 107};
 const SlotId POS_STATIONS[STATIONS] = {17, 38, 81, 88, 97, 109};
 
 const InSensorId IN_SENSOR_OF_OUT_SENSOR[OUT_SENSORS] = {0, 1, 3, 4, 5};
+const SlotId POS_IN_SENSORS_IN_ORDER[STATIONS] = {POS_IN_SENSORS[0], POS_IN_SENSORS[1], POS_IN_SENSORS[3], POS_IN_SENSORS[2], POS_IN_SENSORS[4], POS_IN_SENSORS[5]};
 
 /**
  * Channels
@@ -48,7 +49,26 @@ bool check_queue(const OutSensorId id, const SlotId position) {
         if (!slot_busy[i])
             return true;
     return false;
-}</declaration>
+}
+
+bool check_pre_station(const StationId id, const SlotId position) {
+    int i;
+    if (id != 3) {
+        for (i = POS_IN_SENSORS_IN_ORDER[id] + 1; i &lt; position; i++)
+            if (slot_busy[i])
+                return false;
+        return true;
+    } else {
+        for (i = POS_IN_SENSORS_IN_ORDER[id] + 1; i &lt;= CONTROLLER_POS; i++)
+            if (slot_busy[i])
+                return false;
+        for (i = BRANCH_FIRST_POS; i &lt; position; i++)
+            if (slot_busy[i])
+                return false;
+        return true;
+    }
+}
+</declaration>
 	<template>
 		<name>Initializer</name>
 		<parameter>const int[1, 12] n_disks</parameter>
@@ -614,7 +634,6 @@ const int STATIONS_ELABORATION_TIME[STATIONS] = { /***/     6    /** ID: 0 (1st)
  * System definition
  */
 
-const SlotId POS_IN_SENSORS_IN_ORDER[STATIONS] = {POS_IN_SENSORS[0], POS_IN_SENSORS[1], POS_IN_SENSORS[3], POS_IN_SENSORS[2], POS_IN_SENSORS[4], POS_IN_SENSORS[5]};
 const OutSensorId OUT_SENSORS_ID_IN_ORDER[STATIONS] = {1, 2, 4, 3, 4, 0};
 const StationId IN_SENSORS_STATION[IN_SENSORS] = {0, 1, 3, 2, 4, 5};
 
@@ -643,13 +662,6 @@ P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
 		</query>
 		<query>
-			<formula>A[] (forall(id : StationId) (station(id).Processing imply (!slot_busy[POS_STATIONS[id] - 1] &amp;&amp; slot_busy[POS_STATIONS[id]])))</formula>
-			<comment>If a station is processing, no other piece is waiting to enter immediately before
-
-Verifies property:
-P1. It never happens that a station holds more than 1 piece.</comment>
-		</query>
-		<query>
 			<formula>A[] (forall(id : OutSensorId) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id]))</formula>
 			<comment>If the sensor is locked, at least one position between it's input sensor and the location right before it is free
 
@@ -662,10 +674,23 @@ P3. No queue ever exceeds the maximum allowed length.</comment>
 P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
-			<formula>A[] (not ((forall(id_s : StationId) (station(id_s).Processing or station(id_s).Done)) &amp;&amp; 
-		 (forall(id_o : OutSensorId) (outSensor(id_o).Locked)) &amp;&amp; 
-		 (forall(id_i : InSensorId) (inSensor(id_i).Locked))))</formula>
-			<comment/>
+			<formula>A[] (
+	not (
+		(forall(id_s : StationId)   (station(id_s).Processing or station(id_s).Done)) &amp;&amp; 
+		(forall(id_o : OutSensorId) (outSensor(id_o).Locked))                         &amp;&amp; 
+		(forall(id_i : InSensorId)  (inSensor(id_i).Locked))
+	)
+)</formula>
+			<comment>Verifies property:
+P4. the plant never incurs in deadlock.</comment>
+		</query>
+		<query>
+			<formula/>
+			<comment>------ Extra properties ------</comment>
+		</query>
+		<query>
+			<formula>A[] (forall(id : StationId) (station(id).Processing imply check_pre_station(id, POS_STATIONS[id])))</formula>
+			<comment>If a station is processing, no other piece is waiting to enter (so, there is no piece between the inSensor and the station)</comment>
 		</query>
 		<query>
 			<formula/>
