@@ -19,6 +19,27 @@
         "stations_processing": {
             "min": [6, 6, 6, 6, 6, 6],
             "max": [9, 9, 9, 9, 9, 9]
+        },
+        "station_std_deviation": {
+            "min": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            "max": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        },
+        "station_std_deviation_samples": 10,
+        "in_sensor_err": {
+            "min": [1, 1, 1, 1, 1, 1],
+            "max": [1, 1, 1, 1, 1, 1]
+        },
+        "in_sensor_right": {
+            "min": [99, 99, 99, 99, 99, 99],
+            "max": [99, 99, 99, 99, 99, 99]
+        },
+        "out_sensor_err": {
+            "min": [1, 1, 1, 1, 1],
+            "max": [1, 1, 1, 1, 1]
+        },
+        "out_sensor_right": {
+            "min": [99, 99, 99, 99, 99],
+            "max": [99, 99, 99, 99, 99]
         }
     },
     "standard": {
@@ -48,5 +69,17 @@
         "policy": 3,
         "out_sensors": [2, 24, 68, 90, 105],
         "stations_processing": [2, 2, 10, 5, 5, 20]
+    },
+    "s-standard": {
+        "speed": 1,
+        "disks": 12,
+        "policy": 3,
+        "out_sensors": [2, 24, 68, 90, 105],
+        "stations_processing": [6, 7, 8, 9, 8, 7],
+        "station_std_deviation": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        "in_sensor_err": [1, 1, 1, 1, 1, 1],
+        "in_sensor_right": [99, 99, 99, 99, 99, 99],
+        "out_sensor_err": [1, 1, 1, 1, 1],
+        "out_sensor_right": [99, 99, 99, 99, 99]
     }
 }

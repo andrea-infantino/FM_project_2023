@@ -13,6 +13,7 @@ import shutil
 import signal
 import subprocess
 from time import time
+import numpy
 from tqdm import tqdm
 import xml.etree.ElementTree as ET
 
@@ -33,10 +34,13 @@ def get_args():
 
 def get_project(file_name: str) -> list[str]:
     project = []
+    stochastic = False
     with open(file_name, 'r') as file:
         for line in file.readlines():
+            if 'stochastic' in line:
+                stochastic = True
             project.append(line[:-1])
-    return project
+    return project, stochastic
 
 def get_config(file_name: str) -> dict:
     with open(file_name, 'r') as file:
@@ -75,24 +79,37 @@ def generate_probabilities(probabilities: list[str], path: str):
 def generate_simulations(simulations: list[str], path: str):
     generate_properties(simulations, path, 'simulation')
 
-def to_array(values: list[int], short: bool = False):
+def to_array(values: list, short: bool = False):
     if not short:
         return '{{{}}}'.format(', '.join([str(value) for value in values]))
     else:
         return '[{}]'.format(','.join([str(value) for value in values]))
 
-def get_space_length(max: list[int], min: list[int]) -> int:
+def get_space_length(min: list[int], max: list[int]) -> int:
     value = 1
     for index in range(0, len(max)):
         value *= (max[index] + 1 - min[index])
     return value
 
-def get_extensive_length(values: list[dict]):
+def get_space_length_float(min: list[float], max: list[float], samples: int) -> int:
+    value = 1
+    for index in range(0, len(max)):
+        value *= (int(max[index] * samples) + 1 - int(min[index] * samples))
+    return value
+
+def get_extensive_length(values: list[dict], stochastic: bool):
     return (int(values['speed']['max']) + 1 - int(values['speed']['min'])) * \
            (int(values['disks']['max']) + 1 - int(values['disks']['min'])) * \
            (int(values['policy']['max']) + 1 - int(values['policy']['min'])) * \
-           get_space_length(values['out_sensors']['max'], values['out_sensors']['min']) * \
-           get_space_length(values['stations_processing']['max'], values['stations_processing']['min'])
+           get_space_length(values['out_sensors']['min'], values['out_sensors']['max']) * \
+           get_space_length(values['stations_processing']['min'], values['stations_processing']['max']) * \
+           (1 if not stochastic else 
+                get_space_length_float(values['station_std_deviation']['min'], values['station_std_deviation']['max'], values['station_std_deviation_samples']) * \
+                get_space_length(values['in_sensor_err']['min'], values['in_sensor_err']['max']) * \
+                get_space_length(values['in_sensor_right']['min'], values['in_sensor_right']['max']) * \
+                get_space_length(values['out_sensor_err']['min'], values['out_sensor_err']['max']) * \
+                get_space_length(values['out_sensor_right']['min'], values['out_sensor_right']['max'])
+           )
 
 def get_space(min: list[int], max: list[int]):
     ranges = []
@@ -101,35 +118,68 @@ def get_space(min: list[int], max: list[int]):
     for result in product(*ranges):
         yield result
 
-def generate_extensive_project(values: list[dict]):
+def get_space_float(min: list[float], max: list[float], samples: int):
+    ranges = []
+    for index in range(0, len(min)):
+        if min[index] != max[index]:
+            ranges.append(numpy.linspace(min[index], max[index], samples + 1, endpoint=True))
+        else:
+            ranges.append([min[index]])
+    for result in product(*ranges):
+        yield result
+
+def generate_extensive_project(values: list[dict], stochastic: bool):
     for speed in range(values['speed']['min'], values['speed']['max'] + 1):
         for disks in range(values['disks']['min'], values['disks']['max'] + 1):
             for policy in range(values['policy']['min'], values['policy']['max'] + 1):
                 for sensors in get_space(values['out_sensors']['min'], values['out_sensors']['max']):
                     for stations in get_space(values['stations_processing']['min'], values['stations_processing']['max']):
-                        yield {
-                            'speed': speed,
-                            'disks': disks,
-                            'policy': policy,
-                            'out_sensors': sensors,
-                            'stations_processing': stations
-                        }
+                        if not stochastic:
+                            yield {
+                                'speed': speed,
+                                'disks': disks,
+                                'policy': policy,
+                                'out_sensors': sensors,
+                                'stations_processing': stations
+                            }
+                        else:
+                            for standard_deviation in get_space_float(values['station_std_deviation']['min'], values['station_std_deviation']['max'], values['station_std_deviation_samples']):
+                                for in_sensor_err in get_space(values['in_sensor_err']['min'], values['in_sensor_err']['max']):
+                                    for in_sensor_right in get_space(values['in_sensor_right']['min'], values['in_sensor_right']['max']):
+                                        for out_sensor_err in get_space(values['out_sensor_err']['min'], values['out_sensor_err']['max']):
+                                            for out_sensor_right in get_space(values['out_sensor_right']['min'], values['out_sensor_right']['max']):
+                                                yield {
+                                                    'speed': speed,
+                                                    'disks': disks,
+                                                    'policy': policy,
+                                                    'out_sensors': sensors,
+                                                    'stations_processing': stations,
+                                                    'station_std_deviation': standard_deviation,
+                                                    'in_sensor_err': in_sensor_err,
+                                                    'in_sensor_right': in_sensor_right,
+                                                    'out_sensor_err': out_sensor_err,
+                                                    'out_sensor_right': out_sensor_right
+                                                }
 
-def generate_project(project: list[str], values: list[dict], name: str):
+def generate_project(project: list[str], values: list[dict], name: str, stochastic: bool):
     new_project = []
     system = False
     done = False
     static = '''
-const SlotId POS_IN_SENSORS_IN_ORDER[STATIONS] = {POS_IN_SENSORS[0], POS_IN_SENSORS[1], POS_IN_SENSORS[3], POS_IN_SENSORS[2], POS_IN_SENSORS[4], POS_IN_SENSORS[5]};
-const OutSensorId OUT_SENSORS_ID_IN_ORDER[STATIONS] = {1, 2, 4, 3, 4, 0};
-const StationId IN_SENSORS_STATION[IN_SENSORS] = {0, 1, 3, 2, 4, 5};
-
 initializer = Initializer(DISKS);
 motor = Motor(SPEED);
 conveyorBelt = ConveyorBelt();
 station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id]);
 inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id]);
 outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
+'''
+    static_stochastic = '''
+initializer = Initializer(DISKS);
+motor = Motor(SPEED);
+conveyorBelt = ConveyorBelt();
+station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id], STD_DEV_STATIONS[id]);
+inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id], IN_SENSORS_WEIGHT_RIGHT[id], IN_SENSORS_WEIGHT_ERR[id]);
+outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS_WEIGHT_RIGHT[id], OUT_SENSORS_WEIGHT_ERR[id]);
 '''
     for line in project:
         if not system and '<system>' not in line:
@@ -144,7 +194,15 @@ outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
             new_project.append('const int[1, 12] DISKS = {};\n'.format(values['disks']))
             new_project.append('const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensors'])))
             new_project.append('const int STATIONS_ELABORATION_TIME[STATIONS] = {};\n'.format(to_array(values['stations_processing'])))
-            new_project.append(static)
+            if not stochastic:
+                new_project.append(static)
+            else:
+                new_project.append('const double STD_DEV_STATIONS[STATIONS] = {};\n'.format(to_array(values['station_std_deviation'])))
+                new_project.append('const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {};\n'.format(to_array(values['in_sensor_err'])))
+                new_project.append('const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {};\n'.format(to_array(values['in_sensor_right'])))
+                new_project.append('const int OUT_SENSORS_WEIGHT_ERR[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensor_err'])))
+                new_project.append('const int OUT_SENSORS_WEIGHT_RIGHT[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensor_right'])))
+                new_project.append(static_stochastic)
             if values['policy'] == 0:
                 new_project.append('flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);\n')
             else:
@@ -154,20 +212,14 @@ outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
     with open(name, 'w') as file:
         file.writelines(new_project)
 
-def generate_projects(config: dict, scenario: str):
+def generate_projects(config: dict, scenario: str, stochastic: bool):
     if scenario == 'extensive':
-        return generate_extensive_project(config[scenario]), get_extensive_length(config[scenario])
+        return generate_extensive_project(config[scenario], stochastic), get_extensive_length(config[scenario], stochastic)
     elif scenario in config:
-        return [{
-                'speed': config[scenario]['speed'],
-                'disks': config[scenario]['disks'],
-                'policy': config[scenario]['policy'],
-                'out_sensors': config[scenario]['out_sensors'],
-                'stations_processing': config[scenario]['stations_processing']
-            }], 1
+        return [config[scenario]], 1
     else:
         print('Configuration not found')
-        return (None, 0)
+        return None, 0
 
 def output_folder_parser(path: str, prefix: str) -> list[list[str]]:
     items = []
@@ -185,38 +237,52 @@ def output_folder_probabilities(path: str) -> list[list[str]]:
 def output_folder_simulations(path: str) -> list[list[str]]:
     return output_folder_parser(path, 'simulation')
 
-def gen_args(content: list[str], verifier: str, projects: list, properties: list[str], path: str):
+def gen_args(content: list[str], verifier: str, projects: list, properties: list[str], path: str, stochastic: bool):
     for project in projects:
         for property in properties:
-            yield content, verifier, project, property, path
+            yield content, verifier, project, property, path, stochastic
 
-def gen_name(values: dict, property: str):
-    return 's{}-d{}-p{}-os{}-sp{}-{}'.format(
-        values['speed'],
-        values['disks'],
-        values['policy'],
-        to_array(values['out_sensors'], short=True),
-        to_array(values['stations_processing'], short=True),
-        property[-6:-4])
+def gen_name(values: dict, property: str, stochastic: str):
+    if not stochastic:
+        return 's{}-d{}-p{}-os{}-sp{}-{}'.format(
+            values['speed'],
+            values['disks'],
+            values['policy'],
+            to_array(values['out_sensors'], short=True),
+            to_array(values['stations_processing'], short=True),
+            property[-6:-4])
+    else:
+        return 's{}-d{}-p{}-os{}-sp{}-std{}-ie{}-ir{}-oe{}-or{}-{}'.format(
+            values['speed'],
+            values['disks'],
+            values['policy'],
+            to_array(values['out_sensors'], short=True),
+            to_array(values['stations_processing'], short=True),
+            to_array(values['station_std_deviation'], short=True),
+            to_array(values['in_sensor_err'], short=True),
+            to_array(values['in_sensor_right'], short=True),
+            to_array(values['out_sensor_err'], short=True),
+            to_array(values['out_sensor_right'], short=True),
+            property[-6:-4])
 
-def run_property(parameters: list[tuple[list[str], str, dict, str, str]]) -> bool:
+def run_property(parameters: list[tuple[list[str], str, dict, str, str, bool]]) -> bool:
     start = time()
-    content, verifier, project, property, path = parameters
-    name = gen_name(project, property)
+    content, verifier, project, property, path, stochastic = parameters
+    name = gen_name(project, property, stochastic)
     fullname = os.path.join(path, 'project_{}.xml'.format(name))
-    generate_project(content, project, fullname)
-    result = subprocess.run([verifier, fullname, property], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    generate_project(content, project, fullname, stochastic)
+    result = subprocess.run([verifier, '-w', '1', fullname, property], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     os.remove(fullname)
     if result.returncode != 0:
         print('[ERROR]', result.stderr.decode().rstrip())
         exit(1)
     return result.stdout.decode(), name, property.split('/')[-1], time() - start
 
-def run_all(content: list[str], verifier: str, projects: list, properties: list[str], path: str, prefix: str, description: str, length: int) -> dict:
+def run_all(content: list[str], verifier: str, projects: list, properties: list[str], path: str, prefix: str, description: str, length: int, stochastic: bool) -> dict:
     pool = Pool(os.cpu_count() - 1)
     results = {}
     print('\033[;1m')
-    for result, project, property, time in tqdm(pool.imap_unordered(run_property, gen_args(content, verifier, projects, properties, path)), desc=description, total=length * len(properties)):
+    for result, project, property, time in tqdm(pool.imap_unordered(run_property, gen_args(content, verifier, projects, properties, path, stochastic)), desc=description, total=length * len(properties)):
         property = property.split('{}_'.format(prefix))[1].strip('.txt')
         results[(project[:-3], property)] = (result, '{0:.2f} seconds'.format(time))
     pool.close()
@@ -224,14 +290,14 @@ def run_all(content: list[str], verifier: str, projects: list, properties: list[
     print('\033[0m')
     return results
 
-def run_all_queries(content: list[str], verifier: str, projects: list, queries: list[str], path: str, length: str) -> dict:
-    return run_all(content, verifier, projects, queries, path, 'query', 'Verifying queries', length)
+def run_all_queries(content: list[str], verifier: str, projects: list, queries: list[str], path: str, length: str, stochastic: bool) -> dict:
+    return run_all(content, verifier, projects, queries, path, 'query', 'Verifying queries', length, stochastic)
 
-def run_all_probabilities(content: list[str], verifier: str, projects: list, probabilities: list[str], path: str, length: str) -> dict:
-    return run_all(content, verifier, projects, probabilities, path, 'probability', 'Calculating probabilities', length)
+def run_all_probabilities(content: list[str], verifier: str, projects: list, probabilities: list[str], path: str, length: str, stochastic: bool) -> dict:
+    return run_all(content, verifier, projects, probabilities, path, 'probability', 'Calculating probabilities', length, stochastic)
 
-def run_all_simulations(content: list[str], verifier: str, projects: list, simulations: list[str], path: str, length: str) -> dict:
-    return run_all(content, verifier, projects, simulations, path, 'simulation', 'Simulating', length)
+def run_all_simulations(content: list[str], verifier: str, projects: list, simulations: list[str], path: str, length: str, stochastic: bool) -> dict:
+    return run_all(content, verifier, projects, simulations, path, 'simulation', 'Simulating', length, stochastic)
 
 def print_queries(results: dict, queries: str, verbose: bool):
     projects = {}
@@ -258,19 +324,30 @@ def print_queries(results: dict, queries: str, verbose: bool):
 def print_probabilities(results: dict, probabilities: str, verbose: bool):
     projects = {}
     interval_regex = re.compile(r'\[([\d.e-]+),([\d.e-]+)\]\s+\(([\d]+)\% CI\)')
-    values_regex = re.compile(r'Values in \[(\d+),(\d+)\] mean=(\d+) steps=1: (.+)')
+    values_regex = re.compile(r'Values in \[(\d+),(\d+)\] mean=([\d.e-]+) steps=1: (.+)')
     for project, probability in results:
         if project not in projects:
             projects[project] = {}
         result, time = results[(project, probability)]
         if 'Formula is satisfied' in result:
-            matches = interval_regex.findall(result.split('\r\n')[-3])[0]
+            full_match = True
+            matches = interval_regex.findall(result.split('\r\n')[-3])
+            if len(matches) == 0:
+                full_match = False
+                matches = interval_regex.findall(result.split('\r\n')[-2])[0]
+            else:
+                matches = matches[0]
             confidence = float(matches[2]) / 100
             interval = {'min': float(matches[0]), 'max': float(matches[1])}
-            matches = values_regex.findall(result.split('\r\n')[-2])[0]
-            values_range = {'min': int(matches[0]), 'max': int(matches[1])}
-            mean = float(matches[2])
-            values = [int(match) for match in matches[3].split(' ')]
+            if full_match:
+                matches = values_regex.findall(result.split('\r\n')[-2])[0]
+                values_range = {'min': int(matches[0]), 'max': int(matches[1])}
+                mean = float(matches[2])
+                values = [int(match) for match in matches[3].split(' ')]
+            else:
+                values_range = {'min': 0, 'max': 0}
+                mean = 0.0
+                values = []
         else:
             interval = {'min': 0.0, 'max': 0.0}
             confidence = 0.0
@@ -353,7 +430,7 @@ if __name__ == '__main__':
         print('[ERROR] Please provide a valid path')
         exit(1)
 
-    project = get_project(args.project_fname)
+    project, stochastic = get_project(args.project_fname)
     config = get_config(args.config_fname)
     full_project = '\n'.join(project)
 
@@ -364,15 +441,18 @@ if __name__ == '__main__':
     generate_queries(queries, output_directory)
     generate_probabilities(probabilities, output_directory)
     generate_simulations(simulations, output_directory)
-    projects, length = generate_projects(config, args.scenario)
+    projects, length = generate_projects(config, args.scenario, stochastic)
 
     if projects is not None:
         if not args.no_queries and len(queries) > 0:
-            print_queries(run_all_queries(project, args.verifyta, projects, output_folder_queries(output_directory), output_directory, length), queries, not args.short)
+            projects, length = generate_projects(config, args.scenario, stochastic)
+            print_queries(run_all_queries(project, args.verifyta, projects, output_folder_queries(output_directory), output_directory, length, stochastic), queries, not args.short)
         if not args.no_probabilities and len(probabilities) > 0:
-            print_probabilities(run_all_probabilities(project, args.verifyta, projects, output_folder_probabilities(output_directory), output_directory, length), probabilities, not args.short)
+            projects, length = generate_projects(config, args.scenario, stochastic)
+            print_probabilities(run_all_probabilities(project, args.verifyta, projects, output_folder_probabilities(output_directory), output_directory, length, stochastic), probabilities, not args.short)
         if not args.no_simulations and len(simulations) > 0:
-            print_simulations(run_all_simulations(project, args.verifyta, projects, output_folder_simulations(output_directory), output_directory, length), simulations, result_directory, not args.short)
+            projects, length = generate_projects(config, args.scenario, stochastic)
+            print_simulations(run_all_simulations(project, args.verifyta, projects, output_folder_simulations(output_directory), output_directory, length, stochastic), simulations, result_directory, not args.short)
 
     shutil.rmtree(output_directory)
     if len(os.listdir(result_directory)) == 0:
