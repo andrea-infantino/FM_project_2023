@@ -51,24 +51,16 @@ bool check_queue(const OutSensorId id, const SlotId position) {
     return false;
 }
 
-bool check_pre_station(const StationId id, const SlotId position) {
+bool check_station(const StationId id) {
     int i;
-    if (id != 3) {
-        for (i = POS_IN_SENSORS_IN_ORDER[id] + 1; i &lt; position; i++)
-            if (slot_busy[i])
-                return false;
-        return true;
-    } else {
-        for (i = POS_IN_SENSORS_IN_ORDER[id] + 1; i &lt;= CONTROLLER_POS; i++)
-            if (slot_busy[i])
-                return false;
-        for (i = BRANCH_FIRST_POS; i &lt; position; i++)
-            if (slot_busy[i])
-                return false;
-        return true;
-    }
-}
-</declaration>
+    int num_of_pieces = 0;
+    for (i = id != 3 ? POS_IN_SENSORS_IN_ORDER[id] + 1 : BRANCH_FIRST_POS; i &lt;= POS_STATIONS[id]; i++)
+        if (slot_busy[i])
+            num_of_pieces++;
+        if (num_of_pieces &gt; 1)
+            return false;
+    return true;
+}</declaration>
 	<template>
 		<name>Initializer</name>
 		<parameter>const int[1, 12] n_disks</parameter>
@@ -607,27 +599,27 @@ bool queue_4_full() {
 		</transition>
 	</template>
 	<system>                                                  /**********************************************************************************/
-                                                  /***   CONFIGURATION: Change here the Configuration Parameters of the plant:    ***/
+                                                  /***   CONFIGURATION: Change here the Configuration Parameters of the plant:     ***/
                                                   /**********************************************************************************/
-                                                  /***     Speed of the Conveyor Belt (Unit of Time per Slot):                    ***/       
-const int SPEED =                                 /***/     1                                                                   ;/***/
-                                                  /***     Number of Disks:                                                       ***/
-const int[1, 12] DISKS =                          /***/     12                                                                  ;/***/
-                                                  /***/                                                                          /***/
-                                                  /***     Positions of the 5 Out-Sensors:                                        ***/
-const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {     /***/     2    /** ID: 0 (1st) */                                             ,/***/
-                                                  /***/     24   /** ID: 1 (2nd) */                                             ,/***/
-                                                  /***/     68   /** ID: 2 (3rd) */                                             ,/***/
-                                                  /***/     90   /** ID: 3 (4th) */                                             ,/***/
-                                                  /***/     105  /** ID: 4 (5th) */                                            };/***/
-                                                  /***/                                                                          /***/
-                                                  /***     Elaboration Times of the 6 Stations:                                   ***/            
-const int STATIONS_ELABORATION_TIME[STATIONS] = { /***/     6    /** ID: 0 (1st)*/                                              ,/***/
-                                                  /***/     7    /** ID: 1 (2nd)*/                                              ,/***/
-                                                  /***/     8    /** ID: 2 (3rd)*/                                              ,/***/
-                                                  /***/     9    /** ID: 3 (4th)*/                                              ,/***/
-                                                  /***/     8    /** ID: 4 (5th)*/                                              ,/***/
-                                                  /***/     7    /** ID: 5 (6nd)*/                                             };/***/
+                                                  /***     Speed of the Conveyor Belt (Unit of Time per Slot):                      ***/
+const int SPEED =                                 /***/     1                                                                       ;/***/
+                                                  /***     Number of Disks:                                                          ***/
+const int[1, 12] DISKS =                          /***/     12                                                                      ;/***/
+                                                  /***/                                                                              /***/
+                                                  /***     Positions of the 5 Out-Sensors:                                          ***/
+const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {     /***/     2    /** ID: 0 (1st) */                                                ,/***/
+                                                  /***/     24   /** ID: 1 (2nd) */                                                ,/***/
+                                                  /***/     68   /** ID: 2 (3rd) */                                                ,/***/
+                                                  /***/     90   /** ID: 3 (4th) */                                                ,/***/
+                                                  /***/     105  /** ID: 4 (5th) */                                               };/***/
+                                                  /***/                                                                              /***/
+                                                  /***     Elaboration Times of the 6 Stations:                                     ***/
+const int STATIONS_ELABORATION_TIME[STATIONS] = { /***/     6    /** ID: 0 (1st)*/                                                 ,/***/
+                                                  /***/     7    /** ID: 1 (2nd)*/                                                 ,/***/
+                                                  /***/     8    /** ID: 2 (3rd)*/                                                 ,/***/
+                                                  /***/     9    /** ID: 3 (4th)*/                                                 ,/***/
+                                                  /***/     8    /** ID: 4 (5th)*/                                                 ,/***/
+                                                  /***/     7    /** ID: 5 (6nd)*/                                                };/***/
                                                   /**********************************************************************************/
 
 /**
@@ -644,6 +636,8 @@ station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION
 inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id]);
 outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id]);
 // flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);
+// flowController = FlowController_1();
+// flowController = FlowController_2();
 flowController = FlowController_3();
 
 system initializer, motor, conveyorBelt, station, inSensor, outSensor, flowController;
@@ -686,15 +680,15 @@ P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
 			<formula/>
-			<comment>------ Extra properties ------</comment>
+			<comment>-------- Extra properties --------</comment>
 		</query>
 		<query>
-			<formula>A[] (forall(id : StationId) (station(id).Processing imply check_pre_station(id, POS_STATIONS[id])))</formula>
+			<formula>A[] (forall(id : StationId) (station(id).Processing imply check_station(id)))</formula>
 			<comment>If a station is processing, no other piece is waiting to enter (so, there is no piece between the inSensor and the station)</comment>
 		</query>
 		<query>
 			<formula/>
-			<comment>------ Simulations ------</comment>
+			<comment>---------- Simulations -----------</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {

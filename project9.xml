@@ -315,117 +315,117 @@ stochasticProcessingTime = f()</label>
 	</template>
 	<template>
 		<name>InSensor</name>
-		<parameter>const InSensorId id, const StationId station_controlled, const int probWeight_1, const int probWeight_2</parameter>
-		<location id="id31" x="-4386" y="-3978">
-			<name x="-4420" y="-4012">C2</name>
-		</location>
-		<location id="id32" x="-4607" y="-3859">
-			<name x="-4675" y="-3842">Locked</name>
+		<parameter>const InSensorId id, const StationId station_controlled, const int working, const int broken</parameter>
+		<location id="id31" x="85" y="-451">
+			<name x="102" y="-484">Unlocked</name>
 			<committed/>
 		</location>
-		<location id="id33" x="-4607" y="-4258">
-			<name x="-4617" y="-4292">Start</name>
-		</location>
-		<location id="id34" x="-4607" y="-4139">
-			<name x="-4590" y="-4172">Unlocked</name>
+		<location id="id32" x="85" y="-127">
+			<name x="17" y="-110">Locked</name>
 			<committed/>
 		</location>
-		<location id="id35" x="-4216" y="-3978">
-			<name x="-4199" y="-4012">C1</name>
+		<location id="id33" x="85" y="-569">
+			<name x="75" y="-603">Start</name>
 		</location>
-		<location id="id36" x="-4981" y="-4046">
-			<name x="-5015" y="-4080">C4</name>
+		<location id="id34" x="373" y="-272">
+			<name x="339" y="-306">C2</name>
 		</location>
-		<location id="id37" x="-4811" y="-4046">
-			<name x="-4845" y="-4080">C3</name>
+		<location id="id35" x="569" y="-272">
+			<name x="577" y="-306">C1</name>
 		</location>
-		<branchpoint id="id38" x="-4896" y="-3944"/>
-		<branchpoint id="id39" x="-4301" y="-4080"/>
+		<location id="id36" x="-357" y="-306">
+			<name x="-391" y="-340">C4</name>
+		</location>
+		<location id="id37" x="-187" y="-306">
+			<name x="-221" y="-340">C3</name>
+		</location>
+		<branchpoint id="id38" x="-272" y="-229"/>
+		<branchpoint id="id39" x="475" y="-365"/>
 		<init ref="id33"/>
 		<transition id="id40">
 			<source ref="id35"/>
-			<target ref="id34"/>
-			<label kind="synchronisation" x="-4182" y="-3969">tick_belt?</label>
-			<nail x="-4063" y="-3978"/>
-			<nail x="-4063" y="-4165"/>
-			<nail x="-4454" y="-4165"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="595" y="-263">tick_belt?</label>
+			<nail x="662" y="-272"/>
+			<nail x="662" y="-450"/>
 		</transition>
 		<transition id="id41">
 			<source ref="id36"/>
 			<target ref="id32"/>
-			<label kind="synchronisation" x="-4896" y="-3765">tick_belt?</label>
-			<nail x="-5100" y="-4046"/>
-			<nail x="-5100" y="-3774"/>
-			<nail x="-4607" y="-3774"/>
+			<label kind="synchronisation" x="-272" y="-119">tick_belt?</label>
+			<nail x="-450" y="-305"/>
+			<nail x="-450" y="-127"/>
 		</transition>
 		<transition id="id42">
 			<source ref="id37"/>
-			<target ref="id34"/>
-			<label kind="synchronisation" x="-4717" y="-4088">tick_sensor?</label>
-			<label kind="assignment" x="-4853" y="-4105">in_sensors_state[id] = false</label>
-			<nail x="-4607" y="-4046"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-25" y="-391">tick_sensor?</label>
+			<label kind="assignment" x="-153" y="-374">in_sensors_state[id] = false</label>
+			<nail x="84" y="-306"/>
 		</transition>
 		<transition id="id43">
 			<source ref="id38"/>
-			<target ref="id36"/>
-			<label kind="probability" x="-5057" y="-3986">probWeight_1</label>
+			<target ref="id37"/>
+			<label kind="probability" x="-213" y="-263">broken</label>
 		</transition>
 		<transition id="id44">
 			<source ref="id38"/>
-			<target ref="id37"/>
-			<label kind="probability" x="-4845" y="-3986">probWeight_2</label>
+			<target ref="id36"/>
+			<label kind="probability" x="-382" y="-263">working</label>
 		</transition>
-		<transition id="id45">
-			<source ref="id31"/>
-			<target ref="id32"/>
-			<label kind="synchronisation" x="-4598" y="-3944">tick_sensor?</label>
-			<label kind="assignment" x="-4598" y="-3927">in_sensors_state[id] = true</label>
-			<nail x="-4607" y="-3978"/>
-		</transition>
-		<transition id="id46" controllable="false">
+		<transition id="id45" controllable="false">
 			<source ref="id32"/>
 			<target ref="id38"/>
-			<nail x="-4896" y="-3859"/>
+			<nail x="51" y="-153"/>
+			<nail x="-272" y="-153"/>
+		</transition>
+		<transition id="id46">
+			<source ref="id35"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="212" y="-118">station_busy[station_controlled]?</label>
+			<label kind="assignment" x="212" y="-101">in_sensors_state[id] = true</label>
+			<nail x="569" y="-127"/>
 		</transition>
 		<transition id="id47">
 			<source ref="id39"/>
-			<target ref="id31"/>
-			<label kind="probability" x="-4454" y="-4054">probWeight_2</label>
+			<target ref="id35"/>
+			<label kind="probability" x="526" y="-348">working</label>
 		</transition>
 		<transition id="id48">
 			<source ref="id39"/>
-			<target ref="id35"/>
-			<label kind="probability" x="-4258" y="-4054">probWeight_1</label>
+			<target ref="id34"/>
+			<label kind="probability" x="365" y="-348">broken</label>
 		</transition>
 		<transition id="id49" controllable="false">
-			<source ref="id34"/>
+			<source ref="id31"/>
 			<target ref="id39"/>
-			<nail x="-4301" y="-4139"/>
+			<nail x="111" y="-425"/>
+			<nail x="475" y="-425"/>
 		</transition>
 		<transition id="id50">
 			<source ref="id36"/>
-			<target ref="id34"/>
-			<label kind="synchronisation" x="-4930" y="-4182">station_free[station_controlled]?</label>
-			<label kind="assignment" x="-4930" y="-4165">in_sensors_state[id] = false</label>
-			<nail x="-4981" y="-4140"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-272" y="-493">station_free[station_controlled]?</label>
+			<label kind="assignment" x="-273" y="-476">in_sensors_state[id] = false</label>
+			<nail x="-357" y="-450"/>
 		</transition>
 		<transition id="id51">
-			<source ref="id35"/>
+			<source ref="id34"/>
 			<target ref="id32"/>
-			<label kind="synchronisation" x="-4522" y="-3851">station_busy[station_controlled]?</label>
-			<label kind="assignment" x="-4522" y="-3834">in_sensors_state[id] = true</label>
-			<nail x="-4217" y="-3859"/>
+			<label kind="synchronisation" x="102" y="-221">tick_sensor?</label>
+			<label kind="assignment" x="102" y="-204">in_sensors_state[id] = true</label>
+			<nail x="85" y="-272"/>
 		</transition>
 		<transition id="id52">
 			<source ref="id33"/>
-			<target ref="id34"/>
-			<label kind="synchronisation" x="-4598" y="-4224">initialize?</label>
-			<label kind="assignment" x="-4598" y="-4207">in_sensors_state[id] = false</label>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="102" y="-535">initialize?</label>
+			<label kind="assignment" x="101" y="-518">in_sensors_state[id] = false</label>
 		</transition>
 	</template>
 	<template>
 		<name>OutSensor</name>
-		<parameter>const OutSensorId id, const SlotId position, const int probWeight_1, const int probWeight_2</parameter>
+		<parameter>const OutSensorId id, const SlotId position, const int working, const int broken</parameter>
 		<location id="id53" x="-153" y="-434">
 			<name x="-136" y="-467">Unlocked</name>
 			<committed/>
@@ -444,10 +444,10 @@ stochasticProcessingTime = f()</label>
 			<name x="339" y="-289">C1</name>
 		</location>
 		<location id="id58" x="-595" y="-289">
-			<name x="-629" y="-323">C5</name>
+			<name x="-629" y="-323">C4</name>
 		</location>
 		<location id="id59" x="-425" y="-289">
-			<name x="-459" y="-323">C4</name>
+			<name x="-459" y="-323">C3</name>
 		</location>
 		<branchpoint id="id60" x="-510" y="-212"/>
 		<branchpoint id="id61" x="237" y="-348"/>
@@ -463,11 +463,10 @@ stochasticProcessingTime = f()</label>
 		<transition id="id63">
 			<source ref="id58"/>
 			<target ref="id54"/>
-			<label kind="guard" x="-510" y="-17">slot_busy[position]</label>
-			<label kind="synchronisation" x="-510" y="0">tick_belt?</label>
-			<nail x="-688" y="-289"/>
-			<nail x="-688" y="-25"/>
-			<nail x="-153" y="-26"/>
+			<label kind="guard" x="-510" y="-85">slot_busy[position]</label>
+			<label kind="synchronisation" x="-510" y="-102">tick_belt?</label>
+			<nail x="-688" y="-288"/>
+			<nail x="-688" y="-110"/>
 		</transition>
 		<transition id="id64">
 			<source ref="id59"/>
@@ -479,35 +478,36 @@ stochasticProcessingTime = f()</label>
 		<transition id="id65">
 			<source ref="id60"/>
 			<target ref="id59"/>
-			<label kind="probability" x="-451" y="-246">probWeight_2</label>
+			<label kind="probability" x="-451" y="-246">broken</label>
 		</transition>
 		<transition id="id66">
 			<source ref="id60"/>
 			<target ref="id58"/>
-			<label kind="probability" x="-663" y="-246">probWeight_1</label>
+			<label kind="probability" x="-620" y="-246">working</label>
 		</transition>
 		<transition id="id67" controllable="false">
 			<source ref="id54"/>
 			<target ref="id60"/>
-			<nail x="-510" y="-110"/>
+			<nail x="-187" y="-136"/>
+			<nail x="-510" y="-136"/>
 		</transition>
 		<transition id="id68">
 			<source ref="id57"/>
 			<target ref="id54"/>
-			<label kind="guard" x="8" y="-85">slot_busy[position]</label>
-			<label kind="synchronisation" x="8" y="-68">tick_sensor?</label>
-			<label kind="assignment" x="8" y="-102">out_sensors_state[id] = true</label>
+			<label kind="guard" x="8" y="-68">slot_busy[position]</label>
+			<label kind="synchronisation" x="8" y="-102">tick_sensor?</label>
+			<label kind="assignment" x="8" y="-85">out_sensors_state[id] = true</label>
 			<nail x="331" y="-110"/>
 		</transition>
 		<transition id="id69">
 			<source ref="id61"/>
 			<target ref="id57"/>
-			<label kind="probability" x="288" y="-331">probWeight_1</label>
+			<label kind="probability" x="288" y="-331">working</label>
 		</transition>
 		<transition id="id70">
 			<source ref="id61"/>
 			<target ref="id56"/>
-			<label kind="probability" x="76" y="-331">probWeight_2</label>
+			<label kind="probability" x="127" y="-331">broken</label>
 		</transition>
 		<transition id="id71" controllable="false">
 			<source ref="id53"/>
@@ -783,65 +783,65 @@ bool queue_4_full() {
 		</transition>
 	</template>
 	<system>                                                     /**********************************************************************************/
-                                                     /***   CONFIGURATION: Change here the Configuration Parameters of the plant:    ***/
+                                                     /***   CONFIGURATION: Change here the Configuration Parameters of the plant:     ***/
                                                      /**********************************************************************************/
-                                                     /***     Speed of the Conveyor Belt (Slots per Unit of Time):                   ***/       
-const int SPEED =                                    /***/     1                                                                   ;/***/
-                                                     /***     Number of Disks:                                                       ***/
-const int[1, 12] DISKS =                             /***/     12                                                                  ;/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Positions of the 5 Out-Sensors:                                        ***/
-const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {        /***/     2    /** ID: 0 (1st) */                                             ,/***/
-                                                     /***/     24   /** ID: 1 (2nd) */                                             ,/***/
-                                                     /***/     68   /** ID: 2 (3rd) */                                             ,/***/
-                                                     /***/     90   /** ID: 3 (4th) */                                             ,/***/
-                                                     /***/     105  /** ID: 4 (5th) */                                            };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Elaboration Times of the 6 Stations:                                   ***/            
-const int STATIONS_ELABORATION_TIME[STATIONS] = {    /***/     3    /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     4    /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     5    /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     6    /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     7    /** ID: 4 (5th)*/                                              ,/***/
-                                                     /***/     8    /** ID: 5 (6nd)*/                                             };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Standard Deviation of the Elaboration Time of the 6 Stations:          ***/            
-const double STD_DEV_STATIONS[STATIONS] = {          /***/     1.0  /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     1.0  /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     1.0  /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     1.0  /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     1.0  /** ID: 4 (5th)*/                                              ,/***/
-                                                     /***/     1.0  /** ID: 5 (6nd)*/                                             };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Probabilistic Error of the 6 In-Sensors:                               ***/            
-const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     1    /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     1    /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     1    /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     1    /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     1    /** ID: 4 (5th)*/                                              ,/***/
-                                                     /***/     1    /** ID: 5 (6nd)*/                                             };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Probabilistic Right of the 6 In-Sensors:                               ***/            
-const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     100    /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     100    /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     100    /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     100    /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     100    /** ID: 4 (5th)*/                                              ,/***/
-                                                     /***/     100    /** ID: 5 (6nd)*/                                             };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Probabilistic Error of the 5 Out-Sensors:                              ***/            
-const int OUT_SENSORS_WEIGHT_ERR[OUT_SENSORS] = {    /***/     1    /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     1    /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     1    /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     1    /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     1    /** ID: 4 (5th)*/                                             };/***/
-                                                     /***/                                                                          /***/
-                                                     /***     Probabilistic Right of the 5 Out-Sensors:                              ***/            
-const int OUT_SENSORS_WEIGHT_RIGHT[OUT_SENSORS] = {  /***/     4    /** ID: 0 (1st)*/                                              ,/***/
-                                                     /***/     4    /** ID: 1 (2nd)*/                                              ,/***/
-                                                     /***/     4    /** ID: 2 (3rd)*/                                              ,/***/
-                                                     /***/     4    /** ID: 3 (4th)*/                                              ,/***/
-                                                     /***/     4    /** ID: 4 (5th)*/                                             };/***/
+                                                     /***     Speed of the Conveyor Belt (Slots per Unit of Time):                     ***/
+const int SPEED =                                    /***/     1                                                                       ;/***/
+                                                     /***     Number of Disks:                                                          ***/
+const int[1, 12] DISKS =                             /***/     12                                                                      ;/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Positions of the 5 Out-Sensors:                                          ***/
+const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {        /***/     2    /** ID: 0 (1st) */                                                ,/***/
+                                                     /***/     24   /** ID: 1 (2nd) */                                                ,/***/
+                                                     /***/     68   /** ID: 2 (3rd) */                                                ,/***/
+                                                     /***/     90   /** ID: 3 (4th) */                                                ,/***/
+                                                     /***/     105  /** ID: 4 (5th) */                                               };/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Elaboration Times of the 6 Stations:                                     ***/
+const int STATIONS_ELABORATION_TIME[STATIONS] = {    /***/     3    /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     4    /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     5    /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     6    /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     7    /** ID: 4 (5th)*/                                                 ,/***/
+                                                     /***/     8    /** ID: 5 (6nd)*/                                                };/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Standard Deviation of the Elaboration Time of the 6 Stations:           ***/
+const double STD_DEV_STATIONS[STATIONS] = {          /***/     1.0  /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     1.0  /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     1.0  /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     1.0  /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     1.0  /** ID: 4 (5th)*/                                                 ,/***/
+                                                     /***/     1.0  /** ID: 5 (6nd)*/                                                };/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Probabilistic Error of the 6 In-Sensors:                                 ***/
+const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 4 (5th)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 5 (6nd)*/                                                };/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Probabilistic Right of the 6 In-Sensors:                                 ***/
+const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 4 (5th)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 5 (6nd)*/                                                };/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Probabilistic Error of the 5 Out-Sensors:                                ***/
+const int OUT_SENSORS_WEIGHT_ERR[OUT_SENSORS] = {    /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     1    /** ID: 4 (5th)*/                                                };/***/
+                                                     /***/                                                                              /***/
+                                                     /***     Probabilistic Right of the 5 Out-Sensors:                                ***/
+const int OUT_SENSORS_WEIGHT_RIGHT[OUT_SENSORS] = {  /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     99   /** ID: 4 (5th)*/                                                };/***/ 
                                                      /**********************************************************************************/
 
 /**
@@ -855,7 +855,9 @@ station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION
 inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id], IN_SENSORS_WEIGHT_RIGHT[id], IN_SENSORS_WEIGHT_ERR[id]);
 outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS_WEIGHT_RIGHT[id], OUT_SENSORS_WEIGHT_ERR[id]);
 // flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);
-flowController = FlowController_1();
+// flowController = FlowController_1();
+// flowController = FlowController_2();
+flowController = FlowController_3();
 
 system initializer, motor, conveyorBelt, station, inSensor, outSensor, flowController;
 </system>
@@ -865,7 +867,7 @@ system initializer, motor, conveyorBelt, station, inSensor, outSensor, flowContr
 			<comment>------ Mandatory properties ------</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=10000] ([] initializer.run_state imply (sum(i : SlotId) slot_busy[i]) == DISKS)</formula>
+			<formula>Pr[&lt;=10000] ([] initializer.run_state imply ((sum(i : SlotId) slot_busy[i]) == DISKS))</formula>
 			<comment>No spawn or disappear of disk
 
 Verifies properties:
@@ -873,7 +875,7 @@ P1. it never happens that a station holds more than 1 piece;
 P2. it never happens that two pieces occupy the same belt slot.</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=10000] (&lt;&gt; (forall(id : OutSensorId) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id])))</formula>
+			<formula>Pr[&lt;=10000] ([] (forall(id : OutSensorId) outSensor(id).Locked imply check_queue(id, POS_OUT_SENSORS[id])))</formula>
 			<comment>If the sensor is locked, at least one position between it's input sensor and the location right before it is free
 
 Verifies property:
@@ -882,52 +884,58 @@ P3. No queue ever exceeds the maximum allowed length.
 --- NOT SIGNIFICANT ---</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=10000] ([] initializer.run_state imply (exists(id_s : StationId) ((station(id_s).Done &amp;&amp; check_out_sensor(id_s)) ||
-					   			       (station(id_s).Idle &amp;&amp; check_in_sensor(id_s))
-					  			      )  
-					    )
-	    )</formula>
+			<formula>Pr[&lt;=10000] ([]
+ 	not (
+		(forall(id_s : StationId)   (station(id_s).Processing or station(id_s).Done)) &amp;&amp; 
+		(forall(id_o : OutSensorId) (outSensor(id_o).Locked))                         &amp;&amp; 
+		(forall(id_i : InSensorId)  (inSensor(id_i).Locked))
+	)
+)</formula>
 			<comment>Verifies property:
 P4. the plant never incurs in deadlock.
 
 The idea is to mark as true this wrong behavior.</comment>
 		</query>
 		<query>
-			<formula>Pr[&lt;=10000] ([] initializer.run_state imply (forall(id : StationId) check_station(id)) )</formula>
+			<formula/>
+			<comment>-------- Extra properties --------</comment>
+		</query>
+		<query>
+			<formula>Pr[&lt;=10000] ([] forall(id : StationId) check_station(id))</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula/>
-			<comment>------ Simulations ------</comment>
+			<comment>---------- Simulations -----------</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	station(0).Pre_processing + station(0).Processing * 2 + station(0).Done * 3 + 4*5,
-	station(1).Pre_processing + station(1).Processing * 2 + station(1).Done * 3 + 4*4,
-	station(2).Pre_processing + station(2).Processing * 2 + station(2).Done * 3 + 4*3,
-	station(3).Pre_processing + station(3).Processing * 2 + station(3).Done * 3 + 4*2,
-	station(4).Pre_processing + station(4).Processing * 2 + station(4).Done * 3 + 4,
+	station(0).Pre_processing + station(0).Processing * 2 + station(0).Done * 3,
+	station(1).Pre_processing + station(1).Processing * 2 + station(1).Done * 3,
+	station(2).Pre_processing + station(2).Processing * 2 + station(2).Done * 3,
+	station(3).Pre_processing + station(3).Processing * 2 + station(3).Done * 3,
+	station(4).Pre_processing + station(4).Processing * 2 + station(4).Done * 3,
 	station(5).Pre_processing + station(5).Processing * 2 + station(5).Done * 3
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	outSensor(0).Locked + 4*4,
-	outSensor(1).Locked + 4*3,
-	outSensor(2).Locked + 4*2,
-	outSensor(3).Locked + 4,
+	outSensor(0).Locked,
+	outSensor(1).Locked,
+	outSensor(2).Locked,
+	outSensor(3).Locked,
 	outSensor(4).Locked
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	inSensor(0).Locked + 4*5,
-	inSensor(1).Locked + 4*4,
-	inSensor(2).Locked + 4*3,
-	inSensor(3).Locked + 4*2,
-	inSensor(4).Locked + 4,
+	inSensor(0).Locked,
+	inSensor(1).Locked,
+	inSensor(2).Locked,
+	inSensor(3).Locked,
+	inSensor(4).Locked,
 	inSensor(5).Locked
 }</formula>
 			<comment/>
