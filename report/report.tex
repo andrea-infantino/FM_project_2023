@@ -27,12 +27,17 @@
 
 \captionsetup[figure]{labelfont=bf}
 
-\newcommand{\figureref}[1]{Figure \ref{#1}}
-\newcommand{\reference}[1]{\ref{#1}: \nameref{#1} (page \pageref{#1})}
+\newcommand{\figureref}[1]{\textsf{\hyperref[#1]{Figure \ref*{#1}}}}
+\newcommand{\sectionref}[1]{\textsf{\hyperref[#1]{Section \ref*{#1}: \nameref*{#1} (page \pageref*{#1})}}}
+\newcommand{\propertyref}[2]{\textsf{\hyperref[#2]{Property #1: \nameref*{#2}}}}
 \newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
 
 \newcommand{\formulacomment}[2]{\underset{\varphi_{#1}}{\underbrace{#2}}}
 \newcommand{\formulatext}[1]{\text{\texttt{#1}}}
+
+\newcommand{\parametertt}{\fontfamily{lmtt}\fontseries{b}\selectfont}
+\newcommand{\parametertitle}[2]{\multicolumn{#1}{|c|}{#2}}
+\newcommand{\parametercontent}[2]{\multicolumn{#1}{|c|}{#2}}
 
 \renewcommand\tabularxcolumn[1]{m{#1}}
 
@@ -76,7 +81,7 @@
 
     \section{Model Description}
 
-    This section provides a description of the production plant with some implementation details, together with all the components that make it up. The motivations behind these modelling choices can be found in Section \reference{section:design_decisions}.
+    This section provides a description of the production plant with some implementation details, together with all the components that make it up. The motivations behind these modelling choices can be found in \sectionref{section:design_decisions}.
 
     \subsection{The Production Plant}
 
@@ -279,7 +284,7 @@
 
     \section{Properties}
 
-    \subsection{No two workpieces can be in the same position}
+    \subsection{No two workpieces can be in the same position} \label{property:1-2}
 
     This property embraces two different requirements of the production plant:
     \begin{itemize}
@@ -297,7 +302,7 @@
         \item \(\varphi_2\): the number of circulating workpieces in the production plant.
     \end{itemize}
 
-    \subsection{Queues never exceed their maximum length}
+    \subsection{Queues never exceed their maximum length} \label{property:3}
 
     This verifies the property: \textit{no queue ever exceeds the maximum allowed length}.\medskip
 
@@ -309,7 +314,7 @@
         \item \(\varphi_2\): checks that the queue doesn't exceed its maximum length.
     \end{itemize}
 
-    \subsection{The plant never incurs in a deadlock}
+    \subsection{The plant never incurs in a deadlock} \label{property:4}
 
     This verifies the property: \textit{the plant never incurs in deadlock}.\medskip
 
@@ -339,19 +344,17 @@
 
     This is a general scenario in which the structure of the plant is the same as the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt (each one on the opposite branch with respect to the previous workpiece).
 
-    \paragraph{Parameters}
+    \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:1}.
 
     \begin{center}
-        \begin{tabular}{|c|c|c|c|c|}
+        \begin{tabular}{|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.145\columnwidth}|>{\centering\arraybackslash}p{0.3\columnwidth}|}
             \hline
-            {\fontfamily{lmtt}\fontseries{b}\selectfont SPEED} & {\fontfamily{lmtt}\fontseries{b}\selectfont DISKS} & \textbf{Policy} & {\fontfamily{lmtt}\fontseries{b}\selectfont POS\_OUT\_SENSORS} & {\fontfamily{lmtt}\fontseries{b}\selectfont STATIONS\_ELABORATION\_TIME} \\
+            \parametertt SPEED & \parametertt DISKS & \textbf{Policy} & \parametertt \small POS\_OUT\_SENSORS & \parametertt STATIONS\_ELABORATION\_TIME \\
             \hline
-            1 & 12 & 3 & [2, 24, 68, 90, 105] & [6, 7, 8, 9, 8, 7] \\
+            1 & 12 & 3 & {\footnotesize [2, 24, 68, 90, 105]} & [6, 7, 8, 9, 8, 7] \\
             \hline
         \end{tabular}
     \end{center}
-
-    \paragraph{Simulations} This is what we obtained by simulating the system for 1000 time instants:
 
     \begin{figure}[h!]
         \begin{subfigure}{\textwidth}
@@ -367,7 +370,8 @@
             \centering
             \includegraphics[width=\textwidth]{images/scenarios/scenario1_outsensors}
         \end{subfigure}
-        \caption{the results of the simulation over 1000 time instants.}
+        \caption{simulation over 1000 time instants of the first scenario.}
+        \label{figure:scenario:1}
     \end{figure}
 
     \paragraph{Results} All the properties are \textit{verified}. As it's supposed to, the plant is working without any problem and all the workpieces flow all around the plant without any problem. The sensors are guaranteeing the required properties and the stations do their job flawlessly.
@@ -376,19 +380,17 @@
 
     With this scenario we want to test if the plant is working in a normal production situation (in which all the processing times of the various stations are balanced), but with short queues in front of the various stations.
 
-    \paragraph{Parameters}
+    \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:2}.
 
     \begin{center}
-        \begin{tabular}{|c|c|c|c|c|}
+        \begin{tabular}{|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.145\columnwidth}|>{\centering\arraybackslash}p{0.3\columnwidth}|}
             \hline
-            {\fontfamily{lmtt}\fontseries{b}\selectfont SPEED} & {\fontfamily{lmtt}\fontseries{b}\selectfont DISKS} & \textbf{Policy} & {\fontfamily{lmtt}\fontseries{b}\selectfont POS\_OUT\_SENSORS} & {\fontfamily{lmtt}\fontseries{b}\selectfont STATIONS\_ELABORATION\_TIME} \\
+            \parametertt SPEED & \parametertt DISKS & \textbf{Policy} & \parametertt \small POS\_OUT\_SENSORS & \parametertt STATIONS\_ELABORATION\_TIME \\
             \hline
-            1 & 12 & 3 & [12, 33, 76, 92, 106] & [2, 15, 5, 3, 2, 5] \\
+            1 & 12 & 3 & {\tiny [12, 33, 76, 92, 106]} & [2, 15, 5, 3, 2, 5] \\
             \hline
         \end{tabular}
     \end{center}
-
-    \paragraph{Simulations} This is what we obtained by simulating the system for 1000 time instants:
 
     \begin{figure}[h!]
         \begin{subfigure}{\textwidth}
@@ -404,7 +406,8 @@
             \centering
             \includegraphics[width=\textwidth]{images/scenarios/scenario2_outsensors}
         \end{subfigure}
-        \caption{the results of the simulation over 1000 time instants.}
+        \caption{simulation over 1000 time instants of the second scenario.}
+        \label{figure:scenario:2}
     \end{figure}
 
     \paragraph{Results} All the properties are \textit{verified}. The graphics show us that the system is working correctly without any particular delay on the stations.
@@ -415,19 +418,17 @@
 
     Here we wanted to test a different scheduling policy. In particular, we choose to route all the workpieces through the branch with the two processing stations. The only thing we changed with respect to the first scenario is the scheduling policy.
 
-    \paragraph{Parameters}
+    \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:3}.
 
     \begin{center}
-        \begin{tabular}{|c|c|c|c|c|}
+        \begin{tabular}{|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.145\columnwidth}|>{\centering\arraybackslash}p{0.3\columnwidth}|}
             \hline
-            {\fontfamily{lmtt}\fontseries{b}\selectfont SPEED} & {\fontfamily{lmtt}\fontseries{b}\selectfont DISKS} & \textbf{Policy} & {\fontfamily{lmtt}\fontseries{b}\selectfont POS\_OUT\_SENSORS} & {\fontfamily{lmtt}\fontseries{b}\selectfont STATIONS\_ELABORATION\_TIME} \\
+            \parametertt SPEED & \parametertt DISKS & \textbf{Policy} & \parametertt \small POS\_OUT\_SENSORS & \parametertt STATIONS\_ELABORATION\_TIME \\
             \hline
-            1 & 12 & 2 & [2, 24, 68, 90, 105] & [6, 7, 8, 9, 8, 7] \\
+            1 & 12 & 2 & {\footnotesize [2, 24, 68, 90, 105]} & [6, 7, 8, 9, 8, 7] \\
             \hline
         \end{tabular}
     \end{center}
-
-    \paragraph{Simulations} This is what we obtained by simulating the system for 1000 time instants:
 
     \begin{figure}[h!]
         \begin{subfigure}{\textwidth}
@@ -443,16 +444,57 @@
             \centering
             \includegraphics[width=\textwidth]{images/scenarios/scenario3_outsensors}
         \end{subfigure}
-        \caption{the results of the simulation over 1000 time instants.}
+        \caption{simulation over 1000 time instants of the third scenario.}
+        \label{figure:scenario:3}
     \end{figure}
 
     \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, and we compare them with the ones of the first scenario, we can notice that the scheduling policy in which we divide the workpieces on the two different branches (so the one of the first scenario) is slightly more efficient than this one (station 0 here processes 56 pieces in 1000 time instants with respect to the 58 ones of the first scenario), which may be expected since, usually, balancing the workload is the best solution.
 
-    \subsection{Scenario 4}
+    \subsection{Scenario 4: the stochastic case}
 
-    \subsection{Scenario 5 (stochastic)}
+    This is an example of a stochastic plant in which the processing time of the stations varies as a Gaussian distribution around the average and the sensors can be faulty.
 
-    \subsection{Scenario 6 (stochastic)}
+    \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:4}.
+
+    \begin{center}
+        \begin{tabular}{|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.145\columnwidth}|>{\centering\arraybackslash}p{0.3\columnwidth}|}
+            \hline
+            \parametertt SPEED & \parametertt DISKS & \textbf{Policy} & \parametertt \small POS\_OUT\_SENSORS & \parametertt STATIONS\_ELABORATION\_TIME \\
+            \hline
+            1 & 12 & 3 & {\footnotesize [2, 24, 68, 90, 105]} & [6, 7, 8, 9, 8, 7] \\
+            \hline
+            \hline
+            \parametertitle{2}{\parametertt STD\_DEV\_STATIONS} & \parametertitle{2}{\parametertt IN\_SENSORS\_ERR} & \parametertt OUT\_SENSORS\_ERR \\
+            \hline
+            \parametercontent{2}{[1.0, 1.0, 1.0, 1.0, 1.0, 1.0]} & \parametercontent{2}{[1, 1, 1, 1, 1, 1]} & [1, 1, 1, 1, 1, 1] \\
+            \hline
+            \hline
+            \parametertitle{3}{\parametertt IN\_SENSORS\_RIGHT} & \parametertitle{2}{\parametertt OUT\_SENSORS\_RIGHT} \\
+            \hline
+            \parametercontent{3}{[9999, 9999, 9999, 9999, 9999, 9999]} & \parametercontent{2}{[9999, 9999, 9999, 9999, 9999, 9999]} \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \begin{figure}[h!]
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{images/scenarios/scenario4_stations}
+        \end{subfigure}
+        \begin{subfigure}{0.49\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/scenarios/scenario4_insensors}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}{0.49\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/scenarios/scenario4_outsensors}
+        \end{subfigure}
+        \caption{simulation over 1000 time instants of the fourth scenario in a stochastic environment.}
+        \label{figure:scenario:4}
+    \end{figure}
+
+    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with proability: \(\ge 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(\ge 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
 
     \section{Conclusions}
 
