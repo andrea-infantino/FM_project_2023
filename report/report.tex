@@ -93,23 +93,23 @@
 
     This is the plant we modelled in our project. The yellow circles are the workpieces, the blue rectangles are the processing stations, the light and dark red circles are the sensors and the green bar is the flow controller.
 
-    \paragraph{Notes on the scheme} We enhanced the original scheme with the number the various stations and laser sensors have inside our project and with the numbers of the positions of the conveyor belt, in order to respect what we have done inside the project.
+    \paragraph{Notes on the scheme} In order to make the entire description of our project as much clear as posssible, we enhanced the original scheme with the IDs we assigned to stations and laser sensors, and with the positions of the slots that compose the conveyor belt. Note that we decided to consider the stations as particular components placed above a normal slot; therefore we have two numbers defining each station: one refers to the position of the slot, while the other the ID of the station.
 
     \subsection{General Overview}
 
-    The model of our system is made of 6 different components which interact between them in order to coordinate the entire production plant. Some of them are also instantiated many times in order to have a simpler modelling of the entire system.
+    The model of our system is made of 6 different components which interact between them to coordinate the entire production plant. Some of them are also instantiated many times in order to have a simpler modelling of the entire system.
 
     \paragraph{Initializer} It's a fictitious component which represents the entry point of the whole system. It allows us to instantiate all the workpieces in the correct positions of the conveyor belt (positions which start from position 13 and ends in position 2 in our model) and works as the general clock of the system.
 
     \paragraph{Motor} This is the real motor of the system. According to the speed at which the conveyor belt should be moving, uses the clock to make all the workpieces move and synchronizes the whole system.
 
-    \paragraph{Conveyor belt} It's the set of all the various conveyor belts of the plant. It's the one in charge of moving around all the workpieces. In our model it's also the one in charge of blocking workpieces and stations from proceeding according to the pieces of information gathered by the laser sensors and the stations and also manages the positions where the two branches of the plant start and merge.
+    \paragraph{Conveyor belt} It's the manager of the conveyor belt, in charge of moving around all the workpieces. In our model it's also the one in charge of preventing workpieces from entering a station, based on the information gathered by the laser sensors. Finally, it handles the positions where the two branches of the plant start and merge.
 
-    \paragraph{Processing stations} They are the ones in charge of processing the various workpieces one they get into them. We have a single template for them which is instantiated as many times as needed in order to recreate the plant. They have all a position on the conveyor belt which is managed in a special way.
+    \paragraph{Processing stations} They are the ones in charge of processing the various workpieces, once they get into them. We implemented a single template for them, which is instantiated as many times as needed in order to recreate the plant. As already explained, each station is assumed to be placed above a slot of the conveyor belt.
 
-    \paragraph{Laser sensors} We have modelled them in two different ways according to their functionalities. The ones guarding the entrance of a station are called \texttt{InSensor}, while the ones guarding the queue and preventing the station right before it to release a workpiece are called \texttt{OutSensor}. Like the stations, they are represented as a single template (one for each type) instantiated multiple times.
+    \paragraph{Laser sensors} We have modelled them in two different ways according to their functionalities. The ones guarding the entrance of a station are called \texttt{InSensor} (represented as light red circles in \figureref{figure:scheme}), while the ones guarding the queue and preventing the station right before it to release a workpiece are called \texttt{OutSensor} (represented as dark red circles). Like the stations, they are represented as a single template (one for each type), instantiated multiple times.
 
-    \paragraph{Flow controller} This is the green piece of \figureref{figure:scheme}. It is pre-configured with a specific policy (which is customizable) and decides whether to send the workpieces once they get at position 65 of the conveyor belt. The available policies are the following ones:
+    \paragraph{Flow controller} This is the green piece of \figureref{figure:scheme}. It is pre-configured with a specific policy (which is customizable) and decides where to send the workpieces once they get at position 65 of the conveyor belt. The available policies are the following ones:
     \begin{enumerate}
         \item[0.] Sends the workpieces on the alternative branch until its queue is full, otherwise lets the workpieces proceed on the main branch;
         \item[1.] Lets all the workpieces to flow on the main branch;
@@ -125,11 +125,11 @@
         \caption{the Timed Automata of the initializer.}
     \end{figure}
 
-    The initializer is a meta component that performs two different actions on the system and is the fundamental entry point of our whole modelling.
+    The initializer is the fundamental entry point of our whole system; it is a meta component that performs two different actions.
 
-    \paragraph{Initialization} Initializes the system by placing the workpieces starting from the in sensor of the first station (index 0) backward with an upper limit of 12 workpieces.
+    \paragraph{Initialization} Initializes the system by placing the workpieces starting from the slot guarded by the first \texttt{InSensor} (index 0), and continuing backward with an upper limit of 12 workpieces.
 
-    \paragraph{Global synchronization} In order to have a simpler model to verify, we decided to have a unique clock for the whole system. This TA performs as the general clock and all the components of our plant directly or indirectly synchronizes with it (usually by means of the signals generated by the motor).
+    \paragraph{Global synchronization} In order to have a simpler model to verify, we decided to have a unique clock for the whole system. This TA performs as the general clock on which all the components of our plant, directly or indirectly synchronize (usually by means of the signals generated by the motor).
 
     \subsection{Motor (\texttt{Motor})}
 
@@ -139,11 +139,11 @@
         \caption{the Timed Automata of the motor.}
     \end{figure}
 
-    As the name says, this is the meta component that manages all the signals used by the sensors and, especially, the conveyor belt and the stations in order to synchronize the movement of the workpieces. The two signals which it generates are presented here.
+    As the name says, this is the meta component that manages all the signals used by the sensors, the conveyor belt and the stations, to synchronize the movement of the workpieces. The two signals which it generates are presented here.
 
     \paragraph{Conveyor belt's tick (\texttt{tick\_belt}, also used by the stations)} It's the signal which makes the conveyor belt move all the workpieces it can one step forward (taking into account also the branch in the conveyor belt).
 
-    \paragraph{Laser sensors and stations' tick (\texttt{tick\_sensor})} In order to avoid any potential race condition, we decided to send a signal right before \texttt{tick\_belt}. This allows us to update the state of the laser sensors (i.e., they can check if there is a workpiece right below them) and to perform some state-changing actions on all the stations (if they need to).
+    \paragraph{Laser sensors and stations' tick (\texttt{tick\_sensor})} In order to avoid any potential race condition, we decided to send a signal right before \texttt{tick\_belt}. This allows us to update the state of the laser sensors (i.e., check whether there is a workpiece right below them or not) and to perform some state-changing actions on all the stations (if needed).
 
     \subsection{Conveyor Belt (\texttt{ConveyorBelt})}
 
@@ -153,15 +153,15 @@
         \caption{the Timed Automata of the conveyor belt.}
     \end{figure}
 
-    It's the entity which collects all the different sectors of the plant's conveyor belt. It's a small automaton since all the underlying complexity of the conveyor belt's management is hidden behind the \texttt{update()} function. This is the most complex component of our plant since manages a lot of different things.
+    It's the entity which handles the plant's conveyor belt. It's a small automaton since all the underlying complexity of the conveyor belt's management is hidden behind the \texttt{update()} function. This is the most complex component of our plant since manages a lot of different things.
 
     \paragraph{Workpieces position} Any workpiece on a non-critical position (which is any in the following situations) is moved ahead of one slot every time the \texttt{update()} function is called.
 
-    \paragraph{Stations and sensors management} Once a workpiece passes the input sensor of a station, it blocks any other workpiece wanting to proceed to the station itself until the sensor tells that the station is free and a new workpiece can flow again towards it.
+    \paragraph{Stations and sensors management} Once a workpiece passes the \texttt{InSensor} of a station, it blocks any other workpiece wanting to proceed to the station itself until the sensor tells that the station is free and a new workpiece can flow again towards it.
 
-    \paragraph{Queue management} Every time a workpiece is blocked in a specific location and some other one wants to proceed, the conveyor belt blocks it until the first one is free to move again. Since we are scanning the belt from the last positions backward this situation is easily managed since we can't place a workpiece on top or another one.
+    \paragraph{Queue management} Every time a workpiece is blocked in a specific location and some other one wants to proceed, the conveyor belt blocks it until the first one is free to move again. Since we are scanning the belt from the last positions backward this situation is easily managed since we can't place a workpiece on top of another one.
 
-    \paragraph{Conveyor belt branch and merge} Because of the \texttt{switch\_branch?}, we keep track of the selected branch where to send the workpieces. This allows us to directly use the \texttt{update()} function to move the workpieces on the correct branch. Also, the merge of the two branches is (easily) managed by the conveyor belt, since, by scanning it backward, once we move a piece in the merge position of the belt (the one coming from the alternative branch, if any), no other one can be put in the same place, thus, blocking it from proceeding, which is exactly what happens in reality.
+    \paragraph{Conveyor belt branch and merge} In order to be updated about which branch the next workpiece should take, we decided to keep the Conveyor Belt always ready to receive the signal \texttt{switch\_branch?}. This allows us to directly use the \texttt{update()} function to move the workpieces on the correct branch. Also, the merge of the two branches is (easily) managed by the conveyor belt, since, by scanning it backward, once we move a piece in the merge position of the belt (position 103), no other one can be put in the same place, thus, blocking it from proceeding, which is exactly what happens in reality.
 
     \subsection{Processing stations (\texttt{Station})}
 
@@ -171,15 +171,15 @@
         \caption{the Timed Automata of every station.}
     \end{figure}
 
-    The stations model the various processes the workpieces need to go through during production. The automaton is divided in four different main states, each one of the for a different portion of the processing.
+    The stations model the various processes the workpieces need to go through during production. The automaton is divided in four different main states, each one representing a status in which the station can be.
 
     \paragraph{Idle} This is the main state of the station, in which it doesn't have to perform any action but to wait for a workpiece to be ready for the processing.
 
-    \paragraph{Preprocessing} When the laser sensors which is guarding the entrance of the station signals that a workpiece is approaching to it, the station moves to this state waiting for the workpiece to be in the right position.
+    \paragraph{Preprocessing} When the laser sensors which is guarding the entrance of the station signals that a workpiece is approaching to it, the station moves to this state waiting for the entrance of the workpiece.
 
-    \paragraph{Processing} Once the workpiece is in the right position, the station starts processing it. In the model, the automaton isn't performing any real task on the workpiece, but it's simply waiting for its processing time to pass. In order to improve verification performance, we discretized the time, and so we use a counter synchronized with the global clock in order to model the time passing.
+    \paragraph{Processing} Once the workpiece is entered, the station starts processing it. In the model, the automaton isn't performing any real task on the workpiece, but it's simply waiting for its processing time to pass. In order to improve verification performance, we discretized the time, and so we use a counter synchronized with the global clock in order to model the time passing.
 
-    \paragraph{Done} Once the processing time is elapsed, the station moves to this state where it waits for the right time to release the workpiece on the conveyor belt. It synchronizes with the conveyor belt itself and with the sensors guarding the entrance queue of the following station in order to know if the workpiece needs to be release or hold inside the station itself. Once the workpiece is released, the station returns to its \textit{idle} state waiting for the next processing cycle.
+    \paragraph{Done} Once the processing time is elapsed, the station moves to this state, where it waits for the right time to release the workpiece on the conveyor belt. It synchronizes with the conveyor belt itself and with the sensors guarding the queue of the following station, in order to know if the workpiece can be release or has to be held inside the station itself. Once the workpiece is released, the station returns to its \textit{idle} state, waiting for the next processing cycle.
 
     \subsection{Processing station's input guard (\texttt{InSensor})}
 
@@ -189,7 +189,7 @@
         \caption{the Timed Automata of every input sensor.}
     \end{figure}
 
-    These are the laser sensors that guards the entrance of a specific station. If a workpiece oversteps it, the laser sensor is equipped with a physical barrier which blocks any other following workpiece from proceeding towards the station itself until the station is free again.
+    These are the laser sensors that guard the entrance of a specific station. If a workpiece oversteps it, the laser sensor is equipped with a physical barrier which blocks any other following workpiece from proceeding towards the guarded station, until it is free again.
 
     \subsection{Queue's guard (\texttt{OutSensor})}
 
@@ -199,9 +199,7 @@
         \caption{the Timed Automata of every output sensor.}
     \end{figure}
 
-    Right before a station there is an \texttt{InSensor} which guards its entrance, but there may also be another sensor before it which guards the queue. Once the station's guard blocks a workpiece, others may arrive forming a queue of workpieces. This queue may have a maximum length. If the queue reaches its maximum, the sensor blocks the preceding station from releasing a workpiece if it contains one until the queue is no more full.
-
-    \pagebreak
+    Right before a station there is always an \texttt{InSensor} which guards its entrance, but  it can be preceeded by another sensor, which guards the queue. Once the station's guard blocks a workpiece, others may arrive forming a queue of workpieces. This queue may have a maximum length. If the queue reaches its maximum, the sensor prevents the preceeding station to release a workpiece until the queue is no longer full.
 
     \subsection{Flow controller (\texttt{FlowController\_*})}
 
@@ -242,17 +240,17 @@
 
     As explained in the introduction, these are the various policy schedules we implemented. Each one of them represents a different way to schedule the workpieces on the processing stations. Starting from the easiest ones, the ones in which all the workpieces follow the same path (either the direct one or the alternative one), to more complex ones, like the one in which we keep track of the queues in front of the first stations of the branch.\medskip
 
-    Since the real movement of the various workpieces is managed by the conveyor belt, these automata, if they need to change the branch where the workpieces need to be sent, send a message to it in order to notify the change in the path.
+    Since the effective movement of the various workpieces is managed by the conveyor belt, these automata send a signal (\texttt{switch\_branch}) to it each time the path followed by the workpieces has to be changed.
     
     \section{Design Decisions} \label{section:design_decisions}
 
     \subsection{Hypothesis}
 
-    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of the merge of the two conveyor belt at position 103. Since we needed to decide which workpiece to let flow in case there is one ready on each branch, with our numbering, we always let flow the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
+    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of merging the two alterenative pathes at position 103. In the (possible) corner case in which both position 85 and position 102 are carrying a workpiece at the same time (i.e. they are simultaneously trying to place a workpiece on slot 103), we decided to apply the following policy: the first piece to flow is always the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
 
-    \paragraph{Maximum number of circulating workpieces} We decided to stick with the representation of \figureref{figure:scheme}. So we have at most twelve workpieces circulating in the production plant, and they all start from position 13 (the one the first \texttt{InSensor}) backward. Please, notice that if the number of workpieces exceeds the position of the first \texttt{OutSensor} (which can be changed by project hypothesis), one of the properties isn't verified. However, this is normal since during the initialization of the plant we are already exceeding the maximum queue's length of the first one.
+    \paragraph{Maximum number of circulating workpieces} We decided to stick with the representation of \figureref{figure:scheme}. So we have at most twelve workpieces circulating in the production plant, and they all are initially placed from position 13, proceeding backward. Please, notice that if the number of workpieces exceeds the position of the first \texttt{OutSensor} (which can be changed by project hypothesis), one of the properties isn't verified. However, this is normal since during the initialization of the plant we are already exceeding the maximum queue's length of the first one.
 
-    \paragraph{Time discretization} This will be more clear in the next part in which we describe the main optimization steps we did, but, in brief, we discretized the time in order to have a better synchronization mechanism of the whole plant.
+    \paragraph{Time discretization} This will be more clear in the next part, where we describe the main optimization steps we did, but, in brief, we discretized the time in order to have a better synchronization mechanism of the whole plant.
 
     \subsection{Optimizations}
 
@@ -262,39 +260,39 @@
 
     \paragraph{Idea} At first, we decided to model every single entity of the plant. We had the template for generating all the single slots of the conveyor belt. This has been done in order to have a precise (and discrete) representation of the plant pointing out all the atomic components that we have.
 
-    \paragraph{Situation} The main issue with this representation is the fact that by doing this, we had a huge verification time created by the huge number of entities and states the software had to process each time.
+    \paragraph{Situation} Proceeding in this way, we experienced huge verification times, due to the high number of entities and states that the software had to process each time.
 
     \subsubsection{Unique conveyor belt}
 
-    \paragraph{Idea} In order to simplify the modelling of the plant and our code, we decided to group all together the various slots of the conveyor belt into a logically single entity (the \texttt{ConveyorBelt}).
+    \paragraph{Idea} In order to simplify the modelling of the plant and our code, we decided to group the slots of the conveyor belt all together into a single logically entity (the \texttt{ConveyorBelt}).
 
-    \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project) since we have a unique entity which manages all the complexity deriving from the movement of the various workpieces. This also works in synchronicity with the various processing stations and sensors in order to block the pieces when needed (and not only when there is a workpiece in front that doesn't move) and with the flow controller which tells the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved a lot the verification time needed to check the properties, but we still had a huge memory consumption.
+    \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project), since we had a unique entity to manage the complexity derived from the movement of the various workpieces. This also works in synchronicity with the processing stations and the sensors, in order to block the pieces when needed, and with the flow controller, which communicates to the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved significantly the verification time needed to check the properties, but we still had a huge memory consumption.
 
     \subsubsection{Automata simplification}
 
-    \paragraph{Idea} Since one of the thinks that make the verification process slow is the number of states it needs to check at each iteration, we decided to try to simplify at most the number of states of all our automata.
+    \paragraph{Idea} Since one of the things that was making the verification process heavy and slow, was the wide number of states traversed at each iteration, we decided to try to reduce the number of total states composing the entire system at the bare minimum.
 
-    \paragraph{Situation} We removed some superfluous states from our model, and we split the flow controller in different ones in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements in the verification time.
+    \paragraph{Situation} We removed some superfluous states from our model, and we splitted the flow controller into four different ones (one for each policy), in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements both in verification times and memory consumption.
 
     \subsubsection{Unique clock}
 
-    \paragraph{Idea} By talking with some colleagues and with the instructors we realized that we had 7 different clocks inside our project (one for the general clock of the system and one for each station) and that they tend to be one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to have all the various templates synchronizing with it.
+    \paragraph{Idea} By talking with some colleagues and with the instructors we realized that we had 7 different clocks inside our project (one for the general clock of the system and one for each station); since this fact was one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to keep all the various templates synchronized with it.
 
-    \paragraph{Situation} We added a new template, the \texttt{Motor}, which sends the right signals at the right moment to all the components that need it respecting the speed of the conveyor belt's movement, and we synchronized the stations' processing times with the general clock of the system (which is not related to the speed of the conveyor belt). By doing this we reduced the number of possible transitions the system can take at any instance, and we make sure that everything is synchronized with just one single entity. This allowed us to have a skyrocketing verification time, even with 12 different workpieces circulating in the production plant at the same time.
+    \paragraph{Situation} We added a new template, the \texttt{Motor}, which sends the right signals at the right moment to all the components that need it, while respecting the speed of the conveyor belt's movement; then we synchronized the stations' processing times with the general clock of the system (which is not related to the speed of the conveyor belt). By doing this, we reduced the number of possible transitions the system can potentially take at any instance. This allowed us to have a skyrocketing verification time, even with 12 different workpieces circulating in the production plant at the same time.
 
     \section{Properties}
 
     \subsection{No two workpieces can be in the same position at the same time} \label{property:1-2}
 
-    This property embraces two different requirements of the production plant:
+    Since we modelled the plant as a unique conveyor belt with the stations placed on some specific slots, this property embraces two different requirements of the production plant:
     \begin{itemize}
         \item \textit{It never happens that a station holds more than 1 workpiece};
         \item \textit{It never happens that two pieces occupy the same conveyor belt slot}.
     \end{itemize}
 
-    This is because we modelled the plant as a unique conveyor belt with all the stations which are placed on a single slot. The slots are modelled as an array of 110 Boolean values, in which \texttt{true} corresponds to the presence of a workpiece in that position.\medskip
+    Note that the slots are modelled as an array of 110 Boolean values, in which \texttt{true} corresponds to the presence of a workpiece in that position.\medskip
 
-    In order to verify this property we check that the number of the workpieces after the plant has been initialized remains constant and equal to its configured number, which can be represented in TCTL as follows:
+    In order to verify this property, we check that, after the plant has been initialized, the number of the workpieces remains constant and equal to its configured number, which can be represented in TCTL as follows:
     \[\forall \square \left(\formulacomment{1}{\formulatext{initializer.run\_state}} \implies \left(\formulacomment{2}{\sum_{i = 0}^{109} \formulatext{slot\_busy[i]}} = \formulatext{DISKS}\right)\right)\]
 
     \begin{itemize}
@@ -304,7 +302,7 @@
 
     \subsection{Queues never exceed their maximum length} \label{property:3}
 
-    We verified this thanks to the use of a custom function which, given the position of the two sensors between the queue should form, we check that in the positions between the two sensors (including their positions) and in the one right before the sensor at the end of the queue itself there is at least one free position. If the property is false it means that there is at most one extra piece in the queue. We verified this as follows:
+    We verified this by exploiting a custom function which, given the positions of a related pair (\texttt{InSensor}, \texttt{OutSensor}), we check that there is at least one free slot between the position of the \texttt{InSensor} and the position preceeding the one of the \texttt{OutSensor}. If the property is false it means that there is at most one extra piece in the queue. We verified this as follows:
     \[\forall \square \left(\forall i \in \left[0; 4\right] \left(\formulacomment{1}{\formulatext{outSensor(i).Locked}} \implies \formulacomment{2}{\formulatext{check\_queue(i, POS\_OUT\_SENSORS[i])}}\right)\right)\]
 
     \begin{itemize}
@@ -314,7 +312,7 @@
 
     \subsection{The plant never incurs in deadlock} \label{property:4}
 
-    In order to verify this, we checked both the automata part and the logic one. This means that we made sure to not incur in a deadlock in the transitions and that all the pieces are continuing to circulate in the plant.\medskip
+    In order to verify this, we checked both the automata part and the logic one. This means that we made sure to not incur in a deadlock in the transitions, and that all the pieces are continuing to circulate in the plant.\medskip
 
     The property for the transitions is verified with \(\forall \square \left(\neg \formulatext{deadlock}\right)\), while the second one with:
     {
