@@ -178,8 +178,8 @@ initializer = Initializer(DISKS);
 motor = Motor(SPEED);
 conveyorBelt = ConveyorBelt();
 station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id], STD_DEV_STATIONS[id]);
-inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id], IN_SENSORS_WEIGHT_RIGHT[id], IN_SENSORS_WEIGHT_ERR[id]);
-outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS_WEIGHT_RIGHT[id], OUT_SENSORS_WEIGHT_ERR[id]);
+inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id], IN_SENSORS_RIGHT[id], IN_SENSORS_ERR[id]);
+outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS_RIGHT[id], OUT_SENSORS_ERR[id]);
 '''
     for line in project:
         if not system and '<system>' not in line:
@@ -198,10 +198,10 @@ outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS
                 new_project.append(static)
             else:
                 new_project.append('const double STD_DEV_STATIONS[STATIONS] = {};\n'.format(to_array(values['station_std_deviation'])))
-                new_project.append('const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {};\n'.format(to_array(values['in_sensor_err'])))
-                new_project.append('const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {};\n'.format(to_array(values['in_sensor_right'])))
-                new_project.append('const int OUT_SENSORS_WEIGHT_ERR[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensor_err'])))
-                new_project.append('const int OUT_SENSORS_WEIGHT_RIGHT[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensor_right'])))
+                new_project.append('const int IN_SENSORS_ERR[IN_SENSORS] = {};\n'.format(to_array(values['in_sensor_err'])))
+                new_project.append('const int IN_SENSORS_RIGHT[IN_SENSORS] = {};\n'.format(to_array(values['in_sensor_right'])))
+                new_project.append('const int OUT_SENSORS_ERR[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensor_err'])))
+                new_project.append('const int OUT_SENSORS_RIGHT[OUT_SENSORS] = {};\n'.format(to_array(values['out_sensor_right'])))
                 new_project.append(static_stochastic)
             if values['policy'] == 0:
                 new_project.append('flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);\n')
