@@ -284,7 +284,7 @@
 
     \section{Properties}
 
-    \subsection{No two workpieces can be in the same position} \label{property:1-2}
+    \subsection{No two workpieces can be in the same position at the same time} \label{property:1-2}
 
     This property embraces two different requirements of the production plant:
     \begin{itemize}
@@ -304,19 +304,15 @@
 
     \subsection{Queues never exceed their maximum length} \label{property:3}
 
-    This verifies the property: \textit{no queue ever exceeds the maximum allowed length}.\medskip
-
     We verified this thanks to the use of a custom function which, given the position of the two sensors between the queue should form, we check that in the positions between the two sensors (including their positions) and in the one right before the sensor at the end of the queue itself there is at least one free position. If the property is false it means that there is at most one extra piece in the queue. We verified this as follows:
     \[\forall \square \left(\forall i \in \left[0; 4\right] \left(\formulacomment{1}{\formulatext{outSensor(i).Locked}} \implies \formulacomment{2}{\formulatext{check\_queue(i, POS\_OUT\_SENSORS[i])}}\right)\right)\]
 
     \begin{itemize}
-        \item \(\varphi_1\): the \(i\)-th \texttt{InSensors} is locked (the guarded station is not in \texttt{Idle});
+        \item \(\varphi_1\): the \(i\)-th \texttt{InSensor} is locked (the guarded station is not in \texttt{Idle});
         \item \(\varphi_2\): checks that the queue doesn't exceed its maximum length.
     \end{itemize}
 
-    \subsection{The plant never incurs in a deadlock} \label{property:4}
-
-    This verifies the property: \textit{the plant never incurs in deadlock}.\medskip
+    \subsection{The plant never incurs in deadlock} \label{property:4}
 
     In order to verify this, we checked both the automata part and the logic one. This means that we made sure to not incur in a deadlock in the transitions and that all the pieces are continuing to circulate in the plant.\medskip
 
@@ -332,7 +328,7 @@
         \item \(\varphi_3\): all the \texttt{InSensor} are blocking pieces from reaching the stations.
     \end{itemize}
 
-    \section{Stochastic version}
+    \section{Stochastic Version}
 
     \paragraph{TODO} Explain it and point out the differences with the automata we changed.
 
@@ -412,7 +408,7 @@
 
     \paragraph{Results} All the properties are \textit{verified}. The graphics show us that the system is working correctly without any particular delay on the stations.
     
-    \paragraph{Particular case} If we try to play a bit with the processing times of the stations, we can create a situation where station 2 and 4 release a piece in such a way that they saturate the queue in front of station 5, exceeding its limit. An example could be a very short processing time on the first two stations in order to let the workpieces flow, the same overall time on the two branches, and very long one at the last station. In this way we break the third property, but it's completely expected, since the plant is not smart enough for preventing this situation to happen.
+    \paragraph{Particular case} If we try to play a bit with the processing times of the stations, we can create a situation where station 2 and 4 release a piece in such a way that they saturate the queue in front of station 5, exceeding its limit. An example could be a very short processing time on the first two stations in order to let the workpieces flow, the same overall time on the two branches, and very long one at the last station. In this way we break the third property, but it's completely expected, since the plant is not smart enough to prevent this situation.
 
     \subsection{Scenario 3: one way}
 
@@ -448,7 +444,7 @@
         \label{figure:scenario:3}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, and we compare them with the ones of the first scenario, we can notice that the scheduling policy in which we divide the workpieces on the two different branches (so the one of the first scenario) is slightly more efficient than this one (station 0 here processes 56 pieces in 1000 time instants with respect to the 58 ones of the first scenario), which may be expected since, usually, balancing the workload is the best solution.
+    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, and we compare them with the ones of the first scenario, we can notice that the scheduling policy in which we divide the workpieces on the two different branches (so the one of the first scenario) is slightly more efficient than this one (here, station 0 processes 56 pieces in 1000 time instants with respect to the 58 ones of the first scenario), which may be expected since, usually, balancing the workload is the best solution.
 
     \subsection{Scenario 4: the stochastic case}
 
@@ -494,7 +490,7 @@
         \label{figure:scenario:4}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with proability: \(\ge 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(\ge 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
+    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with probability: \(\ge 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(\ge 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
 
     \section{Conclusions}
 
