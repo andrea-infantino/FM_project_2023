@@ -814,7 +814,7 @@ const double STD_DEV_STATIONS[STATIONS] = {          /***/     1.0  /** ID: 0 (1
                                                      /***/     1.0  /** ID: 5 (6nd)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Error of the 6 In-Sensors:                                 ***/
-const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
+const int IN_SENSORS_ERR[IN_SENSORS] = {             /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
                                                      /***/     1    /** ID: 1 (2nd)*/                                                 ,/***/
                                                      /***/     1    /** ID: 2 (3rd)*/                                                 ,/***/
                                                      /***/     1    /** ID: 3 (4th)*/                                                 ,/***/
@@ -822,7 +822,7 @@ const int IN_SENSORS_WEIGHT_ERR[IN_SENSORS] = {      /***/     1    /** ID: 0 (1
                                                      /***/     1    /** ID: 5 (6nd)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Right of the 6 In-Sensors:                                 ***/
-const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
+const int IN_SENSORS_RIGHT[IN_SENSORS] = {           /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
                                                      /***/     99   /** ID: 1 (2nd)*/                                                 ,/***/
                                                      /***/     99   /** ID: 2 (3rd)*/                                                 ,/***/
                                                      /***/     99   /** ID: 3 (4th)*/                                                 ,/***/
@@ -830,18 +830,18 @@ const int IN_SENSORS_WEIGHT_RIGHT[IN_SENSORS] = {    /***/     99   /** ID: 0 (1
                                                      /***/     99   /** ID: 5 (6nd)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Error of the 5 Out-Sensors:                                ***/
-const int OUT_SENSORS_WEIGHT_ERR[OUT_SENSORS] = {    /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
+const int OUT_SENSORS_ERR[OUT_SENSORS] = {           /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
                                                      /***/     1    /** ID: 1 (2nd)*/                                                 ,/***/
                                                      /***/     1    /** ID: 2 (3rd)*/                                                 ,/***/
                                                      /***/     1    /** ID: 3 (4th)*/                                                 ,/***/
                                                      /***/     1    /** ID: 4 (5th)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Right of the 5 Out-Sensors:                                ***/
-const int OUT_SENSORS_WEIGHT_RIGHT[OUT_SENSORS] = {  /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
+const int OUT_SENSORS_RIGHT[OUT_SENSORS] = {         /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
                                                      /***/     99   /** ID: 1 (2nd)*/                                                 ,/***/
                                                      /***/     99   /** ID: 2 (3rd)*/                                                 ,/***/
                                                      /***/     99   /** ID: 3 (4th)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 4 (5th)*/                                                };/***/ 
+                                                     /***/     99   /** ID: 4 (5th)*/                                                };/***/
                                                      /**********************************************************************************/
 
 /**
@@ -852,8 +852,8 @@ initializer = Initializer(DISKS);
 motor = Motor(SPEED);
 conveyorBelt = ConveyorBelt();
 station(const StationId id) = Station(id, POS_STATIONS[id], STATIONS_ELABORATION_TIME[id], POS_IN_SENSORS_IN_ORDER[id], OUT_SENSORS_ID_IN_ORDER[id], STD_DEV_STATIONS[id]);
-inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id], IN_SENSORS_WEIGHT_RIGHT[id], IN_SENSORS_WEIGHT_ERR[id]);
-outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS_WEIGHT_RIGHT[id], OUT_SENSORS_WEIGHT_ERR[id]);
+inSensor(const InSensorId id) = InSensor(id, IN_SENSORS_STATION[id], IN_SENSORS_RIGHT[id], IN_SENSORS_ERR[id]);
+outSensor(const OutSensorId id) = OutSensor(id, POS_OUT_SENSORS[id], OUT_SENSORS_RIGHT[id], OUT_SENSORS_ERR[id]);
 // flowController = FlowController_0(POS_OUT_SENSORS[2], POS_OUT_SENSORS[3]);
 // flowController = FlowController_1();
 // flowController = FlowController_2();
@@ -879,9 +879,7 @@ P2. it never happens that two pieces occupy the same belt slot.</comment>
 			<comment>If the sensor is locked, at least one position between it's input sensor and the location right before it is free
 
 Verifies property:
-P3. No queue ever exceeds the maximum allowed length.
-
---- NOT SIGNIFICANT ---</comment>
+P3. No queue ever exceeds the maximum allowed length.</comment>
 		</query>
 		<query>
 			<formula>Pr[&lt;=10000] ([]
@@ -891,10 +889,10 @@ P3. No queue ever exceeds the maximum allowed length.
 		(forall(id_i : InSensorId)  (inSensor(id_i).Locked))
 	)
 )</formula>
-			<comment>Verifies property:
-P4. the plant never incurs in deadlock.
+			<comment>The idea is to mark as true this wrong behavior.
 
-The idea is to mark as true this wrong behavior.</comment>
+Verifies property:
+P4. the plant never incurs in deadlock.</comment>
 		</query>
 		<query>
 			<formula/>
@@ -921,22 +919,22 @@ The idea is to mark as true this wrong behavior.</comment>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	outSensor(0).Locked,
-	outSensor(1).Locked,
-	outSensor(2).Locked,
-	outSensor(3).Locked,
-	outSensor(4).Locked
+	outSensor(0).Locked + outSensor(0).C3 + outSensor(0).C4,
+	outSensor(1).Locked + outSensor(1).C3 + outSensor(1).C4,
+	outSensor(2).Locked + outSensor(2).C3 + outSensor(2).C4,
+	outSensor(3).Locked + outSensor(3).C3 + outSensor(3).C4,
+	outSensor(4).Locked + outSensor(4).C3 + outSensor(4).C4
 }</formula>
 			<comment/>
 		</query>
 		<query>
 			<formula>simulate[&lt;=1000] {
-	inSensor(0).Locked,
-	inSensor(1).Locked,
-	inSensor(2).Locked,
-	inSensor(3).Locked,
-	inSensor(4).Locked,
-	inSensor(5).Locked
+	inSensor(0).Locked + inSensor(0).C3 + inSensor(0).C4,
+	inSensor(1).Locked + inSensor(1).C3 + inSensor(1).C4,
+	inSensor(2).Locked + inSensor(2).C3 + inSensor(2).C4,
+	inSensor(3).Locked + inSensor(3).C3 + inSensor(3).C4,
+	inSensor(4).Locked + inSensor(4).C3 + inSensor(4).C4,
+	inSensor(5).Locked + inSensor(5).C3 + inSensor(5).C4
 }</formula>
 			<comment/>
 		</query>
