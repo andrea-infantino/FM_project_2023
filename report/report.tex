@@ -216,7 +216,7 @@
 
     \subsection{Hypothesis}
 
-    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of merging the two alterenative pathes at position 103. In the (possible) corner case in which both position 85 and position 102 are carrying a workpiece at the same time (i.e. they are simultaneously trying to place a workpiece on slot 103), we decided to apply the following policy: the first piece to flow is always the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
+    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of merging the two alternative paths at position 103. In the (possible) corner case in which both position 85 and position 102 are carrying a workpiece at the same time (i.e., they are simultaneously trying to place a workpiece on slot 103), we decided to apply the following policy: the first piece to flow is always the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
 
     \paragraph{Maximum number of circulating workpieces} We decided to stick with the representation of \figureref{figure:scheme}. So we have at most twelve workpieces circulating in the production plant, and they all are initially placed from position 13, proceeding backward. Please, notice that if the number of workpieces exceeds the position of the first \texttt{OutSensor} (which can be changed by project hypothesis), one of the properties isn't verified. However, this is normal since during the initialization of the plant we are already exceeding the maximum queue's length of the first one.
 
@@ -242,7 +242,7 @@
 
     \paragraph{Idea} Since one of the things that was making the verification process heavy and slow, was the wide number of states traversed at each iteration, we decided to try to reduce the number of total states composing the entire system at the bare minimum.
 
-    \paragraph{Situation} We removed some superfluous states from our model, and we splitted the flow controller into four different ones (one for each policy), in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements both in verification times and memory consumption.
+    \paragraph{Situation} We removed some superfluous states from our model, and we split the flow controller into four different ones (one for each policy), in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements both in verification times and memory consumption.
 
     \subsubsection{Unique clock}
 
@@ -272,7 +272,7 @@
 
     \subsection{Queues never exceed their maximum length} \label{property:3}
 
-    We verified this by exploiting a custom function which, given the positions of a related pair (\texttt{InSensor}, \texttt{OutSensor}), we check that there is at least one free slot between the position of the \texttt{InSensor} and the position preceeding the one of the \texttt{OutSensor}. If the property is false it means that there is at most one extra piece in the queue. We verified this as follows:
+    We verified this by exploiting a custom function which, given the positions of a related pair (\texttt{InSensor}, \texttt{OutSensor}), we check that there is at least one free slot between the position of the \texttt{InSensor} and the position preceding the one of the \texttt{OutSensor}. If the property is false, it means that there is at most one extra piece in the queue. We verified this as follows:
     \[\forall \square \left(\forall i \in \left[0; 4\right] \left(\formulacomment{1}{\formulatext{outSensor(i).Locked}} \implies \formulacomment{2}{\formulatext{check\_queue(i, POS\_OUT\_SENSORS[i])}}\right)\right)\]
 
     \begin{itemize}
@@ -458,13 +458,13 @@
         \label{figure:scenario:4}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with probability: \(\ge 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(\ge 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
+    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with probability: \(> 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(> 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
 
-    \subsection{Scenario 5: TODO}
+    \subsection{Scenario 5: the faulty stochastic}
 
-    This is an example of a stochastic plant in which the processing time of the stations varies as a Gaussian distribution around the average and the sensors can be faulty.
+    Here we want to show that even in the case of a stochastic production plant with highly faulty sensors, it continues to work properly, even if the queues maximum lengths can't be guaranteed.
 
-    \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:4}.
+    \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:5}.
 
     \begin{center}
         \begin{tabular}{|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.14\columnwidth}|>{\centering\arraybackslash}p{0.145\columnwidth}|>{\centering\arraybackslash}p{0.3\columnwidth}|}
@@ -489,22 +489,22 @@
     \begin{figure}[h!]
         \begin{subfigure}{\textwidth}
             \centering
-            \includegraphics[width=0.9\textwidth]{images/scenarios/scenario4_stations}
+            \includegraphics[width=0.9\textwidth]{images/scenarios/scenario5_stations}
         \end{subfigure}
         \begin{subfigure}{0.49\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{images/scenarios/scenario4_insensors}
+            \includegraphics[width=\textwidth]{images/scenarios/scenario5_insensors}
         \end{subfigure}
         \hfill
         \begin{subfigure}{0.49\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{images/scenarios/scenario4_outsensors}
+            \includegraphics[width=\textwidth]{images/scenarios/scenario5_outsensors}
         \end{subfigure}
-        \caption{simulation over 1000 time instants of the fourth scenario in a stochastic environment.}
-        \label{figure:scenario:4}
+        \caption{simulation over 1000 time instants of the fifth scenario in a stochastic environment.}
+        \label{figure:scenario:5}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with probability: \(\ge 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(\ge 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
+    \paragraph{Results} Some properties are \textit{not verified}, but all with a 95\% confidence and with probability: \(> 95\%\) (\propertyref{1}{property:1-2}), \(< 5\%\) (\propertyref{2}{property:3}) and \(> 95\%\) (\propertyref{3}{property:4}). Also in this case the plant is still functioning, but it's almost certain that at least one queue exceed its maximum length. This is because the probability of a sensor being faulty is very high, so in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physics laws are respected, even if it has a really strange behaviour.
 
     \section{Conclusions}
 

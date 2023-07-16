@@ -81,5 +81,17 @@
         "in_sensor_right": [9999, 9999, 9999, 9999, 9999, 9999],
         "out_sensor_err": [1, 1, 1, 1, 1],
         "out_sensor_right": [9999, 9999, 9999, 9999, 9999]
+    },
+    "s-faulty": {
+        "speed": 1,
+        "disks": 12,
+        "policy": 3,
+        "out_sensors": [2, 24, 68, 90, 105],
+        "stations_processing": [6, 7, 8, 9, 8, 7],
+        "station_std_deviation": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        "in_sensor_err": [1, 1, 1, 1, 1, 1],
+        "in_sensor_right": [99, 99, 99, 99, 99, 99],
+        "out_sensor_err": [1, 1, 1, 1, 1],
+        "out_sensor_right": [99, 99, 99, 99, 99]
     }
 }
