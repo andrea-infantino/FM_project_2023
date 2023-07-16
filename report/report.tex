@@ -297,16 +297,30 @@
     \end{itemize}
 
     \section{Stochastic Version}
+    
+    In real world applications of abstract models, nothing is unbreakable. Every kind of concrete component can be subject to fault, errors and/or failures; that's why, in order to provide a model as much suitable to a real application context as possbile, we implemented a separate version of our original project, improved with the two following stochastic features.
 
-    \paragraph{TODO} Explain it and point out the differences with the automata we changed (sensors and stations, integer rounding in stations because of UPPAAL and clocks, processing time is the mean, sensors' escape to avoid deadlocks).
+    \subsection{Faulty Sensors}
+
+    % IMAGE
+
+    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present piece) and/or false negatives (in our case, non-detection of an actually present piece); we took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in Figure 4: Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occured) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
+
+    \paragraph{Deadlock avoidance} As you can see in Figure 4, we added two apparently useless edges: the first from state \texttt{C1} to state \texttt{Unlocked}, and the second from state \texttt{C4} to state \texttt{Locked}; these edges are unexpectedly necessary, since they allow the sensors to check for the presence of a workpiece on the guarded slot every time the conveyor belt moves, avoinding unwanted potential deadlocks.
+
+    \subsection{Normally distributed stations' processing times}
+
+    The processing time of any real industrial processing station can be effectively measured in order to coordinate every other component that has to interact with it. However, even if they are usually very close one from each other, the time taken in practice is never exactly the same for every single processing; we abstracted this classical behavior by creating a normal distribution function with mean value and standard deviation passed as parameters of the \texttt{Station} template; then, each time a workpiece enters a station, the processing time needed is stochastically picked based on the computed normal distribution.
+
+    \paragraph{UPPAAL limit} While implementing the normal distribution function, we experienced that UPPAAL is unable to compare clocks (used to keep track of the passing of the time) with \texttt{double} numbers. In order to deal with that, after have stochastically picked the needed processing time, we decided to round it to the closest integer value.
 
     \section{Scenarios}
 
-    These are some possible scenarios which want to show that the production plant we modelled works correctly in any (normal) situation. There are some pathological cases in which the plant fails to guarantee some properties, but it's completely normal since they are all pathological cases. Some of them are depicted here.
+    In this section we are going to propose some possible scenarios, aiming at proving the resiliency of our model both in standard and borderline situations; Furthermore, we included also some pathological cases, in which the plant fails to guarantee some properties (as it should be).
 
     \subsection{Scenario 1: the normality}
 
-    This is a general scenario in which the structure of the plant is the same as the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt (each one on the opposite branch with respect to the previous workpiece).
+    This can be considered the "standard" scenario: the structure of the plant is the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt, in the way defined above as policy number 3.
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:1}.
 
@@ -338,11 +352,11 @@
         \label{figure:scenario:1}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified}. As it's supposed to, the plant is working without any problem and all the workpieces flow all around the plant without any problem. The sensors are guaranteeing the required properties and the stations do their job flawlessly.
+    \paragraph{Results} All the properties are \textit{verified}. As it is supposed to, the plant is correctly working: every workpiece flows through the plant without any problem. The sensors are guaranteeing the required properties and the stations are working flawlessly.
 
     \subsection{Scenario 2: short queues}
 
-    With this scenario we want to test if the plant is working in a normal production situation (in which all the processing times of the various stations are balanced), but with short queues in front of the various stations.
+    The idea behind this scenario is to test whether the plant is working in a realistic situation characterized by short queues of pieces waiting to be processed by the stations (i.e. each \texttt{OutSensor} is placed very close to its related \texttt{InSensor}).
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:2}.
 
@@ -374,13 +388,13 @@
         \label{figure:scenario:2}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified}. The graphics show us that the system is working correctly without any particular delay on the stations.
+    \paragraph{Results} All the properties are \textit{verified}. The graphics is showing the system is working properly without any particular delay of the stations.
     
-    \paragraph{Particular case} If we try to play a bit with the processing times of the stations, we can create a situation where station 2 and 4 release a piece in such a way that they saturate the queue in front of station 5, exceeding its limit. An example could be a very short processing time on the first two stations in order to let the workpieces flow, the same overall time on the two branches, and very long one at the last station. In this way we break the third property, but it's completely expected, since the plant is not smart enough to prevent this situation.
+    \paragraph{Particular case} If we slightly change the processing times of the stations (For instance by setting very short processing times on the first two stations, the same overall time on the two branches, and very long one on the last), we obtain a situation where stations 2 and 4 release a piece, which cause the saturation the queue preceding station 5, and exceeds its limit. In this case, the third property is no longer verified; anyway this behavior is completely expected, since the plant isn't smart enough to prevent this situation.
 
     \subsection{Scenario 3: one way}
 
-    Here we wanted to test a different scheduling policy. In particular, we choose to route all the workpieces through the branch with the two processing stations. The only thing we changed with respect to the first scenario is the scheduling policy.
+    Here we wanted to test a different scheduling policy: we kept the same parameters of the first scenario and changed only the scheduling policy followed by the Flow Controller; in particular, we chose to route all the workpieces through the branch with the two processing stations (policy 2).
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:3}.
 
@@ -412,11 +426,11 @@
         \label{figure:scenario:3}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, and we compare them with the ones of the first scenario, we can notice that the scheduling policy in which we divide the workpieces on the two different branches (so the one of the first scenario) is slightly more efficient than this one (here, station 0 processes 56 pieces in 1000 time instants with respect to the 58 ones of the first scenario), which may be expected since, usually, balancing the workload is the best solution.
+    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, we notice that the scheduling policy adopted here is slightly more inefficient w.r.t. the standard one (i.e. the one used in Scenario 1): in particular, here station 0 processes 56 pieces in 1000 time instants, while, considering the same time frame, the standard scenario is capable of processing 58 workpieces. The outcome of this comparison is easy understandable, since balancing the workload is usually the best solution.
 
     \subsection{Scenario 4: the stochastic case}
 
-    This is an example of a stochastic plant in which the processing time of the stations varies as a Gaussian distribution around the average and the sensors can be faulty.
+    Here we got the results by running the stochastic version of our project: each station's processing time varies as a Gaussian distribution around an average value, while the sensors can be faulty.
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:4}.
 
@@ -458,11 +472,17 @@
         \label{figure:scenario:4}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with probability: \(> 95\%\) (\propertyref{1}{property:1-2}), \(84\% \pm 5\%\) (\propertyref{2}{property:3}) and \(> 95\%\) (\propertyref{3}{property:4}). We can see that the plant is still working in a non-ideal scenario, processing correctly all the workpieces, without breaking physics laws. It may happen that some queues exceeds their maximum length because of faulty sensors.
+    \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with the following probabilities:
+    \begin{itemize}
+        \item \(> 95\%\) (\propertyref{1}{property:1-2});
+        \item \(84\% \pm 5\%\) (\propertyref{2}{property:3});
+        \item \(> 95\%\) (\propertyref{3}{property:4}).
+    \end{itemize}
+    We can see that the plant is still working in a non-ideal scenario, correctly processing all the workpieces, without breaking physics constraints. Note that it may happen that some queues exceeds their maximum length, because of faulty sensors.
 
     \subsection{Scenario 5: the faulty stochastic}
 
-    Here we want to show that even in the case of a stochastic production plant with highly faulty sensors, it continues to work properly, even if the queues maximum lengths can't be guaranteed.
+    The goal here is to show that in the (unrealistic) case of a stochastic production plant with highly faulty sensors, the system keeps working properly, even if the queues maximum lengths can't be guaranteed.
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:5}.
 
@@ -504,8 +524,16 @@
         \label{figure:scenario:5}
     \end{figure}
 
-    \paragraph{Results} Some properties are \textit{not verified}, but all with a 95\% confidence and with probability: \(> 95\%\) (\propertyref{1}{property:1-2}), \(< 5\%\) (\propertyref{2}{property:3}) and \(> 95\%\) (\propertyref{3}{property:4}). Also in this case the plant is still functioning, but it's almost certain that at least one queue exceed its maximum length. This is because the probability of a sensor being faulty is very high, so in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physics laws are respected, even if it has a really strange behaviour.
+    \paragraph{Results} Some properties are \textit{not verified}, but all with a 95\% confidence; we achieved the following probabilities:
+    \begin{itemize}
+        \item \(> 95\%\) (\propertyref{1}{property:1-2});
+        \item \(< 5\%\) (\propertyref{2}{property:3});
+        \item \(> 95\%\) (\propertyref{3}{property:4}).
+    \end{itemize}
+    It is clear that, also in this case, the plant is still functioning, even if it's almost certain that at least one queue exceed its maximum length. This is due to the very high probability of a sensor to be faulty, for which in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physical constraints are respected.
 
     \section{Conclusions}
+
+    In conclusion, we argue that the results obtained in the various scenarios just presented can be considered proofs of the efficiency and the resiliency achieved by the proposed model. We can state that our project provides a complete abstraction of the LEGO® MINDSTROMS™ Production Plant, by considering both common and rare situations, without neglecting any corner case. From the perspective of performance, we think that, after several optimizations and refinements, we have achieved remarkable outcomes, both in terms of verification speed and memory consumption. By virtue of the considerations exhibited so far, we deeply believe that our model is sticking close to the specifications required by the LEGO® MINDSTROMS™ Production Plant's model.
 
 \end{document}
