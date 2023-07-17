@@ -93,7 +93,7 @@
 
     This is the plant we modelled in our project. The yellow circles are the workpieces, the blue rectangles are the processing stations, the light and dark red circles are the sensors and the green bar is the flow controller.
 
-    \paragraph{Notes on the scheme} In order to make the entire description of our project as much clear as posssible, we enhanced the original scheme with the IDs we assigned to stations and laser sensors, and with the positions of the slots that compose the conveyor belt. Note that we decided to consider the stations as particular components placed above a normal slot; therefore we have two numbers defining each station: one refers to the position of the slot, while the other the ID of the station.
+    \paragraph{Notes on the scheme} In order to make the entire description of our project as much clear as possible, we enhanced the original scheme with the IDs we assigned to stations and laser sensors, and with the positions of the slots that compose the conveyor belt. Note that we decided to consider the stations as particular components placed above a normal slot; therefore we have two numbers defining each station: one refers to the position of the slot, while the other the ID of the station.
 
     \subsection{General Overview}
 
@@ -176,25 +176,11 @@
     \begin{figure}[h!]
         \centering
         \begin{tabularx}{\linewidth}{*{2}{>{\centering\arraybackslash}X}}
-            \begin{subfigure}{\linewidth}
-                \caption{Controller v0}
-            \end{subfigure} &
-            \begin{subfigure}{\linewidth}
-                \caption{Controller v1}
-            \end{subfigure} \\
-            \begin{subfigure}{0.5\columnwidth}
-                \centering
-                \includegraphics[width=\columnwidth]{images/automata/flow_controller_0}
-            \end{subfigure} &
-            \begin{subfigure}{0.23\columnwidth}  
-                \centering
-                \includegraphics[width=\columnwidth]{images/automata/flow_controller_1}
-            \end{subfigure} \\
-            \begin{subfigure}{0.27\columnwidth}   
+            \begin{subfigure}{0.49\columnwidth}   
                 \centering 
-                \includegraphics[width=\textwidth]{images/automata/flow_controller_2}
+                \includegraphics[width=\textwidth]{images/automata/flow_controller_0}
             \end{subfigure} &
-            \begin{subfigure}{0.45\columnwidth}   
+            \begin{subfigure}{0.49\columnwidth}   
                 \centering 
                 \includegraphics[width=\columnwidth]{images/automata/flow_controller_3}
             \end{subfigure} \\
@@ -205,13 +191,13 @@
                 \caption{Controller v3}
             \end{subfigure}
         \end{tabularx}
-        \caption{the Timed Automata of the various types of controllers.}
+        \caption{the two non-trivial \texttt{FlowController} we ideated.}
     \end{figure}
 
     As explained in the introduction, these are the various policy schedules we implemented. Each one of them represents a different way to schedule the workpieces on the processing stations. Starting from the easiest ones, the ones in which all the workpieces follow the same path (either the direct one or the alternative one), to more complex ones, like the one in which we keep track of the queues in front of the first stations of the branch.\medskip
 
     Since the effective movement of the various workpieces is managed by the conveyor belt, these automata send a signal (\texttt{switch\_branch}) to it each time the path followed by the workpieces has to be changed.
-    
+
     \section{Design Decisions} \label{section:design_decisions}
 
     \subsection{Hypothesis}
@@ -221,6 +207,8 @@
     \paragraph{Maximum number of circulating workpieces} We decided to stick with the representation of \figureref{figure:scheme}. So we have at most twelve workpieces circulating in the production plant, and they all are initially placed from position 13, proceeding backward. Please, notice that if the number of workpieces exceeds the position of the first \texttt{OutSensor} (which can be changed by project hypothesis), one of the properties isn't verified. However, this is normal since during the initialization of the plant we are already exceeding the maximum queue's length of the first one.
 
     \paragraph{Time discretization} This will be more clear in the next part, where we describe the main optimization steps we did, but, in brief, we discretized the time in order to have a better synchronization mechanism of the whole plant.
+
+    \pagebreak
 
     \subsection{Optimizations}
 
@@ -297,16 +285,27 @@
     \end{itemize}
 
     \section{Stochastic Version}
-    
-    In real world applications of abstract models, nothing is unbreakable. Every kind of concrete component can be subject to fault, errors and/or failures; that's why, in order to provide a model as much suitable to a real application context as possbile, we implemented a separate version of our original project, improved with the two following stochastic features.
+
+    In real world applications of abstract models, nothing is unbreakable. Every kind of concrete component can be subject to fault, errors and/or failures; that's why, in order to provide a model as much suitable to a real application context as possible, we implemented a separate version of our original project, improved with the two following stochastic features.
 
     \subsection{Faulty Sensors}
 
-    % IMAGE
+    \begin{figure}[h!]
+        \begin{subfigure}{0.49\linewidth}
+            \includegraphics[width=\textwidth]{images/automata/in_sensor_s}
+            \caption{Stochastic \texttt{InSensor}}
+        \end{subfigure}
+        \begin{subfigure}{0.49\linewidth}
+            \includegraphics[width=\textwidth]{images/automata/out_sensor_s}
+            \caption{Stochastic \texttt{OutSensor}}
+        \end{subfigure}
+        \caption{the stochastic version of our \texttt{InSensor} and \texttt{OutSensor}.}
+        \label{figure:stochastic_sensors}
+    \end{figure}
 
-    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present piece) and/or false negatives (in our case, non-detection of an actually present piece); we took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in Figure 4: Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occured) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
+    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present piece) and/or false negatives (in our case, non-detection of an actually present piece); we took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in \figureref{figure:stochastic_sensors}. Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occurred) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
 
-    \paragraph{Deadlock avoidance} As you can see in Figure 4, we added two apparently useless edges: the first from state \texttt{C1} to state \texttt{Unlocked}, and the second from state \texttt{C4} to state \texttt{Locked}; these edges are unexpectedly necessary, since they allow the sensors to check for the presence of a workpiece on the guarded slot every time the conveyor belt moves, avoinding unwanted potential deadlocks.
+    \paragraph{Deadlock avoidance} As you can see in \figureref{figure:stochastic_sensors}, we added two apparently useless edges: the first from state \texttt{C1} to state \texttt{Unlocked}, and the second from state \texttt{C4} to state \texttt{Locked}; these edges are unexpectedly necessary, since they allow the sensors to check for the presence of a workpiece on the guarded slot every time the conveyor belt moves, avoiding unwanted potential deadlocks.
 
     \subsection{Normally distributed stations' processing times}
 
@@ -356,7 +355,7 @@
 
     \subsection{Scenario 2: short queues}
 
-    The idea behind this scenario is to test whether the plant is working in a realistic situation characterized by short queues of pieces waiting to be processed by the stations (i.e. each \texttt{OutSensor} is placed very close to its related \texttt{InSensor}).
+    The idea behind this scenario is to test whether the plant is working in a realistic situation characterized by short queues of pieces waiting to be processed by the stations (i.e., each \texttt{OutSensor} is placed very close to its related \texttt{InSensor}).
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:2}.
 
@@ -389,8 +388,10 @@
     \end{figure}
 
     \paragraph{Results} All the properties are \textit{verified}. The graphics is showing the system is working properly without any particular delay of the stations.
-    
+
     \paragraph{Particular case} If we slightly change the processing times of the stations (For instance by setting very short processing times on the first two stations, the same overall time on the two branches, and very long one on the last), we obtain a situation where stations 2 and 4 release a piece, which cause the saturation the queue preceding station 5, and exceeds its limit. In this case, the third property is no longer verified; anyway this behavior is completely expected, since the plant isn't smart enough to prevent this situation.
+
+    \pagebreak
 
     \subsection{Scenario 3: one way}
 
@@ -426,7 +427,7 @@
         \label{figure:scenario:3}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, we notice that the scheduling policy adopted here is slightly more inefficient w.r.t. the standard one (i.e. the one used in Scenario 1): in particular, here station 0 processes 56 pieces in 1000 time instants, while, considering the same time frame, the standard scenario is capable of processing 58 workpieces. The outcome of this comparison is easy understandable, since balancing the workload is usually the best solution.
+    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, we notice that the scheduling policy adopted here is slightly more inefficient w.r.t. the standard one (i.e., the one used in Scenario 1): in particular, here station 0 processes 56 pieces in 1000 time instants, while, considering the same time frame, the standard scenario is capable of processing 58 workpieces. The outcome of this comparison is easy understandable, since balancing the workload is usually the best solution.
 
     \subsection{Scenario 4: the stochastic case}
 
@@ -474,9 +475,9 @@
 
     \paragraph{Results} All the properties are \textit{verified} with a 95\% confidence and with the following probabilities:
     \begin{itemize}
-        \item \(> 95\%\) (\propertyref{1}{property:1-2});
-        \item \(84\% \pm 5\%\) (\propertyref{2}{property:3});
-        \item \(> 95\%\) (\propertyref{3}{property:4}).
+        \item \propertyref{1}{property:1-2}: \(> 95\%\);
+        \item \propertyref{2}{property:3}: \(84\% \pm 5\%\);
+        \item \propertyref{3}{property:4}: \(> 95\%\).
     \end{itemize}
     We can see that the plant is still working in a non-ideal scenario, correctly processing all the workpieces, without breaking physics constraints. Note that it may happen that some queues exceeds their maximum length, because of faulty sensors.
 
@@ -526,14 +527,14 @@
 
     \paragraph{Results} Some properties are \textit{not verified}, but all with a 95\% confidence; we achieved the following probabilities:
     \begin{itemize}
-        \item \(> 95\%\) (\propertyref{1}{property:1-2});
-        \item \(< 5\%\) (\propertyref{2}{property:3});
-        \item \(> 95\%\) (\propertyref{3}{property:4}).
+        \item \propertyref{1}{property:1-2}: \(> 95\%\);
+        \item \propertyref{2}{property:3}: \(< 5\%\);
+        \item \propertyref{3}{property:4}: \(> 95\%\).
     \end{itemize}
     It is clear that, also in this case, the plant is still functioning, even if it's almost certain that at least one queue exceed its maximum length. This is due to the very high probability of a sensor to be faulty, for which in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physical constraints are respected.
 
     \section{Conclusions}
 
-    In conclusion, we argue that the results obtained in the various scenarios just presented can be considered proofs of the efficiency and the resiliency achieved by the proposed model. We can state that our project provides a complete abstraction of the LEGO® MINDSTROMS™ Production Plant, by considering both common and rare situations, without neglecting any corner case. From the perspective of performance, we think that, after several optimizations and refinements, we have achieved remarkable outcomes, both in terms of verification speed and memory consumption. By virtue of the considerations exhibited so far, we deeply believe that our model is sticking close to the specifications required by the LEGO® MINDSTROMS™ Production Plant's model.
+    In conclusion, we argue that the results obtained in the various scenarios just presented can be considered proofs of the efficiency and the resiliency achieved by the proposed model. We can state that our project provides a complete abstraction of the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark Production Plant, by considering both common and rare situations, without neglecting any corner case. From the perspective of performance, we think that, after several optimizations and refinements, we have achieved remarkable outcomes, both in terms of verification speed and memory consumption. By virtue of the considerations exhibited so far, we deeply believe that our model is sticking close to the specifications required by the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark Production Plant's model.
 
 \end{document}
