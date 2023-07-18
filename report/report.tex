@@ -19,33 +19,16 @@
 \usepackage{tabularx}
 \usepackage{xcolor}
 
-\setlength{\parindent}{0pt}
-
 \hypersetup{
     pdftitle={Formal Digital Twin of a LEGO® MINDSTROMS™ Production Plant},
     pdfauthor={Andrea Infantino, Riccardo Motta, Matteo Negro}
-}
+    }
 
-\captionsetup[figure]{labelfont=bf}
-
-\newcommand{\figureref}[1]{\textsf{\hyperref[#1]{Figure \ref*{#1}}}}
-\newcommand{\sectionref}[1]{\textsf{\hyperref[#1]{Section \ref*{#1}: \nameref*{#1} (page \pageref*{#1})}}}
-\newcommand{\propertyref}[2]{\textsf{\hyperref[#2]{Property #1: \nameref*{#2}}}}
-\newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
-
-\newcommand{\formulacomment}[2]{\underset{\varphi_{#1}}{\underbrace{#2}}}
-\newcommand{\formulatext}[1]{\text{\texttt{#1}}}
-
-\newcommand{\parametertt}{\fontfamily{lmtt}\fontseries{b}\selectfont}
-\newcommand{\parametertitle}[2]{\multicolumn{#1}{|c|}{#2}}
-\newcommand{\parametercontent}[2]{\multicolumn{#1}{|c|}{#2}}
-
-\renewcommand\tabularxcolumn[1]{m{#1}}
+\setlength{\parindent}{0pt}
 
 \arrayrulecolor{lightgray}
 
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\sectionmark}[1]{\markboth{#1}{}} 
+\captionsetup[figure]{labelfont=bf}
 
 \fancypagestyle{plain} {
     \fancyhead{}
@@ -60,6 +43,25 @@
 
 \fancyhead[RO,LE]{\textcolor{gray}{\if\thesection0{}\else Section \thesection: \leftmark\fi}}
 \fancyfoot[LE,RO]{\textcolor{gray}{\thepage}}
+
+\newcommand{\doublequotes}[1]{``#1''}
+
+\newcommand{\figureref}[1]{\textsf{\hyperref[#1]{Figure \ref*{#1}}}}
+\newcommand{\sectionref}[1]{\textsf{\hyperref[#1]{Section \ref*{#1}: \nameref*{#1} (page \pageref*{#1})}}}
+\newcommand{\propertyref}[2]{\textsf{\hyperref[#2]{Property #1: \nameref*{#2}}}}
+\newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
+
+\newcommand{\formulacomment}[2]{\underset{\varphi_{#1}}{\underbrace{#2}}}
+\newcommand{\formulatext}[1]{\text{\texttt{#1}}}
+
+\newcommand{\parametertt}{\fontfamily{lmtt}\fontseries{b}\selectfont}
+\newcommand{\parametertitle}[2]{\multicolumn{#1}{|c|}{#2}}
+\newcommand{\parametercontent}[2]{\multicolumn{#1}{|c|}{#2}}
+
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}} 
 
 \begin{document}
 
@@ -111,7 +113,7 @@
 
     This is the plant we modelled in our project. The yellow circles are the workpieces, the blue rectangles are the processing stations, the light and dark red circles are the sensors and the green bar is the flow controller.
 
-    \paragraph{Notes on the scheme} In order to make the entire description of our project as much clear as possible, we enhanced the original scheme with the IDs we assigned to stations and laser sensors, and with the positions of the slots that compose the conveyor belt. Note that we decided to consider the stations as particular components placed above a normal slot; therefore we have two numbers defining each station: one refers to the position of the slot, while the other the ID of the station.
+    \paragraph{Notes on the scheme} In order to make the entire description of our project as much clear as possible, we enhanced the original scheme with the IDs we assigned to stations and laser sensors, and with the positions of the slots that compose the conveyor belt. Notice that we decided to consider the stations as particular components placed above a normal slot, therefore we have two numbers defining each station: one refers to the position of the slot, while the other the ID of the station.
 
     \subsection{General Overview}
 
@@ -132,7 +134,7 @@
         \item[0.] Sends the workpieces on the alternative branch until its queue is full, otherwise lets the workpieces proceed on the main branch;
         \item[1.] Lets all the workpieces to flow on the main branch;
         \item[2.] Sends all the workpieces on the alternative branch;
-        \item[3.] Every time a workpiece is in front of him sends it on a different path with respect to the one taken by the previous workpiece.
+        \item[3.] Every time a workpiece is in front of him sends it on a different path with respect to the one taken by the previous workpiece.\label{policy:3}
     \end{enumerate}
 
     \subsection{Initializer (\texttt{Initializer})}
@@ -250,7 +252,7 @@
 
     \subsubsection{Unique clock}
 
-    \paragraph{Idea} We realized that we actually had 7 different clocks inside our project (one for the general clock of the system and one for each station); since this fact was one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to keep all the various templates synchronized with it.
+    \paragraph{Idea} We realized that we actually had 7 different clocks inside our project (one for the general clock of the system and one for each station). Since this fact was one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to keep all the various templates synchronized with it.
 
     \paragraph{Situation} We added a new template, the \texttt{Motor}, which sends the right signals at the right moment to all the components that need it, while respecting the speed of the conveyor belt's movement; then we synchronized the stations' processing times with the general clock of the system (which is not related to the speed of the conveyor belt). By doing this, we reduced the number of possible transitions the system can potentially take at any instance. This allowed us to have a skyrocketing verification time, even with 12 different workpieces circulating in the production plant at the same time.
 
@@ -321,23 +323,23 @@
         \label{figure:stochastic_sensors}
     \end{figure}
 
-    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present workpiece) and/or false negatives (in our case, non-detection of an actually present workpiece); we took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in \figureref{figure:stochastic_sensors}. Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling potential false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occurred) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
+    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present workpiece) and/or false negatives (in our case, non-detection of an actually present workpiece). We took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in \figureref{figure:stochastic_sensors}. Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling potential false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occurred) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
 
     \paragraph{Deadlock avoidance} As you can see in \figureref{figure:stochastic_sensors}, we added two apparently useless edges: the first from state \texttt{C1} to state \texttt{Unlocked}, and the second from state \texttt{C4} to state \texttt{Locked}. These edges allow the sensors to check for the presence of a workpiece on the guarded slot at every tick, emulating the real behaviour of a sensor, which can misread every time. This is also helpful in order to avoid unwanted potential deadlocks, since it can always get back to a fully functioning state.
 
     \subsection{Normally distributed stations' processing times}
 
-    The processing time of any real industrial processing station can be effectively measured in order to coordinate every other component that has to interact with it. However, even if they are usually very close one from each other, the time taken in practice is never exactly the same for every single processing; we abstracted this classical behavior by creating a normal distribution function with mean value and standard deviation passed as parameters of the \texttt{Station} template; then, each time a workpiece enters a station, the processing time needed is stochastically picked based on the computed normal distribution.
+    The processing time of any real industrial processing station can be effectively measured in order to coordinate every other component that has to interact with it. However, even if they are usually very close one from each other, the time taken in practice is never exactly the same for every single processing. We abstracted this classical behavior by creating a normal distribution function with mean value and standard deviation passed as parameters of the \texttt{Station} template; then, each time a workpiece enters a station, the processing time needed is stochastically picked based on the computed normal distribution.
 
     \paragraph{UPPAAL limit} While implementing the normal distribution function, we experienced that UPPAAL is unable to compare clocks (used to keep track of the passing of the time) with \texttt{double} numbers. In order to deal with that, after have stochastically picked the needed processing time, we decided to round it to the closest integer value.
 
     \section{S\lowercase{cenarios}}
 
-    In this section we are going to propose some possible scenarios, aiming at proving the resiliency of our model both in standard and borderline situations; Furthermore, we included also some pathological cases, in which the plant fails to guarantee some properties (as it should be).
+    In this section we are going to propose some possible scenarios, aiming at proving the resiliency of our model both in standard and borderline situations. Furthermore, we included also some pathological cases, in which the plant fails to guarantee some properties (as it should be).
 
     \subsection{Scenario 1: the normality}
 
-    This can be considered the "standard" scenario: the structure of the plant is the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt, in the way defined above as policy number 3.
+    This can be considered the \doublequotes{standard} scenario: the structure of the plant is the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt, in the way defined above as \textsf{\hyperref[policy:3]{Policy 3}}.
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:1}.
 
@@ -407,11 +409,11 @@
 
     \paragraph{Results} All the properties are \textit{verified}. The graphics is showing the system is working properly without any particular delay of the stations.
 
-    \paragraph{Particular case} If we slightly change the processing times of the stations, we obtain a situation where stations 2 and 4 release a workpiece, which cause the saturation the queue preceding station 5, and exceeds its limit. For instance, this can be obtained by setting very short processing times on the first two stations, the same overall time on the two branches, and very long one on the last. In this case, the third property is no longer verified; anyway this behavior is completely expected, since the plant isn't smart enough to prevent this situation.
+    \paragraph{Particular case} If we slightly change the processing times of the stations, we obtain a situation where stations 2 and 4 release a workpiece, which cause the saturation the queue preceding station 5, and exceeds its limit. For instance, this can be obtained by setting very short processing times on the first two stations, the same overall time on the two branches, and very long one on the last. In this case, the third property is no longer verified. Anyway, this behavior is completely expected, since the plant isn't smart enough to prevent this situation.
 
     \subsection{Scenario 3: one way}
 
-    Here we wanted to test a different scheduling policy: we kept the same parameters of the first scenario and changed only the scheduling policy followed by the Flow Controller; in particular, we chose to route all the workpieces through the branch with the two processing stations (policy 2).
+    Here we wanted to test a different scheduling policy: we kept the same parameters of the first scenario and changed only the scheduling policy followed by the \texttt{FlowController}. In particular, we chose to route all the workpieces through the branch with the two processing stations (policy 2).
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:3}.
 
@@ -541,7 +543,7 @@
         \label{figure:scenario:5}
     \end{figure}
 
-    \paragraph{Results} Some properties are \textit{not verified}, but all with a 95\% confidence; we achieved the following probabilities:
+    \paragraph{Results} Some properties are \textit{not verified}, but all with a 95\% confidence. We achieved the following probabilities:
     \begin{itemize}
         \item \propertyref{1}{property:1-2}: \(> 95\%\);
         \item \propertyref{2}{property:3}: \(< 5\%\);
@@ -551,6 +553,6 @@
 
     \section{C\lowercase{onclusions}}
 
-    In conclusion, we argue that the results obtained in the various scenarios just presented can be considered proofs of the efficiency and the resiliency achieved by the proposed model. We can state that our project provides a complete abstraction of the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark Production Plant, by considering both common and rare situations, without neglecting any corner case. From the perspective of performance, we think that, after several optimizations and refinements, we have achieved remarkable outcomes, both in terms of verification speed and memory consumption. By virtue of the considerations exhibited so far, we deeply believe that our model is sticking close to the specifications required by the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark Production Plant's model.
+    In conclusion, we argue that the results obtained in the various scenarios just presented can be considered proofs of the efficiency and the resiliency achieved by the proposed model. We can state that our project provides a complete abstraction of the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark{} Production Plant, by considering both common and rare situations, without neglecting any corner case. From the perspective of performance, we think that, after several optimizations and refinements, we have achieved remarkable outcomes, both in terms of verification speed and memory consumption. By virtue of the considerations exhibited so far, we deeply believe that our model is sticking close to the specifications required by the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark{} Production Plant's model.
 
 \end{document}
