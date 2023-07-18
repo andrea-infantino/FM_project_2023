@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper,twoside]{article}
 
 \pdfmajorversion=1
 \pdfminorversion=7
@@ -6,12 +6,13 @@
 \pdfobjcompresslevel=2
 
 \usepackage[hidelinks]{hyperref}
-\usepackage[margin=60pt]{geometry}
+\usepackage[margin=50pt]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{colortbl}
+\usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{mathtools}
 \usepackage{subcaption}
@@ -42,6 +43,23 @@
 \renewcommand\tabularxcolumn[1]{m{#1}}
 
 \arrayrulecolor{lightgray}
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}} 
+
+\fancypagestyle{plain} {
+    \fancyhead{}
+    \fancyfoot{}
+    \fancyfoot[LE,RO]{\thepage}
+}
+
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyfoot{}
+
+\fancyhead[RO,LE]{\textcolor{gray}{\if\thesection0{}\else Section \thesection: \leftmark\fi}}
+\fancyfoot[LE,RO]{\textcolor{gray}{\thepage}}
 
 \begin{document}
 
@@ -79,7 +97,7 @@
 
     \pagebreak
 
-    \section{Model Description}
+    \section{M\lowercase{odel} D\lowercase{escription}}
 
     This section provides a description of the production plant with some implementation details, together with all the components that make it up. The motivations behind these modelling choices can be found in \sectionref{section:design_decisions}.
 
@@ -143,7 +161,7 @@
 
     \paragraph{Queue management} Every time a workpiece is blocked in a specific location and some other one wants to proceed, the conveyor belt blocks it until the first one is free to move again. Since we are scanning the belt from the last positions backward this situation is easily managed since we can't place a workpiece on top of another one.
 
-    \paragraph{Conveyor belt branch and merge} In order to be updated about which branch the next workpiece should take, we decided to keep the Conveyor Belt always ready to receive the signal \texttt{switch\_branch?}. This allows us to directly use the \texttt{update()} function to move the workpieces on the correct branch. Also, the merge of the two branches is (easily) managed by the conveyor belt, since, by scanning it backward, once we move a piece in the merge position of the belt (position 103), no other one can be put in the same place, thus, blocking it from proceeding, which is exactly what happens in reality.
+    \paragraph{Conveyor belt branch and merge} In order to be updated about which branch the next workpiece should take, we decided to keep the Conveyor Belt always ready to receive the signal \texttt{switch\_branch?}. This allows us to directly use the \texttt{update()} function to move the workpieces on the correct branch. Also, the merge of the two branches is (easily) managed by the conveyor belt, since, by scanning it backward, once we move a workpiece in the merge position of the belt (position 103), no other one can be put in the same place, thus, blocking it from proceeding, which is exactly what happens in reality.
 
     \subsection{Processing stations (\texttt{Station})}
 
@@ -185,7 +203,7 @@
                 \includegraphics[width=\columnwidth]{images/automata/flow_controller_3}
             \end{subfigure} \\
             \begin{subfigure}{\linewidth}
-                \caption{Controller v2}
+                \caption{Controller v0}
             \end{subfigure} &
             \begin{subfigure}{\linewidth}
                 \caption{Controller v3}
@@ -198,17 +216,15 @@
 
     Since the effective movement of the various workpieces is managed by the conveyor belt, these automata send a signal (\texttt{switch\_branch}) to it each time the path followed by the workpieces has to be changed.
 
-    \section{Design Decisions} \label{section:design_decisions}
+    \section{D\lowercase{esign} D\lowercase{ecisions}} \label{section:design_decisions}
 
     \subsection{Hypothesis}
 
-    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of merging the two alternative paths at position 103. In the (possible) corner case in which both position 85 and position 102 are carrying a workpiece at the same time (i.e., they are simultaneously trying to place a workpiece on slot 103), we decided to apply the following policy: the first piece to flow is always the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
+    \paragraph{Slots' numbering} We numbered the slots as shown in \figureref{figure:scheme}. This helped us in the management of the conveyor belt's update function and implicitly allowed us to solve the problem of merging the two alternative paths at position 103. In the (possible) corner case in which both position 85 and position 102 are carrying a workpiece at the same time (i.e., they are simultaneously trying to place a workpiece on slot 103), we decided to apply the following policy: the first workpiece to flow is always the one coming from station 4. This is, of course, a simplification. A more complicated approach could have been taken, like randomly picking one of the two workpieces, but we decided to keep it as simple as we could.
 
     \paragraph{Maximum number of circulating workpieces} We decided to stick with the representation of \figureref{figure:scheme}. So we have at most twelve workpieces circulating in the production plant, and they all are initially placed from position 13, proceeding backward. Please, notice that if the number of workpieces exceeds the position of the first \texttt{OutSensor} (which can be changed by project hypothesis), one of the properties isn't verified. However, this is normal since during the initialization of the plant we are already exceeding the maximum queue's length of the first one.
 
     \paragraph{Time discretization} This will be more clear in the next part, where we describe the main optimization steps we did, but, in brief, we discretized the time in order to have a better synchronization mechanism of the whole plant.
-
-    \pagebreak
 
     \subsection{Optimizations}
 
@@ -224,28 +240,28 @@
 
     \paragraph{Idea} In order to simplify the modelling of the plant and our code, we decided to group the slots of the conveyor belt all together into a single logically entity (the \texttt{ConveyorBelt}).
 
-    \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project), since we had a unique entity to manage the complexity derived from the movement of the various workpieces. This also works in synchronicity with the processing stations and the sensors, in order to block the pieces when needed, and with the flow controller, which communicates to the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved significantly the verification time needed to check the properties, but we still had a huge memory consumption.
+    \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project), since we had a unique entity to manage the complexity derived from the movement of the various workpieces. This also works in synchronicity with the processing stations and the sensors, in order to block the workpieces when needed, and with the flow controller, which communicates to the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved significantly the verification time needed to check the properties, but we still had a huge memory consumption.
 
     \subsubsection{Automata simplification}
 
-    \paragraph{Idea} Since one of the things that was making the verification process heavy and slow, was the wide number of states traversed at each iteration, we decided to try to reduce the number of total states composing the entire system at the bare minimum.
+    \paragraph{Idea} One of the things that was making the verification process heavy and slow, was the wide number of states traversed at each iteration. So, we decided to try to reduce the number of total states and transitions composing the entire system at the bare minimum.
 
-    \paragraph{Situation} We removed some superfluous states from our model, and we split the flow controller into four different ones (one for each policy), in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements both in verification times and memory consumption.
+    \paragraph{Situation} We removed some superfluous states and transitions from our model. We also split the flow controller into four different ones (one for each policy), in order to instantiate only the one that we were going to use during the simulation and verification of the plant. This allowed us to have slight improvements both in verification times and memory consumption.
 
     \subsubsection{Unique clock}
 
-    \paragraph{Idea} By talking with some colleagues and with the instructors we realized that we had 7 different clocks inside our project (one for the general clock of the system and one for each station); since this fact was one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to keep all the various templates synchronized with it.
+    \paragraph{Idea} We realized that we actually had 7 different clocks inside our project (one for the general clock of the system and one for each station); since this fact was one of the biggest bottlenecks during the verification phase, we decided to reduce them to just a general one, and to keep all the various templates synchronized with it.
 
     \paragraph{Situation} We added a new template, the \texttt{Motor}, which sends the right signals at the right moment to all the components that need it, while respecting the speed of the conveyor belt's movement; then we synchronized the stations' processing times with the general clock of the system (which is not related to the speed of the conveyor belt). By doing this, we reduced the number of possible transitions the system can potentially take at any instance. This allowed us to have a skyrocketing verification time, even with 12 different workpieces circulating in the production plant at the same time.
 
-    \section{Properties}
+    \section{P\lowercase{roperties}}
 
     \subsection{No two workpieces can be in the same position at the same time} \label{property:1-2}
 
     Since we modelled the plant as a unique conveyor belt with the stations placed on some specific slots, this property embraces two different requirements of the production plant:
     \begin{itemize}
         \item \textit{It never happens that a station holds more than 1 workpiece};
-        \item \textit{It never happens that two pieces occupy the same conveyor belt slot}.
+        \item \textit{It never happens that two workpieces occupy the same conveyor belt slot}.
     \end{itemize}
 
     Note that the slots are modelled as an array of 110 Boolean values, in which \texttt{true} corresponds to the presence of a workpiece in that position.\medskip
@@ -258,9 +274,11 @@
         \item \(\varphi_2\): the number of circulating workpieces in the production plant.
     \end{itemize}
 
+    \pagebreak
+
     \subsection{Queues never exceed their maximum length} \label{property:3}
 
-    We verified this by exploiting a custom function which, given the positions of a related pair (\texttt{InSensor}, \texttt{OutSensor}), we check that there is at least one free slot between the position of the \texttt{InSensor} and the position preceding the one of the \texttt{OutSensor}. If the property is false, it means that there is at most one extra piece in the queue. We verified this as follows:
+    We verified this by exploiting a custom function which, given the positions of a related pair (\texttt{InSensor}, \texttt{OutSensor}), we check that there is at least one free slot between the position of the \texttt{InSensor} and the position preceding the one of the \texttt{OutSensor}. If the property is false, it means that there is at most one extra workpiece in the queue. We verified this as follows:
     \[\forall \square \left(\forall i \in \left[0; 4\right] \left(\formulacomment{1}{\formulatext{outSensor(i).Locked}} \implies \formulacomment{2}{\formulatext{check\_queue(i, POS\_OUT\_SENSORS[i])}}\right)\right)\]
 
     \begin{itemize}
@@ -270,7 +288,7 @@
 
     \subsection{The plant never incurs in deadlock} \label{property:4}
 
-    In order to verify this, we checked both the automata part and the logic one. This means that we made sure to not incur in a deadlock in the transitions, and that all the pieces are continuing to circulate in the plant.\medskip
+    In order to verify this, we checked both the automata part and the logic one. This means that we made sure to not incur in a deadlock in the transitions, and that all the workpieces are continuing to circulate in the plant.\medskip
 
     The property for the transitions is verified with \(\forall \square \left(\neg \formulatext{deadlock}\right)\), while the second one with:
     {
@@ -280,13 +298,13 @@
 
     \begin{itemize}
         \item \(\varphi_1\): all the stations are either blocked on \texttt{Processing} or \texttt{Done};
-        \item \(\varphi_2\): all the \texttt{OutSensor} are preventing pieces from exiting the stations;
-        \item \(\varphi_3\): all the \texttt{InSensor} are blocking pieces from reaching the stations.
+        \item \(\varphi_2\): all the \texttt{OutSensor} are preventing workpieces from exiting the stations;
+        \item \(\varphi_3\): all the \texttt{InSensor} are blocking workpieces from reaching the stations.
     \end{itemize}
 
-    \section{Stochastic Version}
+    \section{S\lowercase{tochastic} V\lowercase{ersion}}
 
-    In real world applications of abstract models, nothing is unbreakable. Every kind of concrete component can be subject to fault, errors and/or failures; that's why, in order to provide a model as much suitable to a real application context as possible, we implemented a separate version of our original project, improved with the two following stochastic features.
+    In real world applications, nothing is unbreakable. Every kind of concrete component can be subject to fault, errors and/or failures; that's why, in order to provide a model as much suitable to a real application context as possible, we implemented a separate version of our original project, improved with the two following stochastic features\footnote{Reference: \textsf{\hyperlink{https://www.it.uu.se/research/group/darts/papers/texts/uppaal-smc-tutorial.pdf}{https://www.it.uu.se/research/group/darts/papers/texts/uppaal-smc-tutorial.pdf}}.}.
 
     \subsection{Faulty Sensors}
 
@@ -303,9 +321,9 @@
         \label{figure:stochastic_sensors}
     \end{figure}
 
-    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present piece) and/or false negatives (in our case, non-detection of an actually present piece); we took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in \figureref{figure:stochastic_sensors}. Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occurred) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
+    In real world, every kind of sensors might provide false positives (in our case, detection of a not actually present workpiece) and/or false negatives (in our case, non-detection of an actually present workpiece); we took into account this feature by modifying the original TA of both \texttt{InSensor} and \texttt{OutSensor} as shown in \figureref{figure:stochastic_sensors}. Starting from the original non-stochastic version of the two type of sensors, we added two couples of alternative states, \texttt{C1}-\texttt{C2} and \texttt{C3}-\texttt{C4}, respectively handling potential false positives and false negatives; in this way, each time the sensor is unlocked, one state among \texttt{C1} (meaning that the sensor is working properly) and \texttt{C2} (meaning that a detection error has occurred) is stochastically chosen, based on a probability weight passed as parameter to the template. Similarly, every time the sensor is locked, state \texttt{C3} is visited if the sensor has performed a misreading, and state \texttt{C4} otherwise.
 
-    \paragraph{Deadlock avoidance} As you can see in \figureref{figure:stochastic_sensors}, we added two apparently useless edges: the first from state \texttt{C1} to state \texttt{Unlocked}, and the second from state \texttt{C4} to state \texttt{Locked}; these edges are unexpectedly necessary, since they allow the sensors to check for the presence of a workpiece on the guarded slot every time the conveyor belt moves, avoiding unwanted potential deadlocks.
+    \paragraph{Deadlock avoidance} As you can see in \figureref{figure:stochastic_sensors}, we added two apparently useless edges: the first from state \texttt{C1} to state \texttt{Unlocked}, and the second from state \texttt{C4} to state \texttt{Locked}. These edges allow the sensors to check for the presence of a workpiece on the guarded slot at every tick, emulating the real behaviour of a sensor, which can misread every time. This is also helpful in order to avoid unwanted potential deadlocks, since it can always get back to a fully functioning state.
 
     \subsection{Normally distributed stations' processing times}
 
@@ -313,7 +331,7 @@
 
     \paragraph{UPPAAL limit} While implementing the normal distribution function, we experienced that UPPAAL is unable to compare clocks (used to keep track of the passing of the time) with \texttt{double} numbers. In order to deal with that, after have stochastically picked the needed processing time, we decided to round it to the closest integer value.
 
-    \section{Scenarios}
+    \section{S\lowercase{cenarios}}
 
     In this section we are going to propose some possible scenarios, aiming at proving the resiliency of our model both in standard and borderline situations; Furthermore, we included also some pathological cases, in which the plant fails to guarantee some properties (as it should be).
 
@@ -355,7 +373,7 @@
 
     \subsection{Scenario 2: short queues}
 
-    The idea behind this scenario is to test whether the plant is working in a realistic situation characterized by short queues of pieces waiting to be processed by the stations (i.e., each \texttt{OutSensor} is placed very close to its related \texttt{InSensor}).
+    The idea behind this scenario is to test whether the plant is working in a realistic situation characterized by short queues of workpieces waiting to be processed by the stations (i.e., each \texttt{OutSensor} is placed very close to its related \texttt{InSensor}).
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:2}.
 
@@ -364,7 +382,7 @@
             \hline
             \parametertt SPEED & \parametertt DISKS & \textbf{Policy} & \parametertt \small POS\_OUT\_SENSORS & \parametertt STATIONS\_ELABORATION\_TIME \\
             \hline
-            1 & 12 & 3 & {\tiny [12, 33, 76, 92, 106]} & [2, 15, 5, 3, 2, 5] \\
+            1 & 12 & 3 & {\footnotesize [12, 33, 76, 92, 106]} & [2, 15, 5, 3, 2, 5] \\
             \hline
         \end{tabular}
     \end{center}
@@ -389,9 +407,7 @@
 
     \paragraph{Results} All the properties are \textit{verified}. The graphics is showing the system is working properly without any particular delay of the stations.
 
-    \paragraph{Particular case} If we slightly change the processing times of the stations (For instance by setting very short processing times on the first two stations, the same overall time on the two branches, and very long one on the last), we obtain a situation where stations 2 and 4 release a piece, which cause the saturation the queue preceding station 5, and exceeds its limit. In this case, the third property is no longer verified; anyway this behavior is completely expected, since the plant isn't smart enough to prevent this situation.
-
-    \pagebreak
+    \paragraph{Particular case} If we slightly change the processing times of the stations, we obtain a situation where stations 2 and 4 release a workpiece, which cause the saturation the queue preceding station 5, and exceeds its limit. For instance, this can be obtained by setting very short processing times on the first two stations, the same overall time on the two branches, and very long one on the last. In this case, the third property is no longer verified; anyway this behavior is completely expected, since the plant isn't smart enough to prevent this situation.
 
     \subsection{Scenario 3: one way}
 
@@ -427,7 +443,7 @@
         \label{figure:scenario:3}
     \end{figure}
 
-    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, we notice that the scheduling policy adopted here is slightly more inefficient w.r.t. the standard one (i.e., the one used in Scenario 1): in particular, here station 0 processes 56 pieces in 1000 time instants, while, considering the same time frame, the standard scenario is capable of processing 58 workpieces. The outcome of this comparison is easy understandable, since balancing the workload is usually the best solution.
+    \paragraph{Results} All the properties are \textit{verified}. If we take a closer look to the graphics, we notice that the scheduling policy adopted here is slightly more inefficient w.r.t. the standard one (i.e., the one used in Scenario 1): in particular, here station 0 processes 56 workpieces in 1000 time instants, while, considering the same time frame, the standard scenario is capable of processing 58 workpieces. The outcome of this comparison is easy understandable, since balancing the workload is usually the best solution.
 
     \subsection{Scenario 4: the stochastic case}
 
@@ -533,7 +549,7 @@
     \end{itemize}
     It is clear that, also in this case, the plant is still functioning, even if it's almost certain that at least one queue exceed its maximum length. This is due to the very high probability of a sensor to be faulty, for which in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physical constraints are respected.
 
-    \section{Conclusions}
+    \section{C\lowercase{onclusions}}
 
     In conclusion, we argue that the results obtained in the various scenarios just presented can be considered proofs of the efficiency and the resiliency achieved by the proposed model. We can state that our project provides a complete abstraction of the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark Production Plant, by considering both common and rare situations, without neglecting any corner case. From the perspective of performance, we think that, after several optimizations and refinements, we have achieved remarkable outcomes, both in terms of verification speed and memory consumption. By virtue of the considerations exhibited so far, we deeply believe that our model is sticking close to the specifications required by the LEGO\textsuperscript{\textregistered} MINDSTROMS\texttrademark Production Plant's model.
 
