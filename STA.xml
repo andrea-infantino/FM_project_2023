@@ -799,12 +799,12 @@ const SlotId POS_OUT_SENSORS[OUT_SENSORS] = {        /***/     2    /** ID: 0 (1
                                                      /***/     105  /** ID: 4 (5th) */                                               };/***/
                                                      /***/                                                                              /***/
                                                      /***     Elaboration Times of the 6 Stations:                                     ***/
-const int STATIONS_ELABORATION_TIME[STATIONS] = {    /***/     3    /** ID: 0 (1st)*/                                                 ,/***/
-                                                     /***/     4    /** ID: 1 (2nd)*/                                                 ,/***/
-                                                     /***/     5    /** ID: 2 (3rd)*/                                                 ,/***/
-                                                     /***/     6    /** ID: 3 (4th)*/                                                 ,/***/
-                                                     /***/     7    /** ID: 4 (5th)*/                                                 ,/***/
-                                                     /***/     8    /** ID: 5 (6nd)*/                                                };/***/
+const int STATIONS_ELABORATION_TIME[STATIONS] = {    /***/     6    /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     7    /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     8    /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     9    /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     8    /** ID: 4 (5th)*/                                                 ,/***/
+                                                     /***/     7    /** ID: 5 (6nd)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Standard Deviation of the Elaboration Time of the 6 Stations:           ***/
 const double STD_DEV_STATIONS[STATIONS] = {          /***/     1.0  /** ID: 0 (1st)*/                                                 ,/***/
@@ -823,12 +823,12 @@ const int IN_SENSORS_ERR[IN_SENSORS] = {             /***/     1    /** ID: 0 (1
                                                      /***/     1    /** ID: 5 (6nd)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Right of the 6 In-Sensors:                                 ***/
-const int IN_SENSORS_RIGHT[IN_SENSORS] = {           /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 1 (2nd)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 2 (3rd)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 3 (4th)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 4 (5th)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 5 (6nd)*/                                                };/***/
+const int IN_SENSORS_RIGHT[IN_SENSORS] = {           /***/     9999 /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 4 (5th)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 5 (6nd)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Error of the 5 Out-Sensors:                                ***/
 const int OUT_SENSORS_ERR[OUT_SENSORS] = {           /***/     1    /** ID: 0 (1st)*/                                                 ,/***/
@@ -838,11 +838,11 @@ const int OUT_SENSORS_ERR[OUT_SENSORS] = {           /***/     1    /** ID: 0 (1
                                                      /***/     1    /** ID: 4 (5th)*/                                                };/***/
                                                      /***/                                                                              /***/
                                                      /***     Probabilistic Right of the 5 Out-Sensors:                                ***/
-const int OUT_SENSORS_RIGHT[OUT_SENSORS] = {         /***/     99   /** ID: 0 (1st)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 1 (2nd)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 2 (3rd)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 3 (4th)*/                                                 ,/***/
-                                                     /***/     99   /** ID: 4 (5th)*/                                                };/***/
+const int OUT_SENSORS_RIGHT[OUT_SENSORS] = {         /***/     9999 /** ID: 0 (1st)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 1 (2nd)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 2 (3rd)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 3 (4th)*/                                                 ,/***/
+                                                     /***/     9999 /** ID: 4 (5th)*/                                                };/***/
                                                      /**********************************************************************************/
 
 /**

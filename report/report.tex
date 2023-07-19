@@ -22,7 +22,7 @@
 \hypersetup{
     pdftitle={Formal Digital Twin of a LEGO® MINDSTROMS™ Production Plant},
     pdfauthor={Andrea Infantino, Riccardo Motta, Matteo Negro}
-    }
+}
 
 \setlength{\parindent}{0pt}
 
@@ -49,6 +49,7 @@
 \newcommand{\figureref}[1]{\textsf{\hyperref[#1]{Figure \ref*{#1}}}}
 \newcommand{\sectionref}[1]{\textsf{\hyperref[#1]{Section \ref*{#1}: \nameref*{#1} (page \pageref*{#1})}}}
 \newcommand{\propertyref}[2]{\textsf{\hyperref[#2]{Property #1: \nameref*{#2}}}}
+\newcommand{\policyref}[1]{\textsf{\hyperref[policies]{Policy #1}}}
 \newcommand{\nbvspace}[1][3]{\vspace*{\stretch{#1}}}
 
 \newcommand{\formulacomment}[2]{\underset{\varphi_{#1}}{\underbrace{#2}}}
@@ -129,12 +130,12 @@
 
     \paragraph{Laser sensors} We have modelled them in two different ways according to their functionalities. The ones guarding the entrance of a station are called \texttt{InSensor} (represented as light red circles in \figureref{figure:scheme}), while the ones guarding the queue and preventing the station right before it to release a workpiece are called \texttt{OutSensor} (represented as dark red circles). Like the stations, they are represented as a single template (one for each type), instantiated multiple times.
 
-    \paragraph{Flow controller} This is the green piece of \figureref{figure:scheme}. It is pre-configured with a specific policy (which is customizable) and decides where to send the workpieces once they get at position 65 of the conveyor belt. The available policies are the following ones:
+    \paragraph{Flow controller} This is the green piece of \figureref{figure:scheme}. It is pre-configured with a specific policy (which is customizable) and decides where to send the workpieces once they get at position 65 of the conveyor belt. The available policies are the following ones:\label{policies}
     \begin{enumerate}
         \item[0.] Sends the workpieces on the alternative branch until its queue is full, otherwise lets the workpieces proceed on the main branch;
         \item[1.] Lets all the workpieces to flow on the main branch;
         \item[2.] Sends all the workpieces on the alternative branch;
-        \item[3.] Every time a workpiece is in front of him sends it on a different path with respect to the one taken by the previous workpiece.\label{policy:3}
+        \item[3.] Every time a workpiece is in front of him sends it on a different path with respect to the one taken by the previous workpiece.
     \end{enumerate}
 
     \subsection{Initializer (\texttt{Initializer})}
@@ -205,10 +206,10 @@
                 \includegraphics[width=\columnwidth]{images/automata/flow_controller_3}
             \end{subfigure} \\
             \begin{subfigure}{\linewidth}
-                \caption{Controller v0}
+                \caption{Controller v0.}
             \end{subfigure} &
             \begin{subfigure}{\linewidth}
-                \caption{Controller v3}
+                \caption{Controller v3.}
             \end{subfigure}
         \end{tabularx}
         \caption{the two non-trivial \texttt{FlowController} we ideated.}
@@ -242,7 +243,7 @@
 
     \paragraph{Idea} In order to simplify the modelling of the plant and our code, we decided to group the slots of the conveyor belt all together into a single logically entity (the \texttt{ConveyorBelt}).
 
-    \paragraph{Situation} This simplified a lot the management of all the various cases (and indeed is still present in our project), since we had a unique entity to manage the complexity derived from the movement of the various workpieces. This also works in synchronicity with the processing stations and the sensors, in order to block the workpieces when needed, and with the flow controller, which communicates to the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved significantly the verification time needed to check the properties, but we still had a huge memory consumption.
+    \paragraph{Situation} This simplified a lot the management of all the various cases (and, indeed, is still present in our project), since we had a unique entity to manage the complexity derived from the movement of the various workpieces. This also works in synchronicity with the processing stations and the sensors, in order to block the workpieces when needed, and with the flow controller, which communicates to the \texttt{ConveyorBelt} where to send the workpieces on the branch. By doing this we also improved significantly the verification time needed to check the properties, but we still had a huge memory consumption.
 
     \subsubsection{Automata simplification}
 
@@ -304,6 +305,9 @@
         \item \(\varphi_3\): all the \texttt{InSensor} are blocking workpieces from reaching the stations.
     \end{itemize}
 
+    \paragraph{Note} This doesn't include all the possible configurations in which a deadlock can occur, since in UPPAAL we didn't find, after a long and deep research, a way to express a formula like the following correct one:
+    \[\exists \lozenge \left(\left(\exists i \in \left[0; 5\right] \square \formulatext{station(i).Done}\right) \vee \left(\exists i \in \left[0; 5\right] \square \formulatext{inSensor(i).Locked}\right) \vee \left(\exists i \in \left[0; 4\right] \square \formulatext{outSensor(i).Locked}\right)\right)\]
+
     \section{S\lowercase{tochastic} V\lowercase{ersion}}
 
     In real world applications, nothing is unbreakable. Every kind of concrete component can be subject to fault, errors and/or failures; that's why, in order to provide a model as much suitable to a real application context as possible, we implemented a separate version of our original project, improved with the two following stochastic features\footnote{Reference: \textsf{\hyperlink{https://www.it.uu.se/research/group/darts/papers/texts/uppaal-smc-tutorial.pdf}{https://www.it.uu.se/research/group/darts/papers/texts/uppaal-smc-tutorial.pdf}}.}.
@@ -313,11 +317,11 @@
     \begin{figure}[h!]
         \begin{subfigure}{0.49\linewidth}
             \includegraphics[width=\textwidth]{images/automata/in_sensor_s}
-            \caption{Stochastic \texttt{InSensor}}
+            \caption{Stochastic \texttt{InSensor}.}
         \end{subfigure}
         \begin{subfigure}{0.49\linewidth}
             \includegraphics[width=\textwidth]{images/automata/out_sensor_s}
-            \caption{Stochastic \texttt{OutSensor}}
+            \caption{Stochastic \texttt{OutSensor}.}
         \end{subfigure}
         \caption{the stochastic version of our \texttt{InSensor} and \texttt{OutSensor}.}
         \label{figure:stochastic_sensors}
@@ -339,7 +343,7 @@
 
     \subsection{Scenario 1: the normality}
 
-    This can be considered the \doublequotes{standard} scenario: the structure of the plant is the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt, in the way defined above as \textsf{\hyperref[policy:3]{Policy 3}}.
+    This can be considered the \doublequotes{standard} scenario: the structure of the plant is the one depicted in the introduction. The stations' processing times have been chosen without any specific criterion, and we instructed the flow controller to equally send the workpieces on the two different branches of the conveyor belt, in the way defined above as \policyref{3}.
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:1}.
 
@@ -413,7 +417,7 @@
 
     \subsection{Scenario 3: one way}
 
-    Here we wanted to test a different scheduling policy: we kept the same parameters of the first scenario and changed only the scheduling policy followed by the \texttt{FlowController}. In particular, we chose to route all the workpieces through the branch with the two processing stations (policy 2).
+    Here we wanted to test a different scheduling policy: we kept the same parameters of the first scenario and changed only the scheduling policy followed by the \texttt{FlowController}. In particular, we chose to route all the workpieces through the branch with the two processing stations (\policyref{2}).
 
     \paragraph{Parameters} These are the parameters used to obtain \figureref{figure:scenario:3}.
 
@@ -549,7 +553,7 @@
         \item \propertyref{2}{property:3}: \(< 5\%\);
         \item \propertyref{3}{property:4}: \(> 95\%\).
     \end{itemize}
-    It is clear that, also in this case, the plant is still functioning, even if it's almost certain that at least one queue exceed its maximum length. This is due to the very high probability of a sensor to be faulty, for which in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physical constraints are respected.
+    It is clear that, also in this case, the plant is still functioning, even if it's almost certain that at least one queue exceeds its maximum length. This is due to the very high probability of a sensor to be faulty, for which in 10000 time instants, this property can't be fully verified. However, the plant doesn't incur in any deadlock and physical constraints are respected.
 
     \section{C\lowercase{onclusions}}
 
